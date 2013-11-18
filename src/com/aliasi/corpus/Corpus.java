@@ -77,6 +77,12 @@ public class Corpus<H extends Handler> {
         visitTrain(trainHandler);
         visitTest(testHandler);
     }
+    
+    public void visitGold(H handler) 
+        throws IOException {
+        
+        /* override with subclass to do something */
+    }
 
     /**
      * Visit the training section of the corpus, sending events to the
