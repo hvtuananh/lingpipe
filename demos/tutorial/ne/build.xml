@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+
+<project name="LingPipe Tutorial - Named Entities"
+         default="compile" basedir=".">
+
+<property name="data.root"
+          value="e:\data"/>
+<property name="model.root"
+          value="../../models"/>
+
+<property name="dir.genetag"
+          value="${data.root}/medtag/unpacked/medtag/genetag/"/>
+<property name="data.genetag"
+          value="${dir.genetag}/genetag.tag"/>
+<property name="model.genetag"
+          value="${model.root}/ne-en-bio-genetag.HmmChunker"/>
+
+<property name="data.conll2002.spanish"
+          value="${data.root}/conll2002/munged/spanish/"/>
+<property name="model.conll2002.spanish"
+          value="${model.root}/ne-es-news-conll2002.AbstractCharLmRescoringChunker"/>
+
+<path id="classpath.standard">
+  <pathelement location="neDemo.jar"/>
+  <pathelement location="../../../lingpipe-4.1.0.jar"/>
+</path>
+
+
+<target name="clean">
+  <delete dir="build"/>
+  <delete file="neDemo.jar"/>
+</target>
+
+
+<target name="compile">
+  <mkdir dir="build/classes"/>
+  <javac includeAntRuntime="false"
+         optimize="on"
+         debug="yes"
+         debuglevel="source,lines,vars"
+         destdir="build/classes">
+    <compilerarg value="-Xlint:all"/>
+    <classpath refid="classpath.standard"/>
+    <src path="src/"/>
+  </javac>
+</target>
+
+
+<target name="jar"
+        depends="compile">
+  <jar destfile="neDemo.jar">
+    <fileset dir="build/classes"
+             includes="**/*.class"/>
+  </jar>
+</target>
+
+
+<target name="run-genetag"
+        depends="jar">
+  <java classname="RunChunker"
+        maxmemory="256M"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${model.genetag}"/>
+    <arg value="p53 regulates human insulin-like growth factor II gene expression through active P4 promoter in rhabdomyosarcoma cells."/>
+  </java>
+</target>
+
+<target name="run-genetag-nbest"
+        depends="jar">
+  <java classname="RunNBestChunker"
+        maxmemory="256M"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${model.genetag}"/>
+    <arg value="p53 regulates human insulin-like growth factor II gene expression through active P4 promoter in rhabdomyosarcoma cells."/>
+  </java>
+</target>
+
+
+<target name="run-genetag-conf"
+        depends="jar">
+  <java classname="RunConfidenceChunker"
+        maxmemory="256M"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${model.genetag}"/>
+    <arg value="p53 regulates human insulin-like growth factor II gene expression through active P4 promoter in rhabdomyosarcoma cells."/>
+  </java>
+</target>
+
+
+<target name="train-genetag"
+        depends="jar">
+  <java classname="TrainGeneTag"
+        maxmemory="256M"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${data.genetag}"/>
+    <arg value="${model.genetag}"/>
+  </java>
+</target>
+
+<target name="eval-genetag"
+        depends="jar">
+  <java classname="EvalGeneTagChunker"
+        maxmemory="512M"
+        fork="true">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+    <arg value="${dir.genetag}/Gold.format"/>
+    <arg value="${dir.genetag}/genetag.sent"/>
+    <arg value="10"/>
+  </java>
+</target>
+
+
+<target name="train-conll2002-spanish"
+        depends="jar">
+  <java classname="TrainConll2002"
+        maxmemory="1G"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${model.conll2002.spanish}"/>
+    <arg value="${data.conll2002.spanish}/esp.train"/>
+    <arg value="${data.conll2002.spanish}/esp.testa"/>
+  </java>
+</target>
+
+<target name="test-conll2002-spanish"
+        depends="jar">
+  <java classname="TestConll2002Chunker"
+        maxmemory="1G"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${model.conll2002.spanish}"/>
+    <arg value="${data.conll2002.spanish}/esp.testb"/>
+  </java>
+</target>
+
+<target name="eval-files-muc6"
+        depends="jar">
+  <java classname="FileScorer"
+        maxmemory="256M"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="../../data/neFileScore/reference.muc6"/>
+    <arg value="../../data/neFileScore/response.muc6"/>
+  </java>
+</target>
+
+<target name="email-chunker"
+        depends="jar">
+  <java classname="EmailRegExChunker"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="John's email is john@his.company.com and his friend's is foo.bar@123.foo.ca."/>
+  </java>
+</target>
+
+
+<target name="dictionary-chunker"
+        depends="jar">
+  <java classname="DictionaryChunker"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="50 Cent is hard to distinguish from 50 cent and just plain cent without case"/>
+    <arg value="The product xyz120 DVD player won't match unless it's exact like XYZ120 DVD Player."/>
+  </java>
+</target>
+
+
+<target name="approx-chunker"
+        depends="jar">
+  <java classname="ApproximateChunkerDemo"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="A protein called Mdm2 binds to p53 and transports it from the nucleus to the cytosol."/>
+    <arg value="p53, also known as protein 53 (TP53), functions as a tumor supressor."/>
+  </java>
+</target>
+
+
+<property name="aner.dict" value="false"/>
+<property name="aner.misc" value="true"/>
+<property name="aner.ngram" value="8"/>
+<property name="aner.interpolation" value="${aner.ngram}"/>
+<property name="aner.chars" value="1024"/>
+<property name="aner.rescored" value="512"/>
+
+<target name="aner"
+        depends="jar">
+  <java classname="ANERXval"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${aner.dir}"/>
+    <arg value="${aner.dict}"/>
+    <arg value="${aner.misc}"/>
+    <arg value="${aner.ngram}"/>
+    <arg value="${aner.interpolation}"/>
+    <arg value="${aner.chars}"/>
+    <arg value="${aner.rescored}"/>
+  </java>
+</target>
+
+<target name="check"
+        depends="jar">
+  <java classname="MungeBadTags"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="c:\carp\data\aner\ANERCorp"/>
+  </java>
+</target>
+
+
+
+</project>

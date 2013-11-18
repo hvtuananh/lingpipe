@@ -1,0 +1,5 @@
+<!-- config to allow deploy/undeploy in Windows -->
+
+<Context path="/lingpipe-demo" 
+         antiJarLocking="false"       
+         antiResourceLocking="false"/>

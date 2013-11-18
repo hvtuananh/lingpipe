@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+
+<project name="LingPipe Tutorial - Singular Value Decomposition" default="compile" basedir=".">
+
+<path id="classpath.standard">
+  <pathelement location="build/classes"/>
+  <pathelement location="../../../lingpipe-4.1.0.jar"/>
+</path>
+
+<target name="clean">
+  <delete dir="build"/>
+  <delete file="svd.jar"/>
+</target>
+
+<target name="compile">
+  <mkdir dir="build/classes"/>
+  <javac includeAntRuntime="false"   optimize="on"
+         debug="yes"
+         debuglevel="source,lines,vars"
+         destdir="build/classes">
+    <compilerarg value="-Xlint:all"/>
+    <classpath refid="classpath.standard"/>
+    <src path="src/"/>
+  </javac>
+</target>
+
+<target name="jar"
+        depends="compile">
+  <jar destfile="svd.jar">
+    <fileset dir="build/classes"
+             includes="**/*.class"/>
+  </jar>
+</target>
+
+<property name="text.file"
+          value="e:\data\gutenberg\dist\JaneAusten\PrideAndPrejudice.txt"/>
+
+<target name="tokenBigram"
+        depends="compile">
+  <java classname="TokenBigramSvd"
+        maxmemory="1200M"
+        fork="true">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+    <arg value="${text.file}"/>
+  </java>
+</target>
+
+<target name="partialTokenBigram"
+        depends="compile">
+  <java classname="PartialTokenBigramSvd"
+        maxmemory="512M"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${text.file}"/>
+  </java>
+</target>
+
+<target name="lsi"
+        depends="compile">
+  <java classname="Lsi"
+        maxmemory="512M"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="human computer interaction"/>
+  </java>
+</target>
+
+<property name="regularization"
+          value="0.015"/>
+<property name="maxEpochs"
+          value="10000"/>
+
+<target name="regularized"
+        depends="compile">
+  <java classname="RegularizedSvd"
+        maxmemory="512M"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${regularization}"/>
+    <arg value="${maxEpochs}"/>
+  </java>
+</target>
+
+</project>

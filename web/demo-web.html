@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Web Demo Instructions</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1>
+<h1 id="pagetitle">Web Demo <span style="font-size:0.5em">(Instructions)</span></h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../index.html">home</a></li>
+
+<li>
+  <a class="current" href="demos.html">demos</a>
+  <ul>
+    <li>
+      demo instructions
+      <ul>
+        <li><a class="current" href="demo-web.html">web</a></li>
+        <li><a href="demo-gui.html">gui</a></li>
+        <li><a href="demo-cmd.html">command line</a></li>
+      </ul>
+    </li>
+    <li>
+      list of demos
+      <ul>
+        <li><a href="demo-sentence.html">sentences</a></li>
+        <li><a href="demo-pos.html">parts of speech</a></li>
+        <li><a href="demo-ne.html">named entities</a></li>
+        <li><a href="demo-coref.html">coreference</a></li>
+        <li><a href="demo-chinese-words.html">chinese words</a></li>
+        <li><a href="demo-echo.html">echo &amp; transcoding</a></li>
+      </ul>
+    </li>
+  </ul>
+</li>
+
+<li><a href="licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="download.html">lingpipe core</a></li>
+<li><a href="models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="install.html">install</a></li>
+<li><a href="../demos/tutorial/read-me.html">tutorials</a></li>
+<li><a href="../docs/api/index.html">javadoc</a></li>
+<li><a href="book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="bugs.html">bugs</a></li>
+<li><a href="sandbox.html">sandbox</a></li>
+<li><a href="competition.html">competition</a></li>
+<li><a href="citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="contact.html">contact</a></li>
+
+<li><a href="about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+
+
+<h2>List of Web Demos</h2>
+
+<div class="sidebar">
+<h2>Servlet Deployment</h2>
+<p>
+LingPipe's web demos are implemented as Java <a
+href="http://java.sun.com/products/servlet/">servlets</a>
+(version 2.4) and deployed in the Apache <a
+href="http://tomcat.apache.org">Tomcat</a> servlet container
+(version 5.5).
+</p>
+</div>
+
+<p>
+Each demo has its own page, with a link to the demo on the web.
+The navigation bar to the left has a listing, as does the top-level demos page:
+</p>
+<ul>
+<li><a href="demos.html#list">List of Demos</a></li>
+</ul>
+<p>
+The rest of this page provides instructions for running
+the demos on the web.
+</p>
+
+
+<h2>Ways to Run the Web Demos</h2>
+
+<div class="sidebar">
+<h2>Web Demo Implementation</h2>
+<p>
+The web demo servlet:
+</p>
+<ul>
+<li><a href="../demos/generic/src/com/aliasi/demo/framework/DemoServlet.java"><code>DemoServlet.java</code></a></li>
+</ul>
+<p>
+acts as an adapter for implementations
+of the streaming text demo interface:
+</p>
+<ul>
+<li><a href="../demos/generic/src/com/aliasi/demo/framework/StreamDemo.java"><code>StreamDemo.java</code></a></li>
+</ul>
+<p>
+The web archive (<code>.war</code>) file is created and
+deployed through the ant
+build file <a
+href="../demos/generic/build.xml"><code>build.xml</code></a>.
+</p>
+</div>
+
+<p>
+LingPipe's web demos may be accessed via HTTP via three
+different interfaces:
+</p>
+<ul>
+<li>
+<a href="#txt">Text Input Form</a>
+</li>
+
+<li>
+<a href="#fileup">File Upload Form</a>
+</li>
+
+<li>
+<a href="#svc">Web Service</a>
+</li>
+</ul>
+<p>
+All three interfaces accept the same content
+types (HTML, XML and plain text) and specify
+input/output character set encodings in the
+same way:
+</p>
+<ul>
+<li><a href="#general">Content Types and Character Encodings</a></li>
+</ul>
+
+
+<a name="txt"></a>
+<h2>Interface 1: Text Input Form</h2>
+
+<p>
+Text input is supported through an HTML form that
+contains a text input field.  The text input form
+for a demo is available at:
+</p>
+<pre class="code">
+http://lingpipe-demos.com:8080/lingpipe-demos/<i>DemoName</i>/textInput.html
+</pre>
+<p>
+where <code><i>DemoName</i></code> is the name of the demo;
+e.g. <code>echo</code> or <code>sentence_en_news</code>.
+</p>
+
+<div class="sidebar">
+<h2>Browser Character Encodings</h2>
+<p>
+Most browsers (IE, Firefox, Opera) allow the user to set
+the page's character set using the top-level browser
+<b>View</b> menu and selecting the <b>Encoding</b> option,
+and then the appropriate character set.
+</p>
+<p>
+After reading an HTML page, a browser may reset the
+character encoding based on the encoding declared in the
+HTTP content type or by including a <code>meta</code> element
+setting the content type of the page with a charset declaration
+(as is done on this page).
+</p>
+</div>
+
+<h3>Text Input</h3>
+<p>
+Text may be entered directly into the input form by typing
+or any other platform-supported means such as cut-and-paste
+or special character input (e.g. for Chinese).
+</p>
+
+<h3>Parameter Input</h3>
+<p>
+Parameters with fixed sets of choices are entered using
+pull-down menus.  Open-ended parameters are entered
+through small text fields.
+</p>
+
+<h3>Content Type</h3>
+<p>
+The content type for this input is the one expected from
+web text entry forms:
+</p>
+
+<pre class="code">
+application/x-www-form-urlencoded
+</pre>
+
+<h3>Browser Character Set</h3>
+<p>
+It is important for text input forms (but not other web demos) that
+the character set declared in a browser (IE, Firefox, Safari, etc.) be
+the same as that declared for input text.  This step is required to
+allow cut-and-paste and direct input to be captured correctly by the
+browser before being sent as bytes to the web server.
+</p>
+
+<h3>Submitting Text and Parameters</h3>
+<p>
+After the text is entered and parameters are selected, pressing the
+submit button sends the text and parameters to the server as an
+appropriately formatted HTTP request.
+</p>
+
+<h3>Viewing Results</h3>
+<p>
+The server will return a page containing XML to the
+client, which the client will then display.  Display
+behavior depends on the client.
+</p>
+
+
+
+<a name="fileup"></a>
+<h2>Interface 2: File Upload Form</h2>
+<p>
+Text may be provided to the web demos by uploading a file
+through a form on the browser.
+The file upload form for a demo is available at:
+</p>
+<pre class="code">
+http://lingpipe-demos.com:8080/lingpipe-demos/<i>DemoName</i>/fileInput.html
+</pre>
+<p>
+where <code><i>DemoName</i></code> is the name of the demo;
+e.g. <code>echo</code> or <code>sentence_en_news</code>.
+</p>
+<h3>Text Input</h3>
+<p>
+An absolute path to the file
+on the user's system may be entered directly, or the browse
+button may pressed in order to find the file using the platform's
+file browser.
+</p>
+
+<h3>Parameter Input</h3>
+<p>
+Parameters are entered using pull-down menus or by small
+text fields if they are open-ended.
+</p>
+
+<h3>Content Type</h3>
+<p>
+The content type for this input is the one expected from
+web file upload forms,
+</p>
+
+<pre class="code">
+multipart/form-data
+</pre>
+
+<h3>Submitting Text and Parameters</h3>
+<p>
+Pressing the submit button after the file is chosen
+and parameters are set causes the file to be sent
+as part of an HTTP request to the web server running
+the demo.
+</p>
+
+<h3>Viewing Results</h3>
+<p>
+The server will return a page containing XML to the
+client, which the client will then display.  Display
+behavior depends on the client.
+</p>
+
+
+
+<a name="svc"></a>
+<h2>Interface 3: Web Service</h2>
+
+<p>
+LingPipe demos may be accessed directly as a web service through HTTP.
+Rather than using a form, a client program can directly send an HTTP
+request to the server.  This can be done through an HTTP client in
+any language.
+</p>
+<p>
+The web service version of a demo is available at:
+</p>
+<pre class="code">
+http://lingpipe-demos.com:8080/lingpipe-demos/<i>DemoName</i>/response.xml
+</pre>
+<p>
+where <code><i>DemoName</i></code> is the name of the demo;
+e.g. <code>echo</code> or <code>sentence_en_news</code>.
+</p>
+
+<div class="sidebar">
+<h2>Java Web Service Client</h2>
+<p>
+We provide a sample Java client as part of our demo package:
+</p>
+<ul>
+<li>
+<a href="../demos/generic/src/com/aliasi/demo/framework/DemoClient.java"><code>DemoClient.java</code></a>
+</li>
+</ul>
+<p>
+This client may be easily adapted to serve as a web service client for
+the LingPipe demos.
+</p>
+</div>
+
+<h3>Text Input</h3>
+<p>
+Text input should be provided as post data.
+</p>
+
+<h3>Parameter Input</h3>
+<p>
+Parameters should be URL encoded as part of the request URL.  For
+more information on URL encoding, see the class documentation for
+<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/net/URLEncoder.html"><code>java.net.URLEncoder</code></a>.
+</p>
+
+<h3>Content Type</h3>
+<p>
+The request content type must be set to:
+</p>
+
+<pre class="code">text/plain</pre>
+
+<p>
+If a character set is specified, it will be used to decode the
+text sent as a byte stream.  The character set may also be specified
+as a parameter.
+</p>
+
+
+<a name="general"></a>
+<h2>Content Types and Character Encodings</h2>
+
+
+
+<h3>Input: Text, HTML or XML</h3>
+<p>
+The demos process data in one of three formats: plain text, HTML or
+XML.  How that data is presented to the demo varies based on
+whether the demo is on the web, in a GUI, or a command.
+</p>
+
+<h4>Specifying Input Content Type</h4>
+<p>
+The content type of the input is specified using a
+control on the form called labeled <code>contentType</code>.
+It presents three values: <code>text/plain</code> (the
+initial value), <code>text/html</code> and <code>text/xml</code>
+</p>
+
+<h4>Specifying Elements to Annotate or Remove</h4>
+<p>
+For XML and HTML input, the elements to tag may be specified
+as a comma-separated list of element qualified names in
+the text field labeled <code>includeElts</code>.  Another
+comma-separated list of names may be removed altogether
+from the input (though their content is left behind) in
+the text field labeled <code>removeElts</code>.
+</p>
+
+<h3>Output: XML</h3>
+<p>
+The demo output format is XML in all cases.  Plain text is minimally
+wrapped in an element. HTML is parsed using NekoHTML into
+well-formed XML.  XML is passed through with inline annotation.
+</p>
+
+<h3>Character Encoding</h3>
+
+<p>
+The web demos all require both input and output character sets to be
+specified.  The web forms will initially show the default
+character set of the server's Java virtual machine.  They will
+also show all of the other encodings available on the platform.
+</p>
+
+<h4>Specifying Character Encodings</h4>
+<p>
+Character encodings for the input and output are specified
+through pulldown menus labled <code>inCharset</code> and
+<code>outCharset</code> respectively.
+</p>
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+

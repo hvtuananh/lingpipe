@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Chinese Word Demo</title>
+<meta http-equiv="Content-type" 
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language" 
+      content="en"/>
+<link href="css/lp-site.css" 
+      title="lp-site"
+      type="text/css" 
+      rel="stylesheet" />
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1>
+<h1 id="pagetitle">Chinese Word Demo</h1>
+<a id="logo" 
+   href="http://alias-i.com/"
+  ><img src="img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../index.html">home</a></li>
+
+<li>
+  <a class="current" href="demos.html">demos</a>
+  <ul>
+    <li>
+      demo instructions
+      <ul>
+        <li><a href="demo-web.html">web</a></li>
+        <li><a href="demo-gui.html">gui</a></li>
+        <li><a href="demo-cmd.html">command line</a></li>
+      </ul>
+    </li>
+    <li>
+      list of demos
+      <ul>
+        <li><a href="demo-sentence.html">sentences</a></li>
+        <li><a href="demo-pos.html">parts of speech</a></li>
+        <li><a href="demo-ne.html">named entities</a></li>
+        <li><a href="demo-coref.html">coreference</a></li>
+        <li><a class="current" href="demo-chinese-words.html">chinese words</a></li>
+        <li><a href="demo-echo.html">echo &amp; transcoding</a></li>
+      </ul>
+    </li>
+  </ul>
+</li>
+
+<li><a href="licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="download.html">lingpipe core</a></li>
+<li><a href="models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="install.html">install</a></li>
+<li><a href="../demos/tutorial/read-me.html">tutorials</a></li>
+<li><a href="../docs/api/index.html">javadoc</a></li>
+<li><a href="book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="bugs.html">bugs</a></li>
+<li><a href="sandbox.html">sandbox</a></li>
+<li><a href="competition.html">competition</a></li>
+<li><a href="citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="contact.html">contact</a></li>
+
+<li><a href="about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<h2>About the Chinese Word Demo</h2>
+
+<div class="sidebar">
+<h2>Chinese Word Tutorial</h2>
+<p>
+There is a tutorial covering part of speech tagging
+at the API level at:
+</p>
+<ul>
+<li>
+<a href="../demos/tutorial/chineseTokens/read-me.html">Chinese Word Tutorial</a>
+</li>
+</ul>
+</div>
+
+
+<p>
+Chinese is written without spaces between the words.  This demo
+illustrates how to break Chinese into words.
+</p>
+
+<h3>Annotation Standard</h3>
+<p>
+Because the notion of word is not a natural one in Chinese, 
+different &quot;standards&quot; have been developed for
+determining wordhood.  This demo is based on the
+Academia Sinica corpus as distributed as part of SIGHAN 2005.
+</p>
+
+<h3>LingPipe's Word Segmentation</h3>
+<p>
+LingPipe's word segmentation is performed using a noisy channel
+model, where the source is a character language model trained
+on segmented text and the channel simply allows spaces to
+be freely inserted.  
+</p>
+
+<div class="sidebar">
+<h2>Chinese Word Demo Implementation</h2>
+<p>
+The part-of-speech demo implementation is in:
+</p>
+<ul><li>
+<a href="../demos/generic/src/com/aliasi/demo/demos/ChineseWordsDemo.java"><code>demo/demos/ChineseWordsDemo.java</code></a>
+</li></ul>
+<p>
+Like every demo, this implements:
+</p>
+<ul><li>
+<a href="../demos/generic/src/com/aliasi/demo/framework/StreamDemo.java"><code>demo/framework/StreamDemo.java</code></a>
+</li></ul>
+<p>
+The demos and framework are in:
+</p>
+<ul><li>
+<code>$lingpipe/demos/generic</code>
+</li></ul>
+</div>
+
+<h3>Model Quality</h3>
+<p>
+The demo uses a 4-gram character language model for the
+source of the noisy channel.  This model is roughly
+30MB in compiled form.  5-grams perform significantly
+better (about 25% fewer errors in the SIGHAN evaluation),
+but the model is 80MB.
+</p>
+
+<h3>Sentences</h3>
+<p>
+The training data provided a single sentence per line,
+so this segmenter assumes that sentences are already
+marked.  LingPipe does not yet have a Chinese sentence
+detector, so this is left to the user.  Performance
+should be OK even without sentences marked.
+</p>
+
+
+<h3>Chinese Word XML Markup</h3>
+
+<p>
+This demo only provides first-best output, with words wrapped
+in <code>token</code> elements.
+</p>
+
+
+
+<h2>Chinese Word Demo on the Web</h2>
+
+<p>
+The demo is hosted on the web at the following URL:
+</p>
+
+<h3>Academia Sinica Corpus</h3>
+<pre class="code">
+<a href="http://lingpipe-demos.com:8080/lingpipe-demos/word_zh_as/textInput.html"><code>http://lingpipe-demos.com:8080/lingpipe-demos/word_zh_as/textInput.html</code></a>
+</pre>
+
+
+
+<p>
+For detailed information about using web demos, including web form,
+file upload and web service instructions, see the <a
+href="demo-web.html">web demo instructions</a>
+</p>
+
+<h2>Chinese Word Demo via GUI</h2>
+
+<p>
+To launch the demo in a GUI, first change directories to the
+command directory and then invoke the demo batch script. <em>Note:</em> Parameters are set in the GUI, not as arguments to the launch script.
+</p>
+
+<h3>Windows Operating System</h3>
+
+<h4>Academia Sinica Corpus</h4>
+<pre class="code">
+&gt; cd %LINGPIPE_HOME%\demos\generic\bin
+&gt; gui_word_zh_as.bat 
+</pre>
+
+<h3>Unix-like Operating Systems</h3>
+
+<h4>Academia Sinica Corpus</h4>
+<pre class="code">
+&gt; cd %LINGPIPE_HOME%\demos\generic\bin
+&gt; sh gui_word_zh_as.sh
+</pre>
+
+<p>
+For detailed information about running demos in a GUI,
+see the <a href="demo-gui.html">GUI demo instructions</a>
+</p>
+
+<h2>Chinese Word Demo via Shell Command</h2>
+
+<p>Shell commands may be run over single files, all of the files
+in a directory, or using standard input/output.  
+</p>
+
+<h3>Running over a Directory</h3>
+
+<h4>Academia Sinica Corpus</h4>
+<pre class="code">
+&gt; cd $LINGPIPE/demos/generic/bin
+&gt; cmd_word_zh_as.bat -inDir=../../data/testdir -outDir=/testout
+</pre>
+
+<h3>Running a Single File</h3>
+
+<h4>Academia Sinica Corpus</h4>
+<pre class="code">
+&gt; cd $LINGPIPE/demos/generic/bin
+&gt; cmd_word_zh_as.bat -inFile=../../data/testdir/foo.txt -outFile=foo.out.xml
+</pre>
+<p>
+The other genres are handled the same way,
+with different suffixes in place of <code>general_brown</code>.
+</p>
+
+
+<h3>Running through a Pipe (Standard input/output)</h3>
+
+<h4>Academia Sinica Corpus</h4>
+<pre class="code">
+&gt; cd demos/generic/bin
+&gt; echo See Spot. See Spot run. | cmd_word_zh_as.bat
+</pre>
+
+
+<h3>Running in Unix-like Operating Systems</h3>
+<p>
+For unix-like operating systems such as Unix,
+Solaris, Linux, or Macintosh OS X:
+</p>
+<ul>
+<li>Replace path backward slashes
+(<code>\</code>) with forward slashes (<code>/</code>), and
+</li>
+<li>substitute <code>.sh</code>
+for the <code>.bat</code> suffix in the command.
+</li>
+</ul>
+
+
+
+
+<p>
+For detailed information about running demos from the command line,
+see the <a href="demo-cmd.html">command line demo instructions</a>
+</p>
+
+
+<h2>Chinese Word Demo Scripts</h2>
+
+<p>
+The following scripts are available in
+<code>$LINGIPE/demos/generic/bin</code> for running the demo.  Note
+that each script comes in four flavors, distinguishing
+command line from GUI, and the Windows DOS shell from the Unix shell.
+</p>
+
+<table class="demolist">
+<tr>
+    <th>Genre</th>
+    <th>Corpus</th>
+    <th>Mode</th>
+    <th>Windows DOS</th>
+    <th>Unix/Linux/Mac sh</th></tr>
+<tr>
+    <td rowspan="2">General</td>
+    <td rowspan="2">Academia Sinica</td>
+    <td>Command</td>
+    <td><a href="../demos/generic/bin/cmd_word_zh_as.bat"><code>cmd_word_zh_as.bat</code></a></td>
+    <td><a href="../demos/generic/bin/cmd_word_zh_as.sh"><code>cmd_word_zh_as.sh</code></a></td>
+</tr>
+<tr><td>GUI</td>
+    <td><a href="../demos/generic/bin/gui_word_zh_as.bat"><code>gui_word_zh_as.bat</code></a></td>
+    <td><a href="../demos/generic/bin/gui_word_zh_as.sh"><code>gui_word_zh_as.sh</code></a></td>
+</tr>
+</table>
+
+
+<h2>Chinese Word Demo Parameters</h2>
+
+<p>
+The following is a complete list of parameters for the demo.  
+</p>
+
+<h3>General Demo Parameters</h3>
+
+<p>
+These parameters apply to every version (web/GUI/command) of every demo.
+</p>
+
+<table>
+<tr><th>Parameter</th>
+    <th>Description</th>
+    <th>Usage Constraints</th></tr>
+<tr><td><code>inCharset</code></td>
+    <td>Input character set</td>
+    <td rowspan="2">Optional.  Defaults to platform default.</td></tr>
+<tr><td><code>outCharset</code></td>
+    <td>Output character set</td></tr>
+<tr><td><code>contentType</code></td>
+    <td>Input content type</td>
+    <td>May be one of:
+       <ul><li><code>text/plain</code></li> 
+           <li><code>text/html</code></li>
+           <li><code>text/xml</code></li>
+       </ul>
+       Defaults to <code>text/plain</code>.</td></tr>
+<tr><td><code>removeElts</code></td>
+    <td>Element tags to remove</td>
+    <td rowspan="3">Optional. May only be used with <code>contentType=text/html</code>
+        or <code>contentType=text/xml</code>.  Each value may be
+        comma-separated list.  If neither of these are
+        specified, all text content is processed.</td></tr>
+<tr><td><code>includeElts</code></td>
+    <td>Elements to annotate</td></tr>
+</table>
+
+<h3>Command-Line Only Parameters</h3>
+
+<p>
+These parameters apply to every command-line demo, but are not
+relevant for the GUI or web versions of the demos.
+</p>
+
+
+<table>
+<tr><th>Parameter</th>
+    <th>Description</th>
+    <th>Usage Constraints</th></tr>
+<tr><td><code>inFile</code></td>
+    <td>Readable input file</td>
+    <td rowspan="2">May not be used with <code>inDir</code>. 
+                    If either is not specified, defaults to standard input or output.</td>
+</tr>
+<tr><td><code>outFile</code></td>
+    <td>Writeable output file</td>
+    </tr>
+<tr><td colspan="3" class="separator"></td></tr>
+<tr><td><code>inDir</code></td>
+    <td>Readable input directory</td>
+    <td rowspan="2">May not be used with <code>inFile</code> or <code>outFile</code>.
+        If used, <code>inDir</code> and <code>outDir</code> must both be specified.</td></tr>
+<tr><td><code>outDir</code></td>
+    <td>Writeable output directory</td></tr>
+</table>
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+

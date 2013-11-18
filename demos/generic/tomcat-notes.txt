@@ -1,0 +1,18 @@
+  q$TOMCAT_HOME  C:\java\apache-tomcat-5.5.15
+$JAVA_HOME    C:\Program Files\Java\jdk1.5.0_05
+
+0. Install Java 1.5 to $JAVA_HOME and set JAVA_HOME env var.
+
+1. Unpack Tomcat to $TOMCAT_HOME
+
+2. edit $TOMCAT_HOME/bin/catalina.bat (or catalina.sh)
+
+Change line declaring JAVA_OPTS to also include -Xms1G -Xmx1G
+  set JAVA_OPTS=%JAVA_OPTS% -Xms1G -Xmx1G -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.util.logging.config.file="%CATALINA_BASE%\conf\logging.properties"
+
+3. execute: $TOMCAT_HOME/bin/catalina.bat run 
+   [you can also use 'start' in place of 'run' to run in the bg]
+   [or start it as a service]
+
+4. any Stdout/Stderr gets piped to the command window in
+   which catalina was started

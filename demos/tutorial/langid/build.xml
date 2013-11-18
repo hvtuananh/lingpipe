@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+
+<project name="LingPipe Tutorial - Language ID" default="compile" basedir=".">
+
+  <property name="data.dir"
+            location="e:\data\"/>
+  <property name="corpus.dir"
+            location="${data.dir}/leipzig/munged"/>
+  <property name="model.file"
+            location="../../models/langid-leipzig.classifier"/>
+  <property name="training.size"
+            value="2000000"/>
+  <property name="nGram"
+            value="5"/>
+  <property name="token.count.min"
+            value="20"/>
+  <property name="test.size"
+            value="32"/>
+  <property name="test.num"
+            value="10000"/>
+
+  <path id="classpath.standard">
+    <pathelement location="languageId.jar"/>
+    <pathelement location="../../../lingpipe-4.1.0.jar"/>
+  </path>
+
+  <target name="clean"
+          description="Clean build and distribution directories.">
+    <delete dir="build"/>
+    <delete file="languageId.jar"/>
+  </target>
+
+  <target name="compile"
+          depends=""
+          description="Compile the src code into the build directory.">
+    <mkdir dir="build/classes"/>
+    <javac includeAntRuntime="false"   optimize="on"
+           debug="yes"
+           debuglevel="source,lines,vars"
+           destdir="build/classes">
+      <compilerarg value="-Xlint:all"/>
+      <classpath refid="classpath.standard"/>
+      <src path="src/"/>
+    </javac>
+  </target>
+
+  <target name="jar"
+          depends="compile">
+    <jar destfile="languageId.jar">
+      <fileset dir="build/classes"
+               includes="**/*.class"/>
+    </jar>
+  </target>
+
+
+  <target name="train"
+          depends="jar"
+          description="Train language identifier">
+    <java classname="TrainLanguageId"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+      <arg value="${corpus.dir}"/>
+      <arg value="${model.file}"/>
+      <arg value="${nGram}"/>
+      <arg value="${training.size}"/>
+      <arg value="${token.count.min}"/>
+    </java>
+  </target>
+
+  <target name="eval"
+          depends="jar">
+    <java classname="EvalLanguageId"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+      <arg value="${corpus.dir}"/>
+      <arg value="${model.file}"/>
+      <arg value="${training.size}"/>
+      <arg value="${test.size}"/>
+      <arg value="${test.num}"/>
+    </java>
+  </target>
+
+  <target name="run"
+          depends="jar">
+    <java classname="RunLanguageId"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+      <arg value="${model.file}"/>
+      <arg value="Per poder jutjar l'efectivitat d'una novetat Acs imprescindible deixar"/>
+      <arg value="Michael"/>
+      <arg value="Maria"/>
+    </java>
+  </target>
+
+<target name="unpack">
+  <echo message="Please be patient, this is lots of data."/>
+  <mkdir dir="${dir.unpacked}/"/>
+  <unzip dest="${dir.unpacked}/">
+    <fileset dir="${dir.dist}">
+      <include name="**/*.zip"/>
+    </fileset>
+  </unzip>
+</target>
+
+<target name="munge"
+        depends="jar">
+  <mkdir dir="${dir.munged}"/>
+  <java classname="Munge"
+        classpath="build/classes"
+        fork="true">
+    <arg value="${dir.unpacked}"/>
+    <arg value="${dir.munged}"/>
+  </java>
+</target>
+
+
+
+</project>

@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+
+<project name="LingPipe Tutorial - CRFs"
+         default="compile" basedir=".">
+
+<path id="classpath.standard">
+  <pathelement location="crf.jar"/>
+  <pathelement location="../../../lingpipe-4.1.0.jar"/>
+</path>
+
+<target name="clean">
+  <delete dir="build"/>
+  <delete file="crf.jar"/>
+</target>
+
+<target name="compile">
+  <mkdir dir="build/classes"/>
+  <javac includeAntRuntime="false"   optimize="on"
+         debug="yes"
+         debuglevel="source,lines,vars"
+         destdir="build/classes">
+    <compilerarg value="-Xlint:all"/>
+    <classpath refid="classpath.standard"/>
+    <src path="src/"/>
+  </javac>
+</target>
+
+<target name="jar"
+        depends="compile">
+  <jar destfile="crf.jar">
+    <fileset dir="build/classes"
+             includes="**/*.class"/>
+  </jar>
+</target>
+
+<target name="simple-pos-train"
+        depends="jar">
+  <java classname="SimplePosTrain"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="simplePos.ChainCrf"/>
+  </java>
+</target>
+
+<target name="simple-pos-run"
+        depends="jar">
+  <java classname="SimplePosTag"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="simplePos.ChainCrf"/>
+    <arg value="John ran ."/>
+  </java>
+</target>
+
+<target name="simple-entity-train"
+        depends="jar">
+  <java classname="SimpleEntityTrain"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="simpleEntity.ChainCrfChunker"/>
+  </java>
+</target>
+
+<target name="simple-entity-run"
+        depends="jar">
+  <java classname="SimpleEntityChunk"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="simpleEntity.ChainCrfChunker"/>
+    <arg value="John Smith lives in New York."/>
+  </java>
+</target>
+
+
+<property name="conll2003.data.munged"
+          value="e:\data\conll2003\munged"/>
+<target name="conll-03-corpus"
+        depends="jar">
+  <java classname="Conll2003EnglishNeXvalCorpus"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${conll2003.data.munged}"/>
+  </java>
+</target>
+
+<property name="conll2003.ev.minFeatureCount"
+          value="2"/>
+<property name="conll2003.ev.addIntercept"
+          value="true"/>
+<property name="conll2003.ev.cacheFeatures"
+          value="true"/>
+<property name="conll2003.ev.priorVariance"
+          value="10000.0"/>
+<property name="conll2003.ev.priorBlockSize"
+          value="100"/>
+<property name="conll2003.ev.initialLearningRate"
+          value="0.1"/>
+<property name="conll2003.ev.learningRateDecay"
+          value="1.0"/>
+<property name="conll2003.ev.minImprovement"
+          value="0.0001"/>
+<property name="conll2003.ev.maxEpochs"
+          value="50"/>
+<target name="conll-ev"
+        depends="jar">
+  <java classname="Conll2003EnglishNeEval"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${conll2003.data.munged}"/>
+    <arg value="${conll2003.ev.minFeatureCount}"/>
+    <arg value="${conll2003.ev.addIntercept}"/>
+    <arg value="${conll2003.ev.cacheFeatures}"/>
+    <arg value="${conll2003.ev.priorVariance}"/>
+    <arg value="${conll2003.ev.priorBlockSize}"/>
+    <arg value="${conll2003.ev.initialLearningRate}"/>
+    <arg value="${conll2003.ev.learningRateDecay}"/>
+    <arg value="${conll2003.ev.minImprovement}"/>
+    <arg value="${conll2003.ev.maxEpochs}"/>
+    <arg value="${conll2003.ev.numFolds}"/>
+  </java>
+</target>
+
+
+
+</project>

@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+
+<project name="LingPipe Tutorial - Sentiment Analysis"
+         default="compile" basedir=".">
+
+<property name="polarityDir"
+          value="POLARITY_DIR"/>
+
+<property name="txtSentokenDir"
+          value="${polarityDir}/txt_sentoken"/>
+
+<path id="classpath.standard">
+  <pathelement location="build/classes"/>
+  <pathelement location="../../../lingpipe-4.1.0.jar"/>
+</path>
+
+<target name="clean">
+  <delete dir="build"/>
+  <delete file="sentimentDemo.jar"/>
+</target>
+
+<target name="compile">
+  <mkdir dir="build/classes"/>
+  <javac includeAntRuntime="false"   optimize="on"
+         debug="yes"
+         debuglevel="source,lines,vars"
+         destdir="build/classes">
+    <compilerarg value="-Xlint:all"/>
+    <classpath refid="classpath.standard"/>
+    <src path="src/"/>
+  </javac>
+</target>
+
+<target name="jar"
+        depends="compile">
+  <jar destfile="sentimentDemo.jar">
+    <fileset dir="build/classes"
+             includes="**/*.class"/>
+  </jar>
+</target>
+
+<target name="polarity"
+        depends="jar">
+  <java classname="PolarityBasic"
+        maxMemory="512M"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${polarityDir}/txt_sentoken"/>
+  </java>
+</target>
+
+<target name="subjectivity"
+        depends="jar">
+  <java classname="SubjectivityBasic"
+        maxMemory="512M"
+        fork="true">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+    <arg value="${polarityDir}"/>
+  </java>
+</target>
+
+<target name="hierarchical"
+        depends="jar">
+  <java classname="PolarityHierarchical"
+        maxMemory="512M"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${polarityDir}"/>
+  </java>
+</target>
+
+
+<target name="whole"
+        depends="compile">
+  <java classname="PolarityWhole"
+        maxMemory="1G"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${txtSentokenDir}"/>
+  </java>
+</target>
+
+</project>

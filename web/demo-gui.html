@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: GUI Demo Instructions</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1>
+<h1 id="pagetitle">GUI Demo <span style="font-size:0.5em">(Instructions)</span></h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../index.html">home</a></li>
+
+<li>
+  <a class="current" href="demos.html">demos</a>
+  <ul>
+    <li>
+      demo instructions
+      <ul>
+        <li><a href="demo-web.html">web</a></li>
+        <li><a class="current" href="demo-gui.html">gui</a></li>
+        <li><a href="demo-cmd.html">command line</a></li>
+      </ul>
+    </li>
+    <li>
+      list of demos
+      <ul>
+        <li><a href="demo-sentence.html">sentences</a></li>
+        <li><a href="demo-pos.html">parts of speech</a></li>
+        <li><a href="demo-ne.html">named entities</a></li>
+        <li><a href="demo-coref.html">coreference</a></li>
+        <li><a href="demo-chinese-words.html">chinese words</a></li>
+        <li><a href="demo-echo.html">echo &amp; transcoding</a></li>
+      </ul>
+    </li>
+  </ul>
+</li>
+
+
+
+
+<li><a href="licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="download.html">lingpipe core</a></li>
+<li><a href="models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="install.html">install</a></li>
+<li><a href="../demos/tutorial/read-me.html">tutorials</a></li>
+<li><a href="../docs/api/index.html">javadoc</a></li>
+<li><a href="book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="bugs.html">bugs</a></li>
+<li><a href="sandbox.html">sandbox</a></li>
+<li><a href="competition.html">competition</a></li>
+<li><a href="citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="contact.html">contact</a></li>
+
+<li><a href="about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+
+<h2>List of GUI Demos</h2>
+
+<div class="sidebar">
+<h2>Portable Command Scripts</h2>
+
+<dl>
+<dt>Windows DOS (<code>.bat</code>)</dt>
+<dd>
+Microsoft <a href="http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/ntcmds_o.mspx?mfr=true">Windows command-line</a> batch (<code>.bat</code>) scripts are
+provided for running in Windows.
+</dd>
+<dt>Bourne Shell (<code>.sh</code>)</dt>
+<dd>
+<a href="http://en.wikipedia.org/wiki/Bourne_shell">Bourne shell</a> (<code>.sh</code>) scripts are
+provided for running in
+<a href="http://en.wikipedia.org/wiki/Unix-like">Unix-like</a> systems, including various
+flavors of Unix and Linux, Mac
+OS X, and in the Cygwin shell on Windows.
+</dd>
+</dl>
+</div>
+
+
+<p>
+Each demo has its own page, with examples of invoking the GUI from the
+command line.  The navigation bar to the left has a listing, as does
+the first section of the top-level demos page:
+</p>
+<ul>
+<li><a href="demos.html#list">List of Demos</a></li>
+</ul>
+<p>
+The rest of this page provides instructions for invoking
+and running the GUI demos.
+</p>
+
+
+
+
+
+<h2>Running the GUI Demos</h2>
+
+<div class="sidebar">
+<h2>GUI Demo Implementation</h2>
+<p>
+The GUI demos are implemented in Java <a
+href="http://java.sun.com/products/jfc/">Swing</a>.  Swing is a Java
+graphical interface development environment distributed as part of
+Java since 1.2.
+</p>
+<ul><li>
+<a href="../demos/generic/src/com/aliasi/demo/framework/DemoGUI.java">DemoGUI.java</a>
+</li></ul>
+<p>
+adapting an instance of:
+</p>
+<ul><li>
+<a href="../demos/generic/src/com/aliasi/demo/framework/StreamDemo.java">StreamDemo.java</a>
+</li></ul>
+
+<p>
+<b>Other Swingers:</b> Some of our favorite tools are implemented in Swing,
+such as <a
+href="http://www.ej-technologies.com/products/jprofiler/overview.html">JProfiler</a>.
+</p>
+</div>
+
+<p>
+This page provides instructions for running the LingPipe demos through
+a graphical user interface (GUI).
+</p>
+
+<h3>Invoking from the Command Line</h3>
+<p>
+Each demo is invoked from the command-line without
+any arguments.  There are <code>.bat</code> batch scripts for Windows,
+and <code>.sh</code> shell scripts for unix-like operating systems.
+These should be launched by first changing directories to that holding
+the commands.  For example, the echo demo is launched in Windows as follows:
+</p>
+<pre class="code">
+&gt; cd $lingpipe/demos/generic/bin
+&gt; gui_echo.bat
+</pre>
+
+<h3>Input</h3>
+<p>
+Text may be provided three different ways:
+</p>
+<ul>
+<li>
+<a href="#textin">Text Input</a>
+</li>
+
+<li>
+<a href="#filesel">File Selection</a>
+</li>
+
+<li>
+<a href="#dnd">Drag and Drop</a>
+</li>
+</ul>
+
+<h3>Content Types: XML, HTML, Text</h3>
+<p>
+All three interfaces accept the same content
+types (HTML, XML and plain text) and specify
+input/output character set encodings in the
+same way:
+</p>
+<ul>
+<li><a href="#general">Content Types and Character Encodings</a></li>
+</ul>
+
+<h3>Parameters</h3>
+<p>Parameters are set with graphical controls.
+Parameters specific to character encodings are discussed below,
+and those for particular demos are discussed on the demo's page.
+</p>
+
+
+
+
+
+
+<a name="textin"></a>
+<h2>Text Input</h2>
+
+<p>
+Text input is supported through a Swing text field.
+</p>
+
+<div class="sidebar">
+<h2>Platform Character Set</h2>
+
+<p>
+Java provides an open-ended internationalization interface for
+extending character input handling:
+</p>
+<ul>
+<li><a href="http://java.sun.com/j2se/1.5.0/docs/guide/intl/overview.html#input">Internationalization Overview: Text Input</a>
+</li>
+</ul>
+</div>
+
+
+<h3>Text Input</h3>
+
+<p>
+Text may be entered directly into the text field, or
+by any other platform-supported means such as
+cut-and-paste or special character input.
+</p>
+
+
+<h3>Parameter Input</h3>
+
+<p>
+Parameters with fixed sets of choices are entered by
+means of pull-down menus (i.e. uneditable combo boxes).
+Parameters with open-ended choices are entered through
+small text input fields.
+</p>
+
+
+<div class="sidebar">
+<h2>Warning: Implicit Formatting</h2>
+<p>
+Some platforms, notably Windows, include formatting information
+as part of cut-and-paste operations.  For instance, cutting
+from an HTML document or MS Office document often results
+in unpredictable formatting being included.
+</p>
+</div>
+
+
+<h3>Submitting Text and Parameters</h3>
+
+<p>
+After the text is entered and the parameters set, the
+analyze button submits the text for analysis and displays
+the output.  The analyze button and corresponding output
+are under the <code>Output</code> title on the
+right-hand side of the split display.
+</p>
+<p>
+The input character set is used to encode the unicode text displayed
+by Java into the appropriate sequence of bytes.
+</p>
+
+
+<a name="filesel"></a>
+<h2>File Selection</h2>
+
+<p>Files may be selected for input throw a file browser.
+</p>
+
+<h3>Selecting a File</h3>
+
+<p>
+Before selecting a file for analysis, its character set
+should be selected in the <code>Input Character Encoding</code>
+pulldown.   This pulldown will display all of the encodings
+available on the platform running the demo.
+</p>
+
+<p>
+Pressing the <code>Select File</code> button causes a file
+browser to pop up with the usual hierarchical controls to navigate the
+file hierarchy.  When the file to analyze is found, either double
+click it or highlight it and press the <code>Open</code> button.
+</p>
+
+<p>
+Opening a file merely loads it into the text input window; it must
+still be submitted for analysis.
+</p>
+
+<h3>Parameter Input</h3>
+
+<p>Other than the <code>Input Character Encoding</code>, which must be set before
+selecting a file, parameters are set in the same way as for the text
+demo.
+</p>
+
+<h3>Submitting Text and Parameters</h3>
+
+<p>Same as for text input; see above.</p>
+
+
+<a name="dnd"></a>
+<h2>Drag and Drop</h2>
+
+<p>
+Files (or other selections, depending on the platform), may be
+dragged and dropped into the input window.
+</p>
+
+<h3>Drop Target</h3>
+<p>
+Text content dragged into the application should be dropped
+on the text input box.  Their binary content will be
+interpreted based on the character set set in the input
+parameters.  Not all types of content may be accepted; if
+</p>
+
+<h3>Drop Contents</h3>
+<p>
+After dropping the content, it should be displayed in
+the input text field.
+</p>
+
+
+<h3>Parameter Input</h3>
+<p>
+Other than the <code>Input Character Encoding</code>, which must be set
+before content is dropped, parameters are set in the same way
+as for the text demo.
+</p>
+
+<h3>Submitting Text and Parameters</h3>
+<p>
+Same as for text input; see above.
+</p>
+
+
+
+
+<a name="general"></a>
+<h2>Content Types and Character Encodings</h2>
+
+
+
+<h3>Input: Text, HTML or XML</h3>
+<p>
+The demos process data in one of three formats: plain text, HTML or
+XML.  How that data is presented to the demo varies based on
+whether the demo is on the web, in a GUI, or a command.
+</p>
+
+<h4>Specifying Input Content Type</h4>
+<p>
+The content type of the input is specified using a
+control on the form called labeled <code>contentType</code>.
+It presents three values: <code>text/plain</code> (the
+initial value), <code>text/html</code> and <code>text/xml</code>
+</p>
+
+<h4>Specifying Elements to Annotate or Remove</h4>
+<p>
+For XML and HTML input, the elements to tag may be specified
+as a comma-separated list of element qualified names in
+the text field labeled <code>includeElts</code>.  Another
+comma-separated list of names may be removed altogether
+from the input (though their content is left behind) in
+the text field labeled <code>removeElts</code>.
+</p>
+
+<h3>Output: XML</h3>
+<p>
+The demo output format is XML in all cases.  Plain text is minimally
+wrapped in an element. HTML is parsed using NekoHTML into
+well-formed XML.  XML is passed through with inline annotation.
+</p>
+
+<h3>Character Encoding</h3>
+
+<p>
+The web demos all require both input and output character sets to be
+specified.  The web forms will initially show the default
+character set of the server's Java virtual machine.  They will
+also show all of the other encodings available on the platform.
+</p>
+
+<h4>Specifying Character Encodings</h4>
+<p>
+Character encodings for the input and output are specified
+through pulldown menus labled <code>inCharset</code> and
+<code>outCharset</code> respectively.
+</p>
+
+
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+

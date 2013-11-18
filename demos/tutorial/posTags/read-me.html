@@ -1,0 +1,2338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Part-of-Speech Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">Part-of-Speech Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a class="current" href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<h2>What is Part-of-Speech Tagging?</h2>
+
+<p>
+Part-of-speech tagging is a process whereby tokens are sequentially
+labeled with syntactic labels, such as &quot;finite verb&quot; or
+&quot;gerund&quot; or &quot;subordinating conjunction&quot;.  This
+tutorial shows how to train a part-of-speech tagger and compile
+its model to a file, how to load a compiled model from a file and
+perform part-of-speech tagging, and finally, how to evaluate and
+tune models.
+</p>
+
+<h2>What is Phrase Chunking?</h2>
+<p>
+Phrase chunking is the process of recovering the
+phrases (typically base noun phrases and verb phrases)
+constructed by the part-of-speech tags.  For instance,
+in the sentence <code>John Smith will eat the beans.</code>,
+there is a proper noun phrase <code>John Smith</code>,
+a verb phrase <code>will eat</code> and a
+common noun phrase, <code>the beans</code>.  Note that
+this notion of phrase may not line up with any theoretically
+motivated linguistic analysis.
+</p>
+<p>
+In the second part of this tutorial, we show how to generate phrase chunkings
+based on a part-of-speech tagger.
+</p>
+
+<h2>Downloading Training Corpora</h2>
+
+<p>We use three different <i>freely downloadable</i> English corpora
+as examples, though the entire tutorial may be completed with only the
+MedPost corpus:
+</p>
+
+<table>
+<tr><th class="title" colspan="6">POS Corpora</th></tr>
+<tr><th><i>Corpus</i></th>
+    <th><i>Domain</i></th>
+    <th><i>Tags</i></th>
+    <th><i>Toks</i></th>
+    <th><i>Parser</i></th>
+    <th><i>Link &gt;&gt;target file(s)</i></th></tr>
+
+<tr><th>Brown</th>
+    <td>Balanced</td>
+    <td>93</td>
+    <td>1.1M</td>
+    <td><a href="../../../docs/api/com/aliasi/corpus/parsers/BrownPosParser.html"><code>BrownPosParser</code></a></td>
+    <td><a href="http://prdownloads.sourceforge.net/nltk/nltk-data-0.3.zip">nltk-data-0.3.zip</a>
+        <small>
+        <br />nltk-data-0.3/brown.zip
+        </small></td></tr>
+
+<tr><th>GENIA</th>
+    <td>Biomed</td>
+    <td>48</td>
+    <td>501K</td>
+    <td><a href="../../../docs/api/com/aliasi/corpus/parsers/GeniaPosParser.html"><code>GeniaPosParser</code></a></td>
+    <td><a href="http://www-tsujii.is.s.u-tokyo.ac.jp/~genia/geniaform.cgi">GENIA 3.02p</a>
+        <small>
+        <br/>GENIAcorpus3.02p-1.tgz
+        <br/>GENIAcorpus3.02.pos.txt
+        </small></td></tr>
+
+<tr><th>MedPost</th>
+    <td>Biomed</td>
+    <td>63</td>
+    <td>182K</td>
+    <td><a href="../../../docs/api/com/aliasi/corpus/parsers/MedPostPosParser.html"><code>MedPostPosParser</code></a></td>
+    <td><a href="ftp://ftp.ncbi.nlm.nih.gov/pub/lsmith/MedTag/medtag.tar.gz">medtag.tar.gz</a>
+        <small><br/>medtag/medpost/tag*.ioc</small></td>
+</tr>
+</table>
+
+<p>Each corpus is listed with a link to the JavaDoc for the
+corresponding parser class in <code>com.aliasi.corpus.parsers</code>,
+such as <code>BrownPosParser</code> for the Brown corpus.  The class
+documentation for these parsers details the corpus contents including
+domain and POS tag set, the corpus format, and provides links to
+download and get more information about the corpus.
+</p>
+
+<p>The last column provides a download link, as well as an
+indication of the target file(s) for training.  For instance,
+the link to the NLTK distribution of the Brown corpus
+should be unzipped and the file <code>nltk-data-0.3/brown.zip</code>
+is the relevant file for training.  These names are reflected
+in the <a href="build.xml">build.xml</a> file for this tutorial.
+</p>
+
+<h2>Training Part-of-Speech Models</h2>
+
+<p>
+Like the other statistical packages in LingPipe (e.g.  named entity
+detection, language-model classifiers, spelling correction, etc.),
+part-of-speech labeling is based on statistical models that are
+trained from a corpus of labeled data.  For this illustration, we use
+the MedPost data, which is availble from the link above.
+</p>
+
+<h3>The Training Corpus</h3>
+
+<p>We downloaded medtag.tar.gz to this tutorial's directory
+<code>/lingpipe/trunk/demos/tutorial/posTags </code>
+</p>
+
+<p>
+When we unpacked it, it created the directories <code>medtag/medpost/</code>.
+</p>
+
+<pre class="code">
+&gt; tar -xzf medtag.tar.gz
+&gt; ls medtag/medpost
+medpost.db   tag_mb01.ioc  tag_mb04.ioc  tag_mb07.ioc  tag_mb10.ioc
+medpost.sql  tag_mb02.ioc  tag_mb05.ioc  tag_mb08.ioc  tag_mb.ioc
+tag_cl.ioc   tag_mb03.ioc  tag_mb06.ioc  tag_mb09.ioc  tag_ml01.ioc
+</pre>
+
+<p>
+The files ending with the suffix <code>.ioc</code> make up the
+text-formatted actual corpus of training files.  For example, using
+the <code>tail</code> command to print the last few lines of the
+training file <code>tag_mb.ioc</code> produces (with our ellipses
+to shorten lines):
+</p>
+
+<pre class="code">
+&gt; tail /data1/data/medtag/medpost/tag_mb.ioc
+P12569660A06
+The_DD N-terminal_JJ region_NN had_VHD high_JJ homology_NN with_II ...
+P12571010A13
+Several_JJ sequences_NNS were_VBD identified_VVN in_II the_DD libra...
+P12576309A07
+Our_PNG findings_NNS indicate_VVB that_CST CRCL_NN has_VHZ prominen...
+P12582233A05
+The_DD corresponding_VVGJ mRNA_NN of_II 3.5_MC kb_NN is_VBZ compose...
+P12586375A07
+A_DD few_JJ examples_NNS of_II heterologous_JJ expression_NN of_II ...
+</pre>
+
+<p>
+The data is formatted with a PubMed identifier
+(e.g. <code>P12569660</code>) and sentence position
+(e.g. <code>A06</code>) on their own line, followed by the text of the
+sentence represented as a sequence of token/tag pairs, such as
+<code>The_DD</code>, which indicates that the token <code>The</code>
+is assigned the determiner part-of-speech <code>DD</code>.
+</p>
+
+<h3>Training a Model</h3>
+
+<p>Given the location of the data directory, the training program <a
+href="src/TrainMedPost.java">src/TrainMedPost.java</a> can be run
+using the ant task:
+</p>
+
+<pre class="code">
+     &gt; ant -Ddata.pos.medpost=<i>/data1/data/medtag/medpost</i> train-medpost</pre>
+
+<p>
+The <code>-D</code> option sets a system property that is picked up by
+Ant to indicate the location of the MedPost data directory. The
+italicized portion of the above command should be replaced with the
+path to where you unpacked the MedPost distribution.  The output
+produces is:
+</p>
+
+<pre class="code">
+     Buildfile: build.xml
+
+compile:
+
+train-medpost:
+Training file=/data1/data/medtag/medpost/tag_cl.ioc
+Training file=/data1/data/medtag/medpost/tag_mb.ioc
+Training file=/data1/data/medtag/medpost/tag_mb01.ioc
+Training file=/data1/data/medtag/medpost/tag_mb02.ioc
+Training file=/data1/data/medtag/medpost/tag_mb03.ioc
+Training file=/data1/data/medtag/medpost/tag_mb04.ioc
+Training file=/data1/data/medtag/medpost/tag_mb05.ioc
+Training file=/data1/data/medtag/medpost/tag_mb06.ioc
+Training file=/data1/data/medtag/medpost/tag_mb07.ioc
+Training file=/data1/data/medtag/medpost/tag_mb08.ioc
+Training file=/data1/data/medtag/medpost/tag_mb09.ioc
+Training file=/data1/data/medtag/medpost/tag_mb10.ioc
+Training file=/data1/data/medtag/medpost/tag_ml01.ioc
+
+BUILD SUCCESSFUL
+Total time: 10 seconds
+</pre>
+
+<p>
+and creates a model file of rougly 5MB:
+</p>
+
+<pre class="code">
+&gt; ls -l ../../models/pos-en-bio-medpost.HiddenMarkovModel
+-rw-rw-r--  1 carp carp 4974338 Sep 20 14:02 ../../models/pos-en-bio-medpost.HiddenMarkovModel
+</pre>
+
+
+<h3>The Training Code</h3>
+
+<p>
+The actual code making up the sample is an almost trivial sequence of
+lines in a single <code>main(String[])</code> method.  First, it
+creates an estimator for a hidden Markov model (HMM):
+</p>
+
+<pre class="code">
+HmmCharLmEstimator estimator
+    = new HmmCharLmEstimator(N_GRAM, NUM_CHARS, LAMBDA_FACTOR);
+</pre>
+
+<p>
+The parameters are for the HMM and determine how many characters to
+use as the basis for the model, the total number of characters, and an
+interpolation parameter for smoothing:
+</p>
+
+<pre class="code">
+static int N_GRAM = 8;
+static int NUM_CHARS = 256;
+static double LAMBDA_FACTOR = 8.0;
+</pre>
+
+<p>
+These are reasonable default values.  Their behavior is outlined in <a
+href="../../../docs/api/com/aliasi/hmm/HmmCharLmEstimator.html"
+><code>hmm.HmmCharLmEstimator</code></a> and described in detail in <a
+href="../../../docs/api/com/aliasi/lm/NGramBoundaryLM.html"
+><code>lm.NGramBoundaryLM</code></a>.  These are reasonable default
+settings for English data.
+</p>
+
+<p>This estimator implements the <a
+href="../../../docs/api/com/aliasi/corpus/ObjectHandler.html"
+><code>corpus.ObjectHandler</code></a> interface for generic type
+<code>Tagging&lt;String&gt;</code>, through which it receives its
+training events in the form of aligned token and tag arrays.  The
+handler acts as a visitor over the training data.  It is escorted by a
+parser, which does the actual data parsing and then provides the
+arrays to the handler.  The parser for this demo is in
+<a href="src/MedPostPosParser.java"><code>src/MedPostPosParser.java</code></a>.
+The code to set it
+up and make sure the taggings it extracts are sent to the estimator is
+just two lines: </p>
+
+<pre class="code">
+Parser&lt;ObjectHandler&lt;Tagging&lt;String&gt;&gt;&gt; parser = new MedPostPosParser();
+parser.setHandler(estimator);
+</pre>
+
+<p>The generic type indicates that the MedPost parser
+provides events for a tag handler.</p>
+
+<p>
+The next step is to find the actual training files and walk over them.
+This is done with an instance of <a
+href="../../../docs/api/com/aliasi/io/FileExtensionFilter.html"
+><code>io.FileExtensionFilter</code></a> that is set to pick out just the files
+ending in <code>&quot;ioc&quot;</code>:
+</p>
+
+<pre class="code">
+File dataDir = new File(args[0]);
+File[] files = dataDir.listFiles(new FileExtensionFilter("ioc"));
+</pre>
+
+<p>
+We then loop over the files, parsing each one:
+</p>
+
+<pre class="code">
+for (int i = 0; i &lt; files.length; ++i) {
+    System.out.println("Training file=" + files[i]);
+    parser.parse(files[i]);
+}
+</pre>
+
+<p>
+That's it.  At this point, the estimator is trained.  Because
+the <code>HmmCharLmEstimator</code> class implements
+<a href="../../../docs/api/com/aliasi/hmm/HiddenMarkovModel.html"
+><code>hmm.HiddenMarkovModel</code></a>, it may be used
+immediately to do part-of-speech tagging.  Rather than do that
+in the tutorial, instead we demonstrate how to compile the
+model to a file using an object output stream with a utility
+method in <code>com.aliasi.util.AbstractExternalizable</code>:
+</p>
+
+<pre class="code">
+File modelFile = new File(args[1]);
+AbstractExternalizable.compileTo(estimator,modelFile);
+</pre>
+
+<p>
+HMM estimators implement the <a
+href="../../../docs/api/com/aliasi/util/Compilable.html"
+><code>util.Compilable</code></a> interface, which is used to write them
+to an object output.  Note that the method <a
+href="../../../docs/api/com/aliasi/util/Streams.html#closeOutputStream(java.io.ObjectOut)"
+><code>util.Streams.closeOutputStream(ObjectOut)</code></a> is used to
+close the output stream; in more robust settings this would be done
+inside a <code>try/finally</code> block to makes sure the streams were
+closed.  That's it.
+</p>
+
+
+<h2>Running Part-of-Speech Taggers</h2>
+
+<p>
+Now that we have a model file, we can use it to assign part-of-speech
+tags to phrases.  The code to run a compiled model is in <a
+href="src/RunMedPost.java"><code>src/RunMedPost.java</code></a>.  We
+set it up to run interactively, which doesn't play very nicely with
+Ant (it plays a bit better with a <code>println()</code> rather than
+<code>print()</code> for the prompt).  Instead, we can call it from
+the command-line directly:
+</p>
+
+<pre class="code">
+&gt;  java -cp build/classes:../../../lingpipe-4.1.0.jar RunMedPost ../../models/pos-en-bio-medpost.HiddenMarkovModel
+</pre>
+
+<p>
+The demo prompts for input sentences and then returns their
+part-of-speech tagging on the next line in the same form
+as the input was found (with line-breaks inserted for readability):
+</p>
+
+<pre class="code">
+Reading model from file=../../models/pos-en-bio-medpost.HiddenMarkovModel
+
+INPUT (return)> A good correlation was found between the
+    grade of Barrett's esophagus dysplasia and high p53 positivity.
+
+A_DD good_JJ correlation_NN was_VBD found_VVN between_II
+    the_DD grade_NN of_II Barrett's_NNP esophagus_NN dysplasia_NN
+    and_CC high_JJ p53_NN positivity_NN ._.
+
+INPUT (return)> This correlation was also confirmed by
+    detection of early carcinoma in patients with "preventive"
+    extirpation of the esophagus due to a high-grade dysplasia.
+
+This_DD correlation_NN was_VBD also_RR confirmed_VVN by_II
+    detection_NN of_II early_JJ carcinoma_NN in_II patients_NNS
+    with_II "_`` preventive_JJ "_'' extirpation_NN of_II the_DD
+    esophagus_NN due_II+ to_II a_DD high-grade_NN dysplasia_NN ._.
+
+INPUT (return)> exit
+</pre>
+
+<p>
+Note that an empty line or the term <code>exit</code> will cause the
+system to exit gracefully.
+</p>
+
+<h3>Tokenization</h3>
+
+<p>The code to do decoding is nearly as simple as that to do training.
+First, our input will come in the form of lines and we thus need to
+tokenize the input to break it down into similar chunks to the
+training-data.  We do this by creating a tokenizer factory that allows
+defines a token as the longest contiguous non-empty sequence of letter
+characters (<code>\p{L}</code>), numerals (<code>\d</code>), hyphens
+(<code>-</code>) and apostrophes (<code>'</code>); it also allows
+single non-whitespace characters (<code>\S</code>).
+</p>
+
+<pre class="code">
+static TokenizerFactory TOKENIZER_FACTORY
+    = new RegExTokenizerFactory(&quot;(-|'|\\d|\\p{L})+|\\S&quot;);
+</pre>
+
+<p>
+In general, the trick with pre-tokenized corpora is developing a
+tokenizer to match the corpus.  The above tokenizer is only an
+approximate guess as to what the real MedPost tokenizer looks like.
+The <a href="http://ii-public.nlm.nih.gov/MMTx/tokenize.shtml">MMTx
+Tokenization</a> page points to NLM's tokenizer, hints that it's
+highly heuristic and context sensitive, but does not provide a grammar
+for it.
+</p>
+
+<h3>Reading the Model</h3>
+
+<p>Actually reading in the model and constructing the decoder requires
+just a bit of stream manipulation, casting and wrapping:
+</p>
+
+<pre class="code">
+FileInputStream fileIn = new FileInputStream(args[0]);
+ObjectInputStream objIn = new ObjectInputStream(fileIn);
+HiddenMarkovModel hmm = (HiddenMarkovModel) objIn.readObject();
+Streams.closeInputStream(objIn);
+HmmDecoder decoder = new HmmDecoder(hmm);
+</pre>
+
+<p>
+An object input stream wraps a file input stream that points to the
+model (<code>args[0]</code> on the command line).  The HMM is then
+just read using the standard
+<code>java.io.ObjectInput.readObject()</code> method; this method may
+throw an <code>IOException</code> or a
+<code>ClassNotFoundException</code>.  The object read from the stream
+is then cast to instance of
+<code>com.aliasi.hmm.HiddenMarkovModel</code>.  The input stream is
+closed; again, a robust approach would do this in a
+<code>finally</code> block.  Finally, the decoder is created by
+wrapping the HMM read from the input stream.
+</p>
+
+<h3>Standard Input Loop</h3>
+
+<p>The next part of the code just goes into a loop to read characters
+a line at a time from the standard input and quit if there's no input
+or the input is command to stop:
+</p>
+
+<pre class="code">
+InputStreamReader isReader = new InputStreamReader(System.in);
+BufferedReader bufReader = new BufferedReader(isReader);
+while (true) {
+    System.out.println("\n\nINPUT (return)> ");
+    System.out.flush();
+    String line = bufReader.readLine();
+    if (line == null || line.length() &lt; 1
+        || line.equalsIgnoreCase("quit") || line.equalsIgnoreCase("exit"))
+        break;
+    char[] cs = line.toCharArray();
+    ...
+</pre>
+
+<p>
+The real work then happens once we have the characters <code>cs</code>
+to tag.  First, we generate the array and then list of tokens (this could
+be done more efficiently with a little more work):
+</p>
+
+<pre class="code">
+    ...
+    Tokenizer tokenizer = TOKENIZER_FACTORY.tokenizer(cs,0,cs.length);
+    String[] tokens = tokenizer.tokenize();
+    List&lt;String&gt; tokenList = Arrays.asList(tokens);
+</pre>
+
+
+<h3>First-Best Results</h3>
+
+<p>
+With the tokens in hand, retrieving the first-best tags
+is trivial:
+</p>
+
+<pre class="code">
+Tagging&lt;String&gt; tagging = decoder.tag(tokenList);
+</pre>
+
+<p>
+We then just print these out in the same format as the training data
+in a simple loop (actually, a bit more complicated because of pretty
+printing):
+</p>
+
+<pre class="code">
+for (int i = 0; i &lt; tagging.size(); ++i)
+    System.out.print(tagging.token(i) + "_" + tagging.tag(i) + " ");
+</pre>
+
+
+<h3>N-best Results</h3>
+
+<p>
+The following code will print the best analyses up to the
+maximum number of analyses <code>MAX_N_BEST</code> (modulo
+a little padding and decimal formatting):
+</p>
+
+<pre class="code">
+static final int MAX_N_BEST = 5;
+
+Iterator&lt;ScoredTagging&lt;String&gt;&gt; nBestIt = decoder.tagNBest(tokenList,MAX_N_BEST);
+for (int n = 0; n &lt; MAX_N_BEST &amp;&amp; nBestIt.hasNext(); ++n) {
+    ScoredTagging&lt;String&gt; scoredTagging = nBestIt.next();
+    double score = scoredTagging.score();
+    System.out.print(n + "   " + format(score) + "  ");
+    for (int i = 0; i &lt; tokenList.size(); ++i)
+        System.out.print(scoredTagging.token(i) + "_" + pad(scoredTagging.tag(i),5));
+    System.out.println();
+}        
+</pre>
+
+<p>
+Here's an example of the demo's print out for the above code
+with an input that's a shortened form of the one above.
+</p>
+
+<pre class="code">
+INPUT> This correlation was also confirmed by detection of early carcinoma.
+     ...
+N BEST
+#   JointLogProb         Analysis
+0     -90.265  This_DD   correlation_NN   was_VBD  also_RR   confirmed_VVN  by_II   detection_NN   of_II   early_JJ   carcinoma_NN   ._.
+1     -94.072  This_DD   correlation_NN   was_VBD  also_RR   confirmed_VVD  by_II   detection_NN   of_II   early_JJ   carcinoma_NN   ._.
+2     -99.905  This_PND  correlation_NN   was_VBD  also_RR   confirmed_VVN  by_II   detection_NN   of_II   early_JJ   carcinoma_NN   ._.
+3    -101.574  This_DD   correlation_NN   was_VBD  also_RR   confirmed_VVN  by_II   detection_NN   of_II   early_RR   carcinoma_NN   ._.
+4    -102.253  This_DD   correlation_NN   was_VBD  also_RR   confirmed_VVN  by_II   detection_NN   of_II   early_NN   carcinoma_NN   ._.
+</pre>
+
+<p> The method <a
+href="../../../docs/api/com/aliasi/hmm/HmmDecoder.html#tagNBest(java.lang.List,int)"
+><code>HmmDecoder.tagNBest(List&lt;String&gt;)</code></a> returns an
+iterator over the top scoring tag sequences for the specified tokens.
+The iterator produces instances of LingPipe's <a
+href="../../../docs/api/com/aliasi/tag/ScoredTagging.html"
+><code>tag.ScoredTagging</code></a> class.  This class simply extends
+a tagging with score information.  The score is retrieved with the
+<code>score()</code> method, and otherwise the scored tagging works
+just like an ordinary tagging.
+The score consists of a joint log (base 2) probability for
+the tags and tokens together.  Another method, <a
+href="../../../docs/api/com/aliasi/hmm/HmmDecoder.html#tagNBestConditional(List,int)"
+><code>HmmDecoder.tagNBestConditional(List&lt;String&gt;,int)</code></a> returns the
+tag sequences in the same order but provides a conditional log (base
+2) probability of the tag sequence given the tokens rather than a
+joint probability.  </p>
+
+<p>The difference between the probabilities in the n-best analyses
+gives a good first-approximation of the tagger's confidence in its tag
+assignments.  In the example above, note that the first-best analysis
+has a log (base 2) joint probability of -90.2 whereas the second
+ranking analysis is at -94.1; this means that the model estimates the
+probability of the first answer as being
+<code>2<sup>3.9</sup></code> (roughly 15) times more likely
+than the second.  For strings that are more confusable to the tagger,
+the gap will be narrower.  For strings in which the tagger is highly
+confident of the total tagging, the gap will be higher.  Further note
+that the only difference in the second analysis is in the form of the
+verb &quot;confirmed&quot;. The third analysis, ranked as almost 1000
+times less likely than the first, only varies from the first in
+assigning <code>This</code> to a pronoun rather than a determiner.
+Looking at the positions that vary also gives you a measure of
+confidence on a tag-by-tag basis.  In this case, it's clear the
+analyzer is very sure of its analysis of all but two tokens.
+</p>
+
+
+<h3>Confidence-Based Results</h3>
+
+<p>
+In addition to extracting n-best results one at a time, the entire
+statistical analysis can be returned in one go through the <a
+href="../../../docs/api/com/aliasi/hmm/HmmDecoder.html#tagMarginal(List)"
+><code>HmmDecoder.lattice(List&lt;String&gt;)</code></a> method.  This method
+returns an instance of <a
+href="../../../docs/api/com/aliasi/tag/TagLattice.html"
+><code>tag.TagLattice</code></a>. For those familiar with
+HMM decoding, this is quite simply the lattice of forward/backward
+scores (including boundary conditions).
+</p>
+
+<p>The code in the demo to print out confidences for tag
+assignments to individual tokens is also quite simple (again
+modulo formatting):
+</p>
+
+<pre class="code">
+TagLattice&lt;String&gt; lattice = decoder.tagMarginal(tokenList);
+for (int tokenIndex = 0; tokenIndex &lt; tokenList.size(); ++tokenIndex) {
+    ConditionalClassification tagScores = lattice.tokenClassification(tokenIndex);
+    System.out.print(pad(Integer.toString(tokenIndex),4));
+    System.out.print(pad(tokenList.get(tokenIndex),15));
+    for (int i = 0; i &lt; 4; ++i) {
+        double conditionalProb = tagScores.score(i);
+        String tag = tagScores.category(i);
+        System.out.print(" " + format(conditionalProb) 
+                         + ":" + pad(tag,4));
+    }
+}
+</pre>
+
+<p>Run on our simplified demo sentence, this produces the following
+output, consisting of a row for each token, with its top 4 tags
+with their joint probabilities.
+</p>
+
+<pre class="code">
+INPUT> This correlation was also confirmed by detection of early carcinoma.
+
+CONFIDENCE
+#   Token               (Prob:Tag)*
+0   This                0.999:DD       0.001:PND      0.000:PNG      0.000:NN
+1   correlation         1.000:NN       0.000:RR       0.000:NNS      0.000:VVN
+2   was                 1.000:VBD      0.000:NNS      0.000:VVZ      0.000:II
+3   also                1.000:RR       0.000:PND      0.000:VVN      0.000:JJR
+4   confirmed           0.933:VVN      0.067:VVD      0.000:VVNJ     0.000:VVB
+5   by                  1.000:II       0.000:NN       0.000:RR       0.000:JJ
+6   detection           1.000:NN       0.000:VVGN     0.000:VVI      0.000:VVB
+7   of                  1.000:II       0.000:VVZ      0.000:RR       0.000:MC
+8   early               0.999:JJ       0.000:RR       0.000:NN       0.000:VVGJ
+9   carcinoma           1.000:NN       0.000:NNS      0.000:JJ       0.000:VVGN
+10  .                   1.000:.        0.000:)        0.000:NN       0.000:,
+</pre>
+
+<p>
+The decoder's 99.9% sure of its estimates in all cases but for the
+form of the verb &quot;confirmed&quot;, for which it estimates 93.3%
+for probability of the tag being <code>VVN</code>, reserving 6.6% for
+the probability it is <code>VVD</code>.  In fact, the tagger picked up
+on a fundamental ambiguity of English verbs between simple past and
+past participles.  This case is confusing to a bigram HMM decoder
+(like ours), because the previous word is <code>also</code> with
+the modifier tag <code>RR</code>; this doesn't disambiguate.  We'd
+need to go back to the auxiliary <code>was</code> with category
+<code>VBD</code>.
+</p>
+
+<p>Note that the ratio of probabilities from the
+confidence-based results (0.933/0.067=14.1) is very close to
+the estimate given by inspecting the top two full analyses in the
+n-best results.  This is due to a deep mathematical link that says the
+confidences are equal to the limit of doing n-best for an unlimited n
+(as opposed to just the top two).
+</p>
+
+<p>Breaking down the code, the key method to compute the confidences
+is the first one called, <a
+href="../../../docs/api/com/aliasi/hmm/HmmDecoder.html#lattice(java.lang.String[])"><code>HmmDecoder.lattice(String[])</code></a>:
+</p>
+
+<pre class="code">
+TagLattice&lt;String&gt; lattice = decoder.tagMarginal(tokenList);
+...
+</pre>
+
+<p>
+This returns what is known as a forward-backward lattice in the HMM
+decoder literature, as an instance of <a
+href="../../../docs/api/com/aliasi/tag/TagLattice.html">tag.TagLattice</a>.
+</p>
+
+<p>
+To extract a confidence-ordered list of tags for a particular
+token index, we use:
+</p>
+
+<pre class="code">
+...
+for (int tokenIndex = 0; tokenIndex &lt; tokenList.size(); ++tokenIndex) {
+    ConditionalClassification tagScores = lattice.tokenClassification(tokenIndex);
+...
+</pre>
+
+<p>This returns the result as a conditional classification.  This is
+because the result of tagging a particular token is just a classification
+of that token.
+</p>
+
+<p>Given the return result, we just iterate over the tags and
+print them  along with their scores:</p>
+
+<pre class="code">
+...
+    for (int i = 0; i &lt; 4; ++i) {
+        double conditionalProb = tagScores.score(i);
+        String tag = tagScores.category(i);
+        System.out.print(" " + format(conditionalProb) 
+                         + ":" + pad(tag,4));
+}
+...
+</pre>
+
+
+<h2>3. Evaluating and Tuning Tagging Models</h2>
+
+<p>
+In the final part of this tutorial, we show how to evaluate
+HMM part-of-speech models and how to tune their parameters.
+</p>
+
+<h3>Running a Part-of-Speech Evaluation</h3>
+
+<p>
+In this section, we show how to dump out a large, but by no means
+comprehensive, set of statistics on part-of-speech tagging.
+</p>
+
+<h3>Train-a-Little, Evaluate-a-Little</h3>
+
+<p>
+The way in which we will evaluate is to train-a-little and
+evaluate-a-little.  Specifically, as we parse the corpus we extract
+reference taggings.  We then take the underlying text and extract
+taggings with our model for a response tagging and then add it to a
+cumulative evaluation.  After evaluating on a reference tagging, we
+add it as training data before evaluating the next sentence of data.
+</p>
+
+
+<h3>Running an Evaluation</h3>
+
+<p>
+For us, with the MedPost corpus in
+<code>/data1/data/medtag/medpost</code>, we run the MedPost evaluation
+with the following invocation of Ant:
+</p>
+
+<pre class="code">
+ant -Dmedpost-dir=/data1/data/medtag/medpost eval-medpost
+</pre>
+
+<p>
+The output begins with a dump of the parameters of the evaluation:
+</p>
+
+<pre class="code">
+COMMAND PARAMETERS
+  Sent eval rate=1
+  Toks before eval=170000
+  Max n-best eval=100
+  Max n-gram=8
+  Num chars=256
+  Lambda factor=8.0
+</pre>
+
+<p>Any of these may be changed through the ant target.</p>
+
+<p>
+It then collects data from the corpus itself in a first-pass
+run-through and prints it out.
+</p>
+
+<pre class="code">
+CORPUS PROFILE:
+  Corpus class=MedPostPosCorpus
+  #Sentences=6700
+  #Tokens=182399
+  #Tags=63
+  Tags=['', (, ), ,, ., :, CC, CC+, CS, CS+, CSN,
+        CST, DB, DD, EX, GE, II, II+, JJ, JJ+,
+        JJR, JJT, MC, NN, NN+, NNP, NNS, PN,
+        PND, PNG, PNR, RR, RR+, RRR, RRT, SYM,
+        TO, VBB, VBD, VBG, VBI, VBN, VBZ, VDB,
+        VDD, VDN, VDZ, VHB, VHD, VHG, VHI, VHZ,
+        VM, VVB, VVD, VVG, VVGJ, VVGN, VVI,
+        VVN, VVNJ, VVZ, ``]</pre>
+
+<p>
+It first trains on 170,000 characters (see the <code>Toks before
+eval</code> figure above).  This takes two or three seconds on my desktop
+machine.
+</p>
+
+<p>The rest of the output consists of evaluation case reports
+and cumulative evaluation reports.  These are printed out per
+evaluation case.  The following example is for the seventh
+evaluation sentence.  First, we get the report on the first-best
+output from the <code>tag()</code> method.  
+</p>
+
+<pre class="code">
+Test Case 7
+First Best Last Case Report
+Known  Token     Reference | Response  ?correct
+    In                  II    |  II
+    patients            NNS   |  NNS
+    with                II    |  II
+    chronic             JJ    |  JJ
+    pure                JJ    |  NN     XX
+    red                 JJ    |  VVD    XX
+    cell                NN    |  NN
+  ? aplasia             NN    |  NN
+    the                 DD    |  DD
+    in                  JJ+   |  JJ+
+    vitro               JJ    |  JJ
+    study               NN    |  NN
+    of                  II    |  II
+    erythroid           NN    |  NN
+    precursors          NNS   |  NNS
+    has                 VHZ   |  VHZ
+    a                   DD    |  DD
+    prognostic          JJ    |  JJ
+    value               NN    |  NN
+    .                   .     |  .
+</pre>
+
+<p>The tokens are printed in a column on the left, with unknown
+tokens marked with question marks.  In t his case, the token
+&quot;aplasia&quot; was not seen in the training data.  The
+next two columns contain first the reference category on the left
+then the system response category on the right.  System errors
+are marked with a double X (<code>XX</code>).  In this case, both
+the tokens &quot;pure&quot; and &quot;red&quot; red are assigned
+the wrong category, with &quot;pure&quot; being assigned to
+the common noun category (<code>NN</code>) instead of the
+adjective (<code>JJ</code>) category and &quot;red&quot; being
+tagged with a verb category (<code>VVD</code>) instead of 
+the adjective (<code>JJ</code>) category.
+</p>
+
+<p>Next, we get the n-best output analysis, which shows the top
+N results and marks the correct one, if it is on the list, with
+three asterisks (<code>***</code>).</p>
+
+<pre class="code">
+N-Best Last Case Report
+Last case n-best reference rank=3
+Last case 5-best:
+Correct,Rank,LogJointProb,Tags
+     0    -214.424  In_II   patients_NNS  with_II   chronic_JJ   pure_NN   red_VVD  cell_NN   aplasia_NN   the_DD   in_JJ+  vitro_JJ   study_NN   of_II   erythroid_NN   precursors_NNS  has_VHZ  a_DD   prognostic_JJ   value_NN   ._.
+     1    -214.544  In_II   patients_NNS  with_II   chronic_JJ   pure_JJ   red_VVNJ cell_NN   aplasia_NN   the_DD   in_JJ+  vitro_JJ   study_NN   of_II   erythroid_NN   precursors_NNS  has_VHZ  a_DD   prognostic_JJ   value_NN   ._.
+     2    -214.837  In_II   patients_NNS  with_II   chronic_JJ   pure_NN   red_VVNJ cell_NN   aplasia_NN   the_DD   in_JJ+  vitro_JJ   study_NN   of_II   erythroid_NN   precursors_NNS  has_VHZ  a_DD   prognostic_JJ   value_NN   ._.
+ *** 3    -215.299  In_II   patients_NNS  with_II   chronic_JJ   pure_JJ   red_JJ   cell_NN   aplasia_NN   the_DD   in_JJ+  vitro_JJ   study_NN   of_II   erythroid_NN   precursors_NNS  has_VHZ  a_DD   prognostic_JJ   value_NN   ._.
+     4    -216.364  In_II   patients_NNS  with_II   chronic_JJ   pure_NN   red_JJ   cell_NN   aplasia_NN   the_DD   in_JJ+  vitro_JJ   study_NN   of_II   erythroid_NN   precursors_NNS  has_VHZ  a_DD   prognostic_JJ   value_NN   ._.
+</pre>
+
+<p>Here the top 5 are reported.  For each of the top results,
+we see its rank (here counting from zero, so the ranks are 0 to 4).
+We see three asterisks in front of the correct analysis, if it's
+on the list.  Here, the rank 3 (or 4th best) result is the correct
+one.  Next, we see log joint probabilities.  In this case, the top
+few answers have very close probabilities, with the best result,
+at -214.4 log (base 2) joint probability is only a factor of
+four times more likely than the fifth best result at -216.3
+log (base 2) joint probability.  Finally, we see the tokens,
+followed by an underscore, followed by their tags.  It's exactly in
+the places where the first best analysis made an error, in the analysis
+of &quot;pure&quot; and &quot;red&quot;, where we see the
+uncertainty in the analysis.</p>
+
+<p>The log probabilities could be normalized to conditional
+probabilities by using the alternative evaluation method
+for n-best conditional outputs.</p>
+
+<p>
+Next, we get an evaluation of the marginal tags assigned, as
+follows:
+</p>
+
+<pre class="code">
+Marginal Last Case Report
+Index Token  RefTag  (Prob:ResponseTag)*
+0   In             II           0.907:II  *      0.063:NN         0.011:JJ         0.009:VVNJ       0.005:CS
+1   patients       NNS          1.000:NNS *      0.000:VVZ        0.000:NN         0.000:JJ         0.000:VVNJ
+2   with           II           1.000:II  *      0.000:NN         0.000:VVGN       0.000:JJ         0.000:RR
+3   chronic        JJ           0.999:JJ  *      0.001:NN         0.000:RR         0.000:VVGJ       0.000:VVNJ
+4   pure           JJ           0.553:NN         0.442:JJ  *      0.002:NNS        0.001:VVGN       0.001:RR
+5   red            JJ           0.361:VVNJ       0.255:VVD        0.218:JJ  *      0.105:NN         0.029:VVN
+6   cell           NN           0.977:NN  *      0.022:JJ         0.000:VVNJ       0.000:RR         0.000:VVGJ
+7   aplasia        NN           0.987:NN  *      0.011:NNS        0.001:VVZ        0.000:VVD        0.000:VVGN
+8   the            DD           0.931:DD  *      0.024:NN         0.016:II+        0.011:PND        0.005:NNS
+9   in             JJ+          0.899:JJ+ *      0.046:II         0.025:NN         0.015:JJ         0.005:VVNJ
+10  vitro          JJ           0.992:JJ  *      0.008:RR         0.000:VVNJ       0.000:NN         0.000:VVZ
+11  study          NN           0.996:NN  *      0.003:VVI        0.001:VVGN       0.000:NNS        0.000:RR
+12  of             II           0.999:II  *      0.000:VVZ        0.000:NN         0.000:MC         0.000:VVGN
+13  erythroid      NN           1.000:NN  *      0.000:VVNJ       0.000:NNS        0.000:JJ         0.000:VVGJ
+14  precursors     NNS          1.000:NNS *      0.000:NN         0.000:VVGN       0.000:VVZ        0.000:JJ
+15  has            VHZ          0.990:VHZ *      0.004:CS         0.002:VVZ        0.001:II         0.001:CSN
+16  a              DD           0.991:DD  *      0.005:RR         0.001:VVB        0.001:JJ         0.001:VVN
+17  prognostic     JJ           0.993:JJ  *      0.007:NN         0.000:VVNJ       0.000:VVI        0.000:VVGJ
+18  value          NN           0.998:NN  *      0.001:JJ         0.001:NNS        0.000:VVGN       0.000:NNP
+19  .              .            1.000:.   *      0.000:)          0.000:''         0.000:(          0.000:,
+</pre>
+
+<p>Here we have the index of the token in the first column,
+with the token itself in the next column.  Then we have
+the reference tag.  For instance, the second token
+has index 1, token &quot;patients&quot; and reference
+category <code>NNS</code>.  Then we get a ranked list of
+possible categories for each token, with a model-based
+estimate of the conditional probability of the listed
+tag for the token given the entire input.  For instance,
+we see that the 7th token, &quot;cell&quot;, has a 0.977
+probablity of being a common noun (<code>NN</code>),
+and a 0.022 chance of being an adjective (<code>JJ</code>).
+</p>
+
+<p>There is an asterisk (<code>*</code>) after the correct
+category if it is listed.  Here, all of the highest ranked
+categories are correct other than for &quot;pure&quot; and
+&quot;red&quot;.  Note the high uncertainty of the model
+in those categories; for &quot;red&quot;, the model estimates
+only a 0.361 probability it is a <code>VVNJ</code>, and
+reserves a 0.218 chance that it's of the correct
+category, <code>JJ</code>.</p>
+
+<p>The values of the marginal probabilities are just the normalized
+sum of the probabilities in the n-best analysis.  That means that
+uncertainty in the n-best analysis is reflected as uncertainty
+in the marginal tag probabilities and vice-versa.</p>
+
+<p>Note that it is not always the case that the most likely
+tag for a token is returned in the first-best analysis.  For
+instance, the most likely category for the token &quot;red&quot; is
+<code>VVNJ</code>, but the first best analysis assigns it
+to <code>VVD</code>.  This is possible because the n-best
+analyses involve whole sequence probabilities, not the
+marginalization to a single category.  So while <code>VVNJ</code>
+may be most likely overall, the single best analysis
+involves <code>VVD</code>, presumably because it makes a
+better sequence with the preceding noun assignment.  Also
+note that the second and third best analyses, which have
+very close probability to the first-best analysis, both
+assign the most likely category, <code>VVD</code>.</p>
+
+<p>After the dump of a result for a sentence, a running cumulative
+total is provided for number of training sentences and tokens,
+and overall accuracy and accuracy restricted to tokens not
+seen in the training data:
+</p>
+
+<pre class="code">
+Cumulative Evaluation
+    Estimator:  #Train Cases=6240 #Train Toks=170178
+    First Best Accuracy (All Tokens) = 176/184 = 0.9565217391304348
+    First Best Accuracy (Unknown Tokens) = 11/13 = 0.8461538461538461
+</pre>
+
+<p>
+It is also possible to generate more results, such as the
+accuracy of the first-best guesses for each token instead of
+the best sequence, and the accuracy evaluated at a whole
+sentence level.
+</p>
+
+<h3>The Evaluation Command and Ant Task</h3>
+
+<p>
+The evaluation command may be run using the following ant
+task, drawn from the
+<code>eval-medpost</code> target
+in the ant build file <a
+href="build.xml"><code>build.xml</code></a>:
+</p>
+
+<pre class="code">
+&lt;target name=&quot;eval-medpost&quot;
+        depends=&quot;compile&quot;&gt;
+  &lt;java classname=&quot;EvaluatePos&quot;
+        fork=&quot;true&quot;&gt;
+    &lt;jvmarg value=&quot;-server&quot;/&gt;
+    &lt;classpath refid=&quot;classpath.standard&quot;/&gt;
+    &lt;arg value=&quot;1&quot;/&gt;                 &lt;!-- sent eval rate --&gt;
+    &lt;arg value=&quot;170000&quot;/&gt;            &lt;!-- toks before eval --&gt;
+    &lt;arg value=&quot;100&quot;/&gt;               &lt;!-- max n-best --&gt;
+    &lt;arg value=&quot;8&quot;/&gt;                 &lt;!-- n-gram size --&gt;
+    &lt;arg value=&quot;256&quot;/&gt;               &lt;!-- num characters --&gt;
+    &lt;arg value=&quot;8.0&quot;/&gt;               &lt;!-- interpolate ratio --&gt;
+    &lt;arg value=&quot;MedPostPosCorpus&quot;/&gt;  &lt;!-- corpus impl class --&gt;
+    &lt;arg value=&quot;${data.pos.medpost}&quot;/&gt;    &lt;!-- baseline dir for data --&gt;
+  &lt;/java>
+&lt;/target>
+</pre>
+
+<p>
+The arguments are all required, and simply supplied in order.
+The first argument is the frequency with which to evaluate sentences.
+The value of <code>1</code> means every sentence.  The second value is
+the number of tokens to use for training before evaluating the first
+sentence.  In this case, 170,000.  The third argument is the size of
+n-gram to use, in this case <code>8</code>.  The fourth argument is
+the number of characters in the training and test data, in this case a
+conservative estimate of <code>256</code>.  The fifth argument,
+<code>8.0</code>, is for the language model interpolation factor.
+Tweaking the last three numbers will affect the performance of the
+tagger, and this task is defined to show you how to do that.  The
+final two arguments, argument six and seven, pick out the name of the
+corpus class and the directory in which it is set.  We include the
+property value <code>${medpost-dir}</code> in order to allow users to
+set it in a properties file or on the command line.  We could have
+also specified the other variables in the same way in order to allow
+the external caller to set them; or the command can be pulled out of
+ant and run standalone.
+</p>
+
+
+<h3>Corpus Parsing Interface and Implementations</h3>
+
+<p>
+Before turning to the code for the evaluation, we first pause to
+abstract the features of our corpus into a general interface with two
+methods:
+</p>
+
+<pre class="code">
+public interface PosCorpus {
+    public Parser&lt;ObjectHandler&lt;Tagging&lt;String&gt;&gt;&gt; parser();
+    public Iterator&lt;InputSource&gt; sourceIterator() throws IOException;
+}
+</pre>
+
+<p>
+The first method returns the parser for a corpus.  The second method
+returns an iterator over input sources and may throw an I/O exception
+if it gets in trouble on the I/O front.  The code can be found in <a
+href="src/PosCorpus.java"><code>src/PosCorpus.java</code></a>.
+</p>
+
+<p>We provide three implementations, one for each corpus described
+above.
+</p>
+
+<h3>Genia POS Corpus Parser</h3>
+
+<p>
+The simplest is the GENIA corpus, because it only involves reading a
+single input source from a file.  The following code for doing this is
+drawn from <a
+href="src/GeniaPosCorpus.java"><code>src/GeniaPosCorpus.java</code></a>:
+</p>
+
+<pre class="code">
+public class GeniaPosCorpus implements PosCorpus {
+    private final File mGeniaGZipFile;
+    public GeniaPosCorpus(File geniaZipFile) {
+        mGeniaGZipFile = geniaZipFile;
+    }
+    public Iterator&lt;InputSource&gt; sourceIterator() throws IOException {
+        FileInputStream fileIn = new FileInputStream(mGeniaGZipFile);
+        InputSource in = new InputSource(fileIn);
+        return Iterators.singleton(in);
+    }
+    public Parser&lt;ObjectHandler&lt;Tagging&lt;String&gt;&gt;&gt; parser() {
+        return new GeniaPosParser();
+    }
+}</pre>
+
+<p>
+The return is through a LingPipe utility for singleton
+iterators in <code>com.aliasi.util.Iterators</code>.  Singleton
+iterators return a single item once, just as if iterating over a
+singleton (one element) set.  The parser method simply returns an
+instance of the GENIA corpus part-of-speech parser.
+</p>
+
+<p>Note that an instance is constructed from a single file, which
+provides the basis for a relative location of the corpus for all of
+the implementations.  Also note that nothing ever closes
+the input source.  This problem would have to be fixed for a robust
+implementation through a more sophisticated iterator implementation
+that knows when it's done and can close the input streams, or
+by reading the file into memory and closing it before wrapping
+it as an input source and providing it as a singleton iterator.
+</p>
+
+<h3>MedPost POS Parser</h3>
+
+<p>The MedPost corpus consists of a directory of files, each
+of which is simply in a text-based format.  The non-trivial bit of the
+implementation of <a
+href="src/MedPostPosCorpus.java"><code>src/MedPostPosCorpus.java</code></a>
+is the iteration over input sources:
+</p>
+
+<pre class="code">
+public Iterator sourceIterator() {
+    return new MedPostSourceIterator(mMedPostDir);
+}
+
+public static class MedPostSourceIterator
+    extends Iterators.Buffered&lt;InputSource&gt; {
+
+    private final File[] mFiles;
+    private int mNextFileIndex = 0;
+    public MedPostSourceIterator(File medPostDir) {
+        mFiles
+            = medPostDir
+             .listFiles(new FileExtensionFilter("ioc"));
+    }
+    public InputSource bufferNext() {
+        if (mNextFileIndex &gt;= mFiles.length) return null;
+        try {
+            File file = mFiles[mNextFileIndex++]);
+            String url = file.toURI().toURL().toString();
+            return new InputSource(url);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+}</pre>
+
+<p>
+Here the iterator stores an array of files that end in the suffix
+<code>&quot;ioc&quot;</code>; these are returned using the LingPipe
+utitlity <a
+href="../../../docs/api/com/aliasi/io/FileExtensionFilter.html"><code>io.FileExtensionFilter</code></a>.
+We then keep the variable <code>mNextFileIndex</code> as a pointer to
+the next file to return through the iterator.  The iterator itself is
+implemented by extending the very handy utility class <a
+href="../../../docs/api/com/aliasi/util/Iterators.Buffered.html"><code>util.Iterators.Buffered</code></a>.
+This abstract class defines the tricky bits of the has-next and next
+logic of iterators through a single method <code>bufferNext()</code>.
+This allows implementations to concentrate on returning the next
+object in the iteration rather than the logic buffering and returing
+has-next information.  A return of <code>null</code> indicates to the
+buffered iterator that there are no more elements.  To return an
+element as in input source, the name of the file is converted to
+a URL using <a href="../../../docs/api/com/aliasi/util/Files.html#fileToURLName(java.io.File)"><code>util.Files.fileToURLName(File)</code></a>.
+</p>
+
+
+<h3>Brown Corpus POS Parser</h3>
+
+<p>The Brown corpus, as distributed with the Natural Language Tool Kit
+(NLTK), is in yet another format -- a zipped directory of files.  Zip
+files are a very nice way to pack a lot of files because Java supports
+their unpacking.  In this way, they're a better choice than the
+standard unix combination of <code>tar</code> and <code>gzip</code>.
+Most of <a
+href="src/BrownPosCorpus.java"><code>src/BrownPosCorpus.java</code></a> is
+just like the previous classes, with the following source iterator:
+</p>
+
+<pre class="code">
+static class BrownSourceIterator
+    extends Iterators.Buffered&lt;InputSource&gt; {
+
+    private ZipInputStream mZipIn = null;
+
+    public BrownSourceIterator(File brownZipFile)
+        throws IOException {
+
+        FileInputStream fileIn
+            = new FileInputStream(brownZipFile);
+        mZipIn = new ZipInputStream(fileIn);
+    }
+    public InputSource bufferNext() {
+        ZipEntry entry = null;
+        try {
+            while ((entry = mZipIn.getNextEntry())
+                   != null) {
+                if (entry.isDirectory()) continue;
+                String name = entry.getName();
+                if (name.equals("brown/CONTENTS")
+                    || name.equals("brown/README"))
+                    continue;
+
+                return new InputSource(mZipIn);
+            }
+        } catch (IOException e) {
+            // fall through on purpose
+        }
+        Streams.closeInputStream(mZipIn);
+        return null;
+    }
+}
+</pre>
+
+<p>
+Here the file input stream is wrapped in a zip input stream.  To get
+the actual input sources, we extract the files in the input stream one
+by one.  To do this, we use the zip iteration method
+<code>getNextEntry()</code>.  If the entry is not a directory and
+does not share a name with one of the non-data read-me files, then
+the whole input stream is wrapped in an input source and passed to
+the iterator to return.  The zip input stream provides the actual bytes
+and will have an end-of-stream marker that is only reset after the
+next call to <code>getNextEntry()</code>.
+</p>
+
+<p>The right way to close the zip input stream would be in a larger
+<code>try/finally</code> block, but we kept it simple for sake of
+readability here.</p>
+
+
+
+<h3>The Evaluation Code</h3>
+
+
+<h3>The Parser/Handler Pattern</h3>
+
+<p>
+As evidenced by the command invocation in the last section, the
+the top-level <code>main(String[])</code> method is located in
+<a href="src/EvaluatePos.java"><code>src/EvaluatePos.java</code></a>,
+and it's quite simple:
+</p>
+
+<pre class="code">
+public static void main(String[] args)
+    throws Exception {
+
+    new EvaluatePos(args).run();
+}
+</pre>
+
+<p>
+It just constructs an <code>EvaluatePos</code> object
+out of the command-line arguments and runs it.  The constructor
+merely sets a bunch of local variables given the arguments:
+</p>
+
+<pre class="code">
+    public EvaluatePos(String[] args) throws Exception {
+        mSentEvalRate = Integer.valueOf(args[0]);
+        mToksBeforeEval = Integer.valueOf(args[1]);
+        mMaxNBest = Integer.valueOf(args[2]);
+        mNGram = Integer.valueOf(args[3]);
+        mNumChars = Integer.valueOf(args[4]);
+        mLambdaFactor = Double.valueOf(args[5]);
+        String constructorName = args[6];
+        File corpusFile = new File(args[7]);
+        Object[] consArgs = new Object[] { corpusFile };
+        @SuppressWarnings("rawtypes") // req for cast
+        PosCorpus corpus 
+            = (PosCorpus) 
+            Class
+            .forName(constructorName)
+            .getConstructor(new Class[] { File.class })
+            .newInstance(consArgs);
+        mCorpus = corpus;
+    }
+</pre>
+
+<p>
+The use of reflection in constructing the corpus throws a range
+of exceptions (see the documentation), but we have just thrown
+a single <code>Exception</code>, which is sloppy but convenient.</p>
+
+<p>
+The real action begins in the <code>run()</code> method, which begins
+by printing out the parameters, then setting up the corpus profile.  </p>
+
+<pre class="code">
+    void run() throws IOException {
+        ... // prints
+...
+</pre>
+
+<p>and then sets up the the corpus profile:</p>
+
+<pre class="code">
+...
+        CorpusProfileHandler profileHandler = new CorpusProfileHandler();
+        parseCorpus(profileHandler);
+...
+</pre>
+
+
+<p>
+The profile handler inner class is worth noting merely as a simple
+example of what can be done with LingPipe's handler framework:
+</p>
+
+<pre class="code">
+class CorpusProfileHandler implements ObjectHandler&lt;Tagging&lt;String&gt;&gt; {
+    public void handle(Tagging&lt;String&gt; tagging) {
+        ++mTrainingSentenceCount;
+        mTrainingTokenCount += tagging.size();
+        for (int i = 0; i &lt; tagging.size(); ++i)
+            mTagSet.add(tagging.tag(i));
+    }
+}
+</pre>
+
+<p>
+The <code>parseCorpus(ObjectHandler&lt;Tagging&lt;String&gt;&gt;)</code> method is a utility that
+simply parses the corpus by iterating through the input
+sources and applying the parser to them:
+</p>
+
+<pre class="code">
+void parseCorpus(ObjectHandler&lt;Tagging&lt;String&gt;&gt; handler) throws IOException {
+    Parser&lt;ObjectHandler&lt;Tagging&lt;String&gt;&gt;&gt; parser = mCorpus.parser();
+    parser.setHandler(handler);
+    Iterator&lt;InputSource&gt; it = mCorpus.sourceIterator();
+    while (it.hasNext()) {
+        InputSource in = it.next();
+        parser.parse(in);
+    }
+}
+</pre>
+
+<p>Because the handler is not static, it is able to manipulate member
+variables for counting in the <code>EvaluatePos</code> class.  Thus
+when we're done with the profile handler, we have access to the tag
+set back in the <code>run()</code> method: </p>
+
+<pre class="code">
+...
+        String[] tags = mTagSet.toArray(Strings.EMPTY_STRING_ARRAY);
+        Arrays.sort(tags);
+        Set&lt;String&gt; tagSet = new HashSet&lt;String&gt;();
+        for (String tag : tags)
+            tagSet.add(tag);
+
+...
+</pre>
+
+<p>Next, we create the HMM estimator and make sure it knows
+about all the tags up front:
+</p>
+
+<pre class="code">
+...
+        mEstimator
+            = new HmmCharLmEstimator(mNGram,mNumChars,mLambdaFactor);
+        for (int i = 0; i &lt; tags.length; ++i)
+            mEstimator.addState(tags[i]);
+...
+</pre>
+
+<p>
+Recall the <code>mCorpus</code> variable is set to the relevant
+implementation of <code>PosCorpus</code>.  The corpus supplies a
+parser through its <code>parser()</code> method and an iterator over
+sources through its <code>sourceIterator()</code> method.  For
+MedPost, these return an instance of <code>MedPostPosParser</code>
+and an iterator over the input sources over the input files.
+</p>
+
+<p>Parsing the corpus with the corpus profile handler simply records
+the number of training sentences, tokens and collects the set of tags.
+</p>
+
+<p>We next set up the decoder based on the HMM and all the
+evaluators:</p>
+
+<pre class="code">
+...
+        HmmDecoder decoder
+            = new HmmDecoder(mEstimator); // no caching
+        boolean storeTokens = true;
+        mTaggerEvaluator
+            = new TaggerEvaluator&lt;String&gt;(decoder,storeTokens);
+        mNBestTaggerEvaluator
+            = new NBestTaggerEvaluator&lt;String&gt;(decoder,mMaxNBest,mMaxNBest);
+        mMarginalTaggerEvaluator
+            = new MarginalTaggerEvaluator&lt;String&gt;(decoder,tagSet,storeTokens);
+...
+</pre>
+
+<p>Note that we have three different evaluators, one
+for first best, one for n-best, and one for
+marginal tags.  They take arguments specifying
+n-best sizes to find and to report, whether ot not
+they store tokens in the valuation, etc.</p>
+
+<p>
+The estimator and evaluator are both instances of <a
+href="../../../docs/api/com/aliasi/corpus/Parser.html"
+><code>com.aliasi.corpus.Parser</code></a>.  They are
+assigned to local variables which whill be available when
+the learning curve handler is run in the last and final
+statements of <code>EvaluatePos</code>'s <code>run()</code>
+method:
+</p>
+
+<pre class="code">
+...
+        LearningCurveHandler evaluationHandler
+            = new LearningCurveHandler();
+        parseCorpus(evaluationHandler);
+...
+</pre>
+
+<p>
+The actual work is all done by the learning curve handler,
+which we describe next.  After we've visited the whole corpus,
+we provide a final report of n-best and token results.
+</p>
+
+<pre class="code">
+...
+        System.out.println(mTaggerEvaluator.tokenEval());
+...
+        System.out.println(mNBestTaggerEvaluator.nBestHistogram());
+}
+</pre>
+
+<p>The final token evaluation is provided as a confusion
+matrix, presenting total counts, correct counts, accuracies,
+and a confusion matrix for errors:
+</p>
+
+<pre class="code">
+First Best Evaluation
+...
+Total Count=12385
+Total Correct=11923
+Total Accuracy=0.9626968106580541
+95% Confidence Interval=0.9626968106580541 +/- 0.003337534892266179
+Confusion Matrix
+reference \ response
+  ,CST,VBI,JJ+,DD,VVGJ,JJ,),VDD,NN,VHB,VVG,VVN,PNG,VVNJ,SYM,TO,VBN,:,DB,JJT,PN,MC,VBZ,NNS,RR,NNP,,,RRT,VHI,JJR,PND,VVGN,VVB,EX,II,VHZ,'',VVI,(,VVZ,VHD,VM,VDB,CSN,VBG,VBB,PNR,VDZ,GE,VBD,VVD,CS,CC+,CC,.,RR+,II+,``
+  CST,50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,1,0,0,0,0,0,0
+  VBI,0,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  JJ+,0,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0
+  DD,2,0,0,952,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0
+  VVGJ,0,0,0,0,42,0,0,0,4,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  JJ,0,0,0,0,0,965,0,0,53,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,1,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+  ),0,0,0,0,0,0,224,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  VDD,0,0,0,0,0,0,0,6,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  NN,0,0,1,0,1,39,0,0,2864,0,0,1,0,3,0,0,0,0,0,2,1,19,0,10,5,13,0,0,0,0,0,2,1,0,0,0,0,5,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  VHB,0,0,0,0,0,0,0,0,0,21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  VVG,0,0,0,0,2,0,0,0,0,0,65,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  VVN,0,0,0,0,0,0,0,0,3,0,0,345,0,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,0,0,0,0,0,0,0
+  PNG,0,0,0,1,0,0,0,0,0,0,0,0,50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  VVNJ,0,0,0,0,0,0,0,0,6,0,0,2,0,137,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0
+  SYM,0,0,0,0,0,0,0,0,0,0,0,0,0,0,150,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  TO,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,76,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  VBN,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  :,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,63,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  DB,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  JJT,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  PN,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,49,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  MC,0,0,0,0,0,0,0,0,12,0,0,0,0,0,0,0,0,0,0,0,0,432,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  VBZ,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,75,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  NNS,0,0,0,0,0,1,0,0,31,0,0,0,0,0,0,0,0,0,0,0,0,0,0,915,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  RR,0,0,0,1,0,7,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,267,0,0,0,0,1,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  NNP,0,0,0,0,0,2,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  ,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,453,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  RRT,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  VHI,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  JJR,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,26,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  PND,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,33,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0
+  VVGN,0,0,0,0,5,1,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,60,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0
+  VVB,0,0,0,0,1,2,0,0,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,109,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0
+  EX,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  II,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1540,0,0,0,0,0,1,0,0,2,0,0,0,0,0,0,0,3,0,0,0,0,0,0
+  VHZ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,15,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  '',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0
+  VVI,0,0,0,0,0,0,0,0,6,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,54,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  (,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,221,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  VVZ,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,51,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  VHD,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  VM,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,56,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  VDB,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  CSN,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,18,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  VBG,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0
+  VBB,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,72,0,0,0,0,0,0,0,0,0,0,0,0
+  PNR,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,53,0,0,0,0,0,0,0,0,0,0,0
+  VDZ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0
+  GE,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0
+  VBD,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,189,0,0,0,0,0,0,0,0
+  VVD,0,0,0,0,0,0,0,0,3,0,0,13,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,0,0,0,0,0,0,0
+  CS,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,47,0,1,0,0,0,0
+  CC+,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0,0,0
+  CC,0,0,0,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,454,0,0,0,0
+  .,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,466,0,0,0
+  RR+,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,0
+  II+,0,0,0,0,0,2,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,19,0
+  ``,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4
+</pre>
+
+<p>After some not-so useful results for a tagging problem, there is a category-by-category
+report of one-versus-all behavior.  For instance, for the common noun category
+we have:</p>
+
+<pre class="code">
+...
+CATEGORY[8]=NN
+First-Best Precision/Recall Evaluation
+  Total=12385
+  True Positive=2864
+  False Negative=104
+  False Positive=146
+  True Negative=9271
+  Positive Reference=2968
+  Positive Response=3010
+  Negative Reference=9417
+  Negative Response=9375
+  Accuracy=0.979814291481631
+  Recall=0.9649595687331537
+  Precision=0.9514950166112957
+  Rejection Recall=0.9844961240310077
+  Rejection Precision=0.9889066666666667
+  F(1)=0.958179993308799
+...
+</pre>
+
+<p>Here we see that there were 2986 common nouns in the reference, of
+which the system found 2864 (true positives), for a recall of 0.964.
+There were 104 instances the system assigned the wrong category (false
+negatives), and 146 instances that were other categories in the
+reference but assigned to common noun by mistake (false positives).
+We see that the specificity is 0.985 (here reported as rejection
+recall); sensitivity is just recall, which is 0.965.</p>  
+
+<p>If we go back to the confusion matrix report, we can see what
+happened for common nouns:</p>
+
+<pre class="code">
+reference \ response
+,CST,VBI,JJ+,DD,VVGJ,JJ,),VDD,NN,VHB,VVG,VVN,PNG,VVNJ,SYM,TO,VBN,:,DB,JJT,PN,MC,VBZ,NNS,RR,NNP,,,RRT,VHI,JJR,PND,VVGN,VVB,EX,II,VHZ,'',VVI,(,VVZ,VHD,VM,VDB,CSN,VBG,VBB,PNR,VDZ,GE,VBD,VVD,CS,CC+,CC,.,RR+,II+,``
+...
+NN,0,0,1,0,1,39,0,0,2864,0,0,1,0,3,0,0,0,0,0,2,1,19,0,10,5,13,0,0,0,0,0,2,1,0,0,0,0,5,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+...
+</pre>
+
+<p>For instance, in one case, a token marked <code>NN</code>
+in the reference is assigned <code>JJ+</code>, in one other
+case, a token marked <code>NN</code> in the reference was
+assigned to <code>VVGJ</code>, and 39 times an <code>NN</code>
+token was erroneously labeled <code>JJ</code> (as we saw
+in our earlier example).</p>
+
+<p>The final dump is of the n-best histogram from the n-best
+evaluation:</p>
+
+<pre class="code">
+N Best Evaluation
+0=227
+-1=75
+1=52
+2=15
+3=11
+6=10
+4=8
+5=5
+7=5
+14=5
+8=4
+24=4
+18=3
+9=2
+11=2
+16=2
+17=2
+28=2
+29=2
+34=2
+40=2
+59=2
+60=2
+10=1
+12=1
+13=1
+15=1
+21=1
+23=1
+27=1
+32=1
+43=1
+47=1
+48=1
+55=1
+56=1
+65=1
+68=1
+69=1
+77=1
+81=1
+87=1
+92=1
+95=1
+97=1
+</pre>
+
+<p>This list provides counts of the number of times the n-best result
+had the correct answer at the specified rank.  For instance,
+<code>0=227</code> says that for 227 of the sentences, the first-best
+answer was completely correct.  The line <code>1=52</code> indicates
+that for 52 sentences, the second-best result was correct, and
+<code>3=11</code> indicates that for 11 sentences, the fourth best
+result was correct.  The line <code>-1=75</code> indicates that for
+75 of the sentences, the correct response was not on the n-best list.</p>
+
+<h3>The Learning Curve Handler</h3>
+
+<p>
+The learning curve handler class is an inner class in <a
+href="src/EvaluatePos.java"><code>src/EvaluatePos.java</code></a>.
+</p>
+
+<pre class="code">
+    class LearningCurveHandler implements ObjectHandler&lt;Tagging&lt;String&gt;&gt; {
+        Set&lt;String&gt; mKnownTokenSet = new HashSet&lt;String&gt;();
+        int mUnknownTokensTotal = 0;
+        int mUnknownTokensCorrect = 0;
+...
+</pre>
+
+<p>Note that the class keeps track of the known tokens, and
+keeps running totals for unknown token accuracy.   Most of the
+work's in the <code>handle()</code> method implementing
+the <code>corpus.ObjectHandler&lt;Tagging&lt;String&gt;&gt;</code> interface:</p>
+
+<pre class="code">
+        public void handle(Tagging&lt;String&gt; tagging) {
+            if (mEstimator.numTrainingTokens() > mToksBeforeEval
+                &amp;&amp; mEstimator.numTrainingCases() % mSentEvalRate == 0) {
+
+                mTaggerEvaluator.handle(tagging);
+                mNBestTaggerEvaluator.handle(tagging);
+                mMarginalTaggerEvaluator.handle(tagging);
+...
+</pre>
+
+<p>
+The handle method checks to see that we're in the training part of the
+system, and then only considers every <code>mSentEvalRate</code> sentence.
+If the sentence is in the evaluation, the body gets called.  
+Inside the evaluation list, we simply create the reference
+tagging and then send it to the three evaluators to handle.
+</p>
+
+<p>After handling the case, we print out the various reports:
+</p>
+
+<pre class="code">
+...
+                System.out.println("\nTest Case "
+                                   + mTaggerEvaluator.numCases());
+
+                System.out.println("First Best Last Case Report");
+                System.out.println(mTaggerEvaluator.lastCaseToString(mKnownTokenSet));
+
+                System.out.println("N-Best Last Case Report");
+                System.out.println(mNBestTaggerEvaluator.lastCaseToString(5));
+
+                System.out.println("Marginal Last Case Report");
+                System.out.println(mMarginalTaggerEvaluator.lastCaseToString(5));
+
+                System.out.println("Cumulative Evaluation");
+                System.out.print("    Estimator:  #Train Cases="
+                                 + mEstimator.numTrainingCases());
+
+                System.out.println(" #Train Toks="
+                                   + mEstimator.numTrainingTokens());
+
+                ConfusionMatrix tokenEval = mTaggerEvaluator.tokenEval().confusionMatrix();
+                System.out.println("    First Best Accuracy (All Tokens) = "
+                                   + tokenEval.totalCorrect() 
+                                   + "/" + tokenEval.totalCount()
+                                   + " = " + tokenEval.totalAccuracy());
+
+...
+</pre>
+
+<p>After these dumps, we calculate and print the
+unknown token evaluation directly:</p>
+
+<pre class="code">
+                ConfusionMatrix unkTokenEval = mTaggerEvaluator.unknownTokenEval(mKnownTokenSet).confusionMatrix();
+                mUnknownTokensTotal += unkTokenEval.totalCount();
+                mUnknownTokensCorrect += unkTokenEval.totalCorrect();
+                System.out.println("    First Best Accuracy (Unknown Tokens) = "
+                                   + mUnknownTokensCorrect
+                                   + "/" + mUnknownTokensTotal
+                                   + " = " + (mUnknownTokensCorrect/(double)mUnknownTokensTotal));
+            }
+...
+</pre>
+
+
+<p>This'd be more easily done once-and-for-all if we
+weren't doing an online evaluation.</p>
+
+<p>In all
+cases, the estimator is trained after the sentence is evaluated, and
+its tokens added to the known token set.  Repeating the if/then structure,
+we have:
+</p>
+
+<pre class="code">
+        public void handle(Tagging&lt;String&gt; tagging) {
+            if (mEstimator.numTrainingTokens() > mToksBeforeEval
+                &amp;&amp; mEstimator.numTrainingCases() % mSentEvalRate == 0) {
+               ...
+
+            }
+            // train after eval
+            mEstimator.handle(tagging);
+            for (int i = 0; i &lt; tagging.size(); ++i)
+                mKnownTokenSet.add(tagging.token(i));
+        }
+    }
+</pre>
+
+<p>
+In this sense, the evaluation
+is online and provides a learning curve.  To get a more realistic
+learning curve, you should start before 170,000 tokens and only evaluate
+every 10th sentence or so thereafter to help with speed (or evaluate
+them all for more accuracy, but it'll take a few minutes).
+</p>
+
+
+
+<h2>Noun and Verb Chunking</h2>
+<p>
+Part-of-speech tagging is often used as the basis for
+extracting higher-level structure, such as phrases.  In this
+section, we show how to create a <code>chunk.Chunker</code>
+implementation that finds nouns and verb chunks based on
+part-of-speech tags.
+</p>
+
+<h3>Tags to Chunks</h3>
+
+<p>
+The usual method of deriving chunks from underlying tags
+is to define a pattern of tags that derive a chunk.  In
+this tutorial, we will consider very simple patterns, but
+the same technique would apply to more complex patterns.
+</p>
+<p>We will employ the Brown corpus part-of-speech tagger
+for English as the basis of our phrasal chunker.  See
+the <a href="../../../docs/api/com/aliasi/corpus/parsers/BrownPosParser.html"><code>corpus.parsers.BrownPosParser</code></a>
+for explanations of all of the categories and links to
+the original documentation.
+</p>
+
+
+<h3>Definining Noun Chunks</h3>
+
+<p>We create noun and verb patterns the same way, with
+a set of possible initial categories and a set of
+possible continuation categories.  Nouns may start with
+determiners, adjectives, common nouns or pronouns.
+Nouns may be continued with any category that may start
+a noun, and also by adverbs or punctuation.
+</p>
+<p>These sets are defined statically; here is a fragment
+of the set of determiner tags:</p>
+<pre class="code">
+static final Set&lt;String&gt; DETERMINER_TAGS = new HashSet&lt;String&gt;();
+
+static {
+    DETERMINER_TAGS.add(&quot;abn&quot;);
+    DETERMINER_TAGS.add(&quot;abx&quot;);
+    DETERMINER_TAGS.add(&quot;ap&quot;);
+    DETERMINER_TAGS.add(&quot;ap$&quot;);
+    DETERMINER_TAGS.add(&quot;at&quot;);
+    ...
+}
+</pre>
+<p>
+The start tags and continuation tags are defined similarly:
+</p>
+<pre class="code">
+START_NOUN_TAGS.addAll(DETERMINER_TAGS);
+START_NOUN_TAGS.addAll(ADJECTIVE_TAGS);
+START_NOUN_TAGS.addAll(NOUN_TAGS);
+START_NOUN_TAGS.addAll(PRONOUN_TAGS);
+
+CONTINUE_NOUN_TAGS.addAll(START_NOUN_TAGS);
+CONTINUE_NOUN_TAGS.addAll(ADVERB_TAGS);
+CONTINUE_NOUN_TAGS.addAll(PUNCTUATION_TAGS);
+</pre>
+
+<h3>Defining Verb Chunks</h3>
+
+<p>We allow verbs to start with verbs, auxiliaries, or
+adverbs; they may be continued with any of these tags, or
+with punctuation.
+</p>
+
+<h3>The Chunker Implementation</h3>
+<p>
+We provide an implementation of the
+<a href="../../../docs/api/com/aliasi/chunk/Chunker.html"><code>chunk.Chunker</code></a>
+interface in <a href="src/PhraseChunker.java"><code>src/PhraseChunker.java</code></a>.
+Note that this is the same interface we use for named
+entity and other chunkers; see the <a href="../ne/read-me.html">Named Entity Tutorial</a>
+for more information.
+</p>
+<p>
+The constructor simply stores a part-of-speech tagger
+(in the form of an HMM decoder) along with a tokenizer
+factory:
+</p>
+<pre class="code">
+private final HmmDecoder mPosTagger;
+private final TokenizerFactory mTokenizerFactory;
+
+public PhraseChunker(HmmDecoder posTagger,
+                     TokenizerFactory tokenizerFactory) {
+    mPosTagger = posTagger;
+    mTokenizerFactory = tokenizerFactory;
+}
+</pre>
+<p>
+The chunk method is implemented in several stages.  The
+first step is to tokenize the input and compute the part-of-speech
+tags using the decoder:
+</p>
+<pre class="code">
+public Chunking chunk(char[] cs, int start, int end) {
+    // tokenize
+    List&lt;String&gt; tokenList = new ArrayList&lt;String&gt;();
+    List&lt;String&gt; whiteList = new ArrayList&lt;String&gt;();
+    Tokenizer tokenizer = mTokenizerFactory.tokenizer(cs,start,end-start);
+    tokenizer.tokenize(tokenList,whiteList);
+
+    String[] tokens
+        = tokenList.&lt;String&gt;toArray(new String[tokenList.size()]);
+    String[] whites
+        = whiteList.&lt;String&gt;toArray(new String[whiteList.size()]);
+
+    // part-of-speech tag
+    Tagging&lt;String&gt; tagging = mPosTagger.tag(tokenList);
+    ...
+</pre>
+
+<p>Next, we walk over the tags, keeping track of the positions
+of the chunks, and waiting for the start of a noun or a verb.
+Skeletally, this looks like:
+</p>
+
+<pre class="code">
+    ...
+        ChunkingImpl chunking = new ChunkingImpl(cs,start,end);
+        int startChunk = 0;
+        for (int i = 0; i &lt; tagging.size(); ) {
+            startChunk += whites[i].length();
+
+            if (START_NOUN_TAGS.contains(tagging.tag(i))) {
+                // extend noun to completion and add
+                ...
+            } else if (START_VERB_TAGS.contains(tagging.tag(i))) {
+                // extend verb to completion and add
+                ...
+
+            } else {
+                startChunk += tokens[i].length();
+                ++i;
+            }
+        }
+        return chunking;
+    }
+</pre>
+<p>The real work is done in the ellided blocks above.  We only
+consider the noun case, as the verb case is structurally identical.
+</p>
+<pre class="code">
+...
+                // extend noun to completion and add
+                int endChunk = startChunk + tokens[i].length();
+                ++i;
+                while (i &lt; tokens.length &amp;&amp; CONTINUE_NOUN_TAGS.contains(tags[i])) {
+                    endChunk += whites[i].length() + tokens[i].length();
+                    ++i;
+                }
+...
+</pre>
+<p>
+Here, once we find the start of the noun at index <code>i</code>,
+we track where it starts (always on the first character of a token,
+not on whitespace).  We then extend it one token at a time
+if the corresponding tag is a legal noun continuation.  All the while,
+we keep track of the end position and the overall index.
+</p>
+<p>
+Once we have a chunk, we work backward peeling off any final
+punctuation.  We define a new trimmed end chunk variable and
+update it going backward.  If the whole thing turns out to
+be punctuation (shouldn't actually happen), then we ignore
+the resulting chunk.
+</p>
+<pre class="code">
+...
+                int trimmedEndChunk = endChunk;
+                for (int k = i;
+                     --k &gt;= 0 &amp;&amp; PUNCTUATION_TAGS.contains(tagging.tag(k)); ) {
+                    trimmedEndChunk -= (whites[k].length() + tokens[k].length());
+                }
+                if (startChunk &gt;= trimmedEndChunk) {
+                    startChunk = endChunk;
+                    continue;
+                }
+...
+</pre>
+<p>
+Otherwise, we use the chunk factory to create a new chunk,
+add it to our chunking, and update our position tracking
+variable <code>startChunk</code>.
+</p>
+<pre class="code">
+...
+                Chunk chunk
+                    = ChunkFactory.createChunk(startChunk,trimmedEndChunk,"noun");
+                chunking.add(chunk);
+                startChunk = endChunk;
+         }
+...
+</pre>
+
+<h3>Running the Program</h3>
+<p>
+We have implemented a <code>main()</code> method in
+<a href="src/PhraseChunker.java"><code>PhraseChunker.java</code></a>
+to allow the chunker to be tested from the command line.  This
+may be run using the ant target <code>phrases</code> in
+the ant <a href="build.xml"><code>build.xml</code></a> file:
+</p>
+<pre class="code">
+&gt; cd $LINGPIPE/demos/tutorial/posTags
+&gt; ant phrases
+
+Buildfile: build.xml
+
+compile:
+
+phrases:
+
+After months of coy hints, Prime Minister Tony Blair made the announcement today as part of a closely choreographed and protracted farewell.
+  noun(6,12) months
+  noun(16,25) coy hints
+  noun(27,52) Prime Minister Tony Blair
+  verb(53,57) made
+  noun(58,80) the announcement today
+  noun(84,88) part
+  noun(92,101) a closely
+  verb(102,115) choreographed
+  verb(120,130) protracted
+  noun(131,139) farewell
+
+The attorney general appeared before the House Judiciary Committee to discuss the dismissals of U.S. attorneys.
+  noun(0,20) The attorney general
+  verb(21,29) appeared
+  noun(37,66) the House Judiciary Committee
+  verb(67,77) to discuss
+  noun(78,92) the dismissals
+  noun(96,110) U.S. attorneys
+
+Nascar's most popular driver announced that his future would not include racing for Dale Earnhardt Inc.
+  noun(0,6) Nascar
+  verb(7,8) s
+  noun(14,28) popular driver
+  verb(29,38) announced
+  noun(44,54) his future
+  verb(55,79) would not include racing
+  noun(84,102) Dale Earnhardt Inc
+
+Purdue Pharma, its parent company, and three of its top executives today admitted to understating the risks of addiction to the painkiller.
+  noun(0,13) Purdue Pharma
+  noun(15,33) its parent company
+  noun(39,44) three
+  noun(48,72) its top executives today
+  verb(73,81) admitted
+  verb(85,97) understating
+  noun(98,107) the risks
+  noun(111,120) addiction
+  noun(124,138) the painkiller
+
+After a difficult stretch for the airline, David Neeleman will give way to David Barger, the No. 2 executive.
+  noun(6,25) a difficult stretch
+  noun(30,41) the airline
+  noun(43,57) David Neeleman
+  verb(58,67) will give
+  noun(68,71) way
+  noun(75,87) David Barger
+  noun(89,108) the No. 2 executive
+</pre>
+
+<h3>The Main Method</h3>
+<p>
+The <code>main()</code> method driving this demo is trivial; it
+just reads in the models, sets up the chunker, and then runs it
+on the remaining command-line arguments:
+</p>
+<pre class="code">
+public static void main(String[] args) {
+
+    // parse input params
+    File hmmFile = new File(args[0]);
+    int cacheSize = Integer.parseInt(args[1]);
+    FastCache&lt;String,double[]&gt; cache = new FastCache&lt;String,double[]&gt;(cacheSize);
+
+    // read HMM for pos tagging
+    HiddenMarkovModel posHmm;
+    try {
+        posHmm
+            = (HiddenMarkovModel)
+            AbstractExternalizable.readObject(hmmFile);
+    } catch (IOException e) {
+        System.out.println("Exception reading model=" + e);
+        e.printStackTrace(System.out);
+        return;
+    } catch (ClassNotFoundException e) {
+        System.out.println("Exception reading model=" + e);
+        e.printStackTrace(System.out);
+        return;
+    }
+
+    // construct chunker
+    HmmDecoder posTagger  = new HmmDecoder(posHmm,null,cache);
+    TokenizerFactory tokenizerFactory = new IndoEuropeanTokenizerFactory();
+    PhraseChunker chunker = new PhraseChunker(posTagger,tokenizerFactory);
+
+    // apply chunker
+    for (int i = 2; i &lt; args.length; ++i) {
+        Chunking chunking = chunker.chunk(args[i]);
+        CharSequence cs = chunking.charSequence();
+        System.out.println("\n" + cs);
+        for (Chunk chunk : chunking.chunkSet()) {
+            String type = chunk.type();
+            int start = chunk.start();
+            int end = chunk.end();
+            CharSequence text = cs.subSequence(start,end);
+            System.out.println("  " + type + "(" + start + "," + end + ") " + text);
+        }
+    }
+}
+</pre>
+
+<h3>Just Proper Nouns</h3>
+<p>
+Given the Brown corpus's tagging, it's possible to pull back
+just the proper noun chunks.  These would take the noun starting
+categories to be just the proper noun category (<code>np</code> in
+the Brown corpus).  This may not produce the desired result, though,
+considering the underlying taggings of the above examples:
+</p>
+<pre class="code">
+After/in months/nns of/in coy/jj hints/nns ,/, Prime/jj Minister/nn Tony/np Blair/np made/vbd the/at announcement/nn today/nr as/cs part/nn of/in a/at closely/rb choreographed/vbn and/cc protracted/vbn farewell/nn ./.
+
+The/at attorney/nn general/nn appeared/vbd before/cs the/at House/nn Judiciary/nn Committee/nn to/to discuss/vb the/at dismissals/nn of/in U/np ./. S/nrs ./. attorneys/nns ./.
+
+Nascar/np '/' s/vbz most/ql popular/jj driver/nn announced/vbd that/cs his/pp$ future/nn would/md not/* include/vb racing/vbg for/in Dale/np Earnhardt/np Inc/np ./.
+
+Purdue/np$ Pharma/nn ,/, its/pp$ parent/jj company/nn ,/, and/cc three/cd of/in its/pp$ top/jjs executives/nns today/nr admitted/vbd to/in understating/vbg the/at risks/nns of/in addiction/nn to/in the/at painkiller/nn ./.
+
+After/in a/at difficult/jj stretch/nn for/in the/at airline/nn ,/, David/np Neeleman/np will/md give/vb way/nn to/in David/np Barger/np ,/, the/at No/rb ./. 2/cd executive/nn ./.
+</pre>
+
+<p>
+Note that <code>Prime Minister</code> is not considered part of
+the proper noun, nor is <code>House Judiciary Committee</code>.
+Only the <code>U</code> in <code>U.S.</code> is assigned a proper
+noun tag.  Proper person names, on the other hand, are usually
+analyzed as category <code>np</code>, as was <code>Nascar</code>
+and <code>Purdue</code> (though note that <code>Pharma</code>
+in <code>Purdue Pharma</code> is not considered a proper noun
+by the tagger).
+</p>
+
+
+<h3>Noun and Verb Chunks with Confidence</h3>
+<p>
+The n-best output for taggers could be used to define chunks.
+Rather than running over just the first-best output,
+use n-best output.  Rather than returning unscored chunks,
+add the conditional probabilities of the whole chunkings
+to determine the likelihood of the chunks, although keep in
+mind that this will be an underestimate that gets better
+the larger the n in the n-best list.
+</p>
+<p>
+A more elaborate method of doing this would be to follow
+the approach to named-entity chunking in the HMM-based chunker
+implementations in the <code>chunk</code> package.
+</p>
+<p>
+A final possibility would be to use the simple noun and
+verb chunker to create a large set of training data that
+could be used to train a rescoring chunker.  Simply use
+the chunkings that are output to train a chunker.
+</p>
+
+
+<h2>References</h2>
+
+<p>
+Being one of the premiere techniques for both written and spoken
+language, there is a wealth of information available on HMMs, including
+applications to part-of-speech tagging.  We'd recommend the two major
+natural language processing texts:
+</p>
+
+<ul>
+<li> Chris Manning and Hinrich Schuetze. 1999. <i>Foundations of
+Statistical Natural Language Processing</i>. MIT Press.
+</li>
+<li> Dan Jurafsky and James H. Martin. 2000. <i>Speech and Language
+Processing</i>.  Prentice-Hall.
+</li>
+</ul>
+
+<p>
+as well as the two standard speech recognition texts:
+</p>
+
+<ul>
+<li> Larry Rabiner and Fred Juang. 1993. <i>Fundamentals of Speech
+Recognition</i>. Prentice Hall.
+</li>
+<li> Fred Jelinek. 1998. <i>Statistical Methods for Speech
+Recognition</i>. MIT Press.
+</li>
+</ul>
+
+
+<h2>Appendix: Additional Corpora</h2>
+
+<p>
+The other part-of-speech training corpora of which we are aware
+are:
+</p>
+
+<h3>Freely Downloadable</h3>
+
+<p>
+The following data may be downloaded over the web and used for
+&quot;scientific&quot;, &quot;non-commercial&quot;, or
+&quot;evaluation&quot; purposes:
+</p>
+
+<ul>
+<li> <b>Chinese:</b>
+<a href="http://www.elda.org/catalogue/en/text/W0039.html">Lancaster Corpus of Mandarin Chinese</a>
+</li>
+
+<li> <b>Dutch:</b> <a href="http://www.cnts.ua.ac.be/conll2002/ner/data/">CoNLL 2003</a> (<code>ned.*.gz</code>)
+</li>
+
+<li> <b>English:</b>
+<ul>
+<li> <a href="http://www.cnts.ua.ac.be/conll2001/clauses/">CoNLL
+2002</a> (<code>train*</code>, <code>test*</code>)
+</li>
+
+<li>
+<a href="http://www.cnts.ua.ac.be/conll2000/chunking/">CoNLL 2001</a> (<code>*.txt.gz</code>);
+</li>
+
+<li>
+Geoffrey Sampson's <a href="http://www.grsampson.net/Resources.html">SUSANNE, CHRISTINE AND LUCE corpora</a>
+</li>
+</ul>
+</li>
+
+<li> <b>German:</b>
+<a href="http://www.coli.uni-saarland.de/projects/sfb378/negra-corpus/negra-corpus.html">Negra Corpus</a>
+</li>
+
+<li> <b>Spanish:</b> <a href="http://www.lsi.upc.es/~nlp/tools/nerc/nerc.html">CoNLL
+2003</a> with POS Tags by Xavier Carreras
+</li>
+</ul>
+
+
+<h3>Restrictively Licensed</h3>
+
+<p>These range in cost from hundreds to thousands of (US) dollars:
+</p>
+
+<ul>
+
+<li> <b>Arabic:</b>
+<a href="http://www.ldc.upenn.edu/Catalog/CatalogEntry.jsp?catalogId=LDC2005T02">LDC Arabic Treebank 3</a>
+</li>
+
+<li> <b>Chinese:</b>
+<a href="http://www.ldc.upenn.edu/Catalog/catalogEntry.jsp?catalogId=LDC2005T01">LDC Chinese Treebank 5</a>
+</li>
+
+<li> <b>Czech &amp; English Aligned:</b>
+<a href="http://www.ldc.upenn.edu/Catalog/catalogEntry.jsp?catalogId=LDC2004T25">LDC Prague Czech-English Dependency Treebank 1</a>
+</li>
+
+<li> <b>Dutch:</b>
+<a href="http://www.elda.org/catalogue/en/text/W0019.html">ELRA PAROLE Dutch</a>
+</li>
+
+<li> <b>English:</b>
+<ul>
+<li><a href="http://www.ldc.upenn.edu/Catalog/CatalogEntry.jsp?catalogId=LDC99T42">Treebank 3</a>;
+</li>
+<li><a href="http://www.ldc.upenn.edu/Catalog/catalogEntry.jsp?catalogId=LDC2000T43">BLIIP WSJ</a> (auto annotated)
+</li>
+<li><a href="http://www.natcorp.ox.ac.uk/">British National Corpus</a> (Full &amp; &quot;baby&quot; versions)
+</li>
+<li><a href="http://khnt.hit.uib.no/icame/manuals/lob/index.htm">Lancaster-Oslo-Bergen (LOB) Corpus</a> (their site doesn't
+make much sense)
+</li>
+</ul>
+</li>
+
+<li> <b>English-French-German-Italian-Spanish Aligned</b>
+<a href="http://www.elda.org/catalogue/en/text/W0017.html">ELRA MULTEXT JOC Corpus</a>
+</li>
+<li> <b>English-French-Spanish Aligned</b>
+<a href="http://www.elda.org/catalogue/en/text/W0003.html">ELRA CRATER Corpus</a>;
+(some <a href="http://www.comp.lancs.ac.uk/linguistics/crater/corpus.html">Sample Files</a> are available)
+</li>
+<li> <b>German:</b>
+<a href="http://www.elda.org/catalogue/en/text/W0008.html">ELRA MTP German Corpus</a>
+</li>
+<li> <b>Greek:</b>
+<a href="http://www.elda.org/catalogue/en/text/W0022.html">ELRA ILSP/ELEFTHEROTYPIA Corpus</a>
+</li>
+<li> <b>Korean:</b>
+<a href="http://www.elda.org/catalogue/en/text/W0034.html">ELRA Qualified POS Tagged Corpus</a>
+</li>
+<li> <b>Portuguese:</b>
+<a href="http://www.elda.org/catalogue/en/text/W0024.html">ELRA PAROLE Portuguese</a>
+</li>
+</ul>
+
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+

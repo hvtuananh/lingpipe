@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+
+
+  <project name="LingPipe Tutorial - Spell Checking" default="compile" basedir=".">
+
+  <description>
+    Example program that does corpus senstive spell checking.
+  </description>
+
+  <path id="classpath.standard">
+    <pathelement location="../../../lingpipe-4.1.0.jar"/>
+    <pathelement location="../../lib/lucene-core-3.0.1.jar"/>
+    <pathelement location="querySpellCheck.jar"/>
+  </path>
+
+  <target name="clean"
+          description="Clean build and distribution directories.">
+    <delete dir="build"/>
+    <delete dir="lucene"/>
+    <delete file="querySpellCheck.jar"/>
+    <delete file="SpellCheck.model"/>
+    <delete file="rec.sport.hockey.CompiledSpellChecker"/>
+    <delete file="rec.sport.hockey.ObjectToCounterMap"/>
+  </target>
+
+  <target name="compile"
+          depends=""
+          description="Compile the src code into the build directory.">
+    <mkdir dir="build/classes"/>
+    <javac includeAntRuntime="false"   optimize="on"
+           debug="yes"
+           debuglevel="source,lines,vars"
+           destdir="build/classes">
+      <compilerarg value="-Xlint:all"/>
+      <classpath refid="classpath.standard"/>
+      <src path="src/"/>
+    </javac>
+  </target>
+
+  <target name="jar"
+          depends="compile">
+    <jar destfile="querySpellCheck.jar">
+      <fileset dir="build/classes"
+               includes="**/*.class"/>
+    </jar>
+  </target>
+
+  <target name="querySpellCheck"
+          depends="jar">
+    <java classname="QuerySpellCheck"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+    </java>
+  </target>
+
+
+  <target name="train"
+        depends="jar">
+    <java classname="TrainSpell"
+          maxmemory="512M"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+      <arg value="../../data/rec.sport.hockey/train/"/>       <!-- training data path -->
+      <arg value="rec.sport.hockey.ObjectToCounterMap"/>      <!-- token count file -->
+      <arg value="rec.sport.hockey.CompiledSpellChecker"/>    <!-- compiled model file -->
+      <arg value="6"/>                                        <!-- n-gram length -->
+     </java>
+  </target>
+
+
+  <target name="evalSimple"
+          depends="jar">
+    <java classname="EvaluateSpell"
+          maxmemory="512M"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+      <arg value="-refFile=../../data/spell-eval-annotated.txt"/>
+      <arg value="-modelFile=rec.sport.hockey.CompiledSpellChecker"/>
+      <arg value="-tokenCounterFile=rec.sport.hockey.ObjectToCounterMap"/>
+      <arg value="-thresholdTokens=2"/>
+
+      <arg value="-numConsecutiveInserts=1"/>
+      <arg value="-knownTokenEditCost=-2"/>
+      <arg value="-firstCharEditCost=-2"/>
+      <arg value="-secondCharEditCost=-1"/>
+      <arg value="-match=0"/>
+      <arg value="-insert=-2"/>
+      <arg value="-delete=-2"/>
+      <arg value="-substitute=-2"/>
+      <arg value="-transpose=-2"/>
+      <!-- <arg value="=deleteOff"/>  -->
+      <!-- <arg value="=substituteOff"/>  -->
+      <arg value="-minTokLengthToEdit=3"/>
+
+      <arg value="-beam=32"/>
+
+     </java>
+  </target>
+
+
+<property name="phrase.counts.file"
+          value="../../data/us-state-populations-06.txt"/>
+
+
+  <target name="complete-cmd"
+          depends="jar">
+    <java classname="AutoCompleteCommand"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+      <arg value="${phrase.counts.file}"/>
+      <arg value="N"/>
+      <arg value="New"/>
+      <arg value="New Y"/>
+      <arg value="New Yor"/>
+      <arg value="Mew "/>
+      <arg value="U"/>
+      <arg value="Uta"/>
+      <arg value="ZebraFish"/>
+    </java>
+  </target>
+
+  <target name="complete-gui"
+          depends="jar">
+    <java classname="AutoCompleteGui"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+      <arg value="${phrase.counts.file}"/>
+    </java>
+  </target>
+
+
+</project>

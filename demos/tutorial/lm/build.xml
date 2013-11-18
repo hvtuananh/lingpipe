@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+
+<project name="LingPipe Tutorial - Language Modeling" default="compile" basedir=".">
+
+<path id="classpath.standard">
+  <pathelement location="lm-demo.jar"/>
+  <pathelement location="../../lib/lingmed-1.3.jar"/>
+  <pathelement location="../../../lingpipe-4.1.0.jar"/>
+</path>
+
+<target name="clean">
+  <delete dir="build"/>
+  <delete dir="models"/>
+  <delete file="lm-demo.jar"/>
+  <delete file="demo-out-8.txt"/>
+</target>
+
+<target name="compile">
+  <mkdir dir="build/classes"/>
+  <javac includeAntRuntime="false"   optimize="on"
+         debug="yes"
+         debuglevel="source,lines,vars"
+         destdir="build/classes">
+    <compilerarg value="-Xlint:all"/>
+    <classpath refid="classpath.standard"/>
+    <src path="src/"/>
+  </javac>
+</target>
+
+<target name="jar"
+        depends="compile">
+  <jar destfile="lm-demo.jar">
+    <fileset dir="build/classes"
+             includes="**/*.class"/>
+  </jar>
+</target>
+
+
+<target name="demo"
+        depends="jar">
+  <java classname="TrainLM"
+        fork="true">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+
+    <arg value="-corpusName=medsamp"/>
+    <arg value="-fileExtension=medsamp2005.xml"/>
+    <arg value="-textParser=com.aliasi.corpus.parsers.MedlineTextParser"/>
+
+    <arg value="-maxNGram=8"/>
+    <arg value="-numChars=256"/>
+    <arg value="-lambdaFactors=2.0, 8.0, 32.0"/>
+
+    <arg value="-sampleSize=5000"/>
+    <arg value="-sampleFreq=1"/>
+
+    <arg value="-reportFile=demo-out-8.txt"/>
+    <arg value="../../data/"/>
+  </java>
+</target>
+
+
+<target name="gigaword"
+        depends="compile">
+  <java classname="TrainLM"
+        maxMemory="1G"
+        fork="true">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+
+    <arg value="-corpusName=gigaword"/>
+    <arg value="-fileExtension=gz"/>
+    <arg value="-textParser=com.aliasi.corpus.parsers.GigawordTextParser"/>
+
+    <arg value="-maxNGram=8"/>
+    <arg value="-numChars=128"/>
+    <arg value="-lambdaFactors=1.0, 2.0, 4.0, 5.6, 8, 11, 16, 32"/>
+
+    <arg value="-sampleSize=10000"/>
+    <arg value="-sampleFreq=5000"/>
+
+    <arg value="-reportFile=gigaword-out-8.txt"/>
+    <arg value="/data1/data/gigaword_eng/nyt"/>
+    <arg value="/data1/data/gigaword_eng/apw"/>
+    <arg value="/data1/data/gigaword_eng/afe"/>
+  </java>
+</target>
+
+<target name="medline"
+        depends="compile">
+  <java classname="TrainLM"
+        maxMemory="1G"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+
+    <arg value="-corpusName=medline"/>
+    <arg value="-fileExtension=gz"/>
+    <arg value="-textParser=com.aliasi.corpus.parsers.MedlineTextParser"/>
+
+    <arg value="-maxNGram=8"/>
+    <arg value="-numChars=256"/>
+    <arg value="-lambdaFactors=1.0, 2.0, 4.0, 5.6, 8, 11, 16, 32"/>
+
+    <arg value="-sampleSize=10000"/>
+    <arg value="-sampleFreq=5000"/>
+
+    <arg value="-reportFile=medline-out-8.txt"/>
+    <arg value="/data1/data/medline/2005/baseline"/>
+  </java>
+</target>
+
+<target name="tok-io"
+        depends="jar">
+  <java classname="DemoTokenNGramFiles"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="aa bb bb cc dd"/>
+    <arg value="dd ee dd dd"/>
+
+    <arg value="cc dd cc dd cc"/>
+    <arg value="dd ee ff ee ee"/>
+  </java>
+</target>
+
+<target name="tok-files"
+        depends="jar">
+  <java classname="TokenNGramIndexer"
+        maxMemory="1G"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+  </java>
+</target>
+
+<property name="medline.samples.dir"
+          value="c:\data\medline\samples"/>
+<property name="medline.index.dir"
+          value="temp-medline-idx"/>
+<target name="med-n"
+        depends="jar">
+  <delete dir="medline.index.dir"
+          quiet="true"/>
+  <java classname="MedlineNGrams"
+        maxMemory="1G"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${medline.samples.dir}"/>
+    <arg value="${medline.index.dir}"/>
+  </java>
+</target>
+
+</project>

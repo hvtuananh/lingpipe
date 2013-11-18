@@ -1,0 +1,1731 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Word Sense Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">Word Sense Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a class="current" href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+
+
+
+<h2>What is Word Sense Disambiguation?</h2>
+
+<p>
+Word sense disambiguation (WSD) is the task of determing which
+meaning of a polysemous word is intended in a given context.  
+</p>
+
+<p>
+Some words, such as English &quot;run&quot;, are highly ambiguous.
+The <a href="http://dictionary.reference.com/search?q=run"><i>American
+Heritage Dictionary, 4th Edition</i></a> lists 28 intransitive verb senses,
+31 transitive verb senses, 30 nominal senses and 46 adjectival senses.
+The word &quot;gallop&quot; has a mere 4 nominal senses, and
+the word &quot;subroutine&quot; only 1 nominal sense.
+</p>
+
+
+<h3>Where Do Senses Come From?</h3> 
+
+<div class="sidebar">
+<h2>The Procrustean Bed of Platonic Ontologies</h2>
+<p>
+There's a name for the study of categories and objects,
+&quot;<a href="http://en.wikipedia.org/wiki/Ontology">ontology</a>&quot;.
+Designing ontologies is fun and can be useful for
+some applications.  
+Naive ontology designers typically fall into the
+<a href="http://en.wikipedia.org/wiki/Plato">Platonic</a> 
+trap of assuming the world is made up of real categories
+to be discovered.  Despite being educated in the
+<a href="http://en.wikipedia.org/wiki/Logical_positivism">logical positivist</a> tradition, we believe
+Platonic ontologies make for a
+<a
+href="http://en.wikipedia.org/wiki/Procrustes">Procrustean bed</a>.
+</p>
+<p>
+Instead, we believe category systems
+are as much a matter of 
+<a href="http://en.wikipedia.org/wiki/Epistemology">epistemology</a>
+and <a href="http://en.wikipedia.org/wiki/Pragmatic_theory_of_truth">pragmatics</a>.  With this post-modern view of ontology, it's
+easiest to just let go of the reins of truth and let
+everyone design their own ontologies.
+</p>
+</div>
+
+<p> It would be convenient if we could trust dictionaries
+as the arbiter of word senses.  Unfortunately, language presents
+harder problems than that.
+Words are fluid, living
+things that change meanings through metaphor, extension, adaptation,
+and just plain randomness.  Attempting to carve the meaning
+of a word into a set of discrete categories with well-defined
+boundaries is doomed to fail for a number of reasons.
+</p>
+
+<ul>
+
+<li>
+Words do not have well-defined boundaries between their
+senses.  Dictionary definitions attempt to distinguish
+a discrete set of meanings with examples and definitions,
+which are themselves vague.  Luckily, humans deal with
+vagueness in their language quite well, so this is not
+so much a problem with humans using dictionaries.
+</li>
+
+<li>
+A related problem with dictionaries is that they don't agree.
+A quick glance at more than one
+dictionary (follow the link for &quot;<a
+href="http://dictionary.reference.com/search?q=run">run</a>&quot;, for
+example) will show that disagreement is not only possible, it's the
+norm.  There is often overlap of meanings with subtle distinctions
+at the boundaries, which in practice, are actually vague.
+</li>
+
+<li>
+Another problem with dictionaries is that they are incomplete.
+Today's newspaper or e-mail is likely to contain
+words or word senses that are not present in today's dictionary.
+</li>
+
+</ul>
+
+<p> In practice, dictionaries can be useful.  They might be good
+enough for practical purposes even if there are
+tail-of-the-distribution or boundary cases they don't adequately
+capture.  </p>
+
+
+<h3>Supervised vs. Unsupervised WSD</h3>
+
+<p>We will assume for the rest of this tutorial that the words we care
+about will have finitely many disjoint senses.  If we have training
+data, word sense disambiguation reduces to a classification problem.
+Additional training data may be supplied in the form of
+dictionary definitions, ontologies such as <a href="http://www.nlm.nih.gov/mesh/">Medical Subject Headings (MeSH)</a>,
+or lexical resources like
+<a href="http://wordnet.princeton.edu/">WordNet</a>.
+</p>
+
+<p>If there is no training data, word sense disambiguation is a
+clustering problem.  Hierarchical clusterings may make sense; the
+dictionaries sited above break meanings of the word &quot;run&quot;
+down into senses and sub-senses.  </p>
+
+<p>
+For this demo, we will be doing supervised word sense disambiguation.
+That is, we will have training data consisting of examples of words
+in context and their meanings.  We will compare several LingPipe
+classifiers on this task.
+</p>
+
+<h2>Senseval &amp; SemEval</h2>
+
+<div class="sidebar">
+<h2>Name Salad</h2>
+<p>
+The first three word sense disambiguation bakeoffs were
+called <a href="http://www.itri.brighton.ac.uk/events/senseval/ARCHIVE/index.html">Senseval 1</a>,
+<a href="http://www.sle.sharp.co.uk/senseval2">Senseval 2</a>,
+and <a href="http://www.senseval.org/senseval3">Senseval 3</a>. 
+The most recent bakeoff is titled
+<a href="http://nlp.cs.swarthmore.edu/semeval/">SemEval-2007</a>,
+but is linked from the Senseval home page as
+&quot;Senseval 4 / SemEval 1&quot;, and is subtitled on its
+own home page as the
+&quot;4th International Workshop on Semantic Evaluations&quot;.
+</p>
+</div>
+
+
+<p>
+Many teams have competed in a series of word sense disambiguation
+bakeoffs sponsored by
+the <a
+href="http://www.aclweb.org/">Association for Computational
+Linguistic</a>'s lexical special interest group <a
+href="http://www.siglex.org/">SIGLEX</a>.  
+</p>
+
+<h3>Senseval 3</h3>
+
+<p>
+<a href="http://www.senseval.org/senseval3">Senseval 3</a>
+took place in Barcelona in 2004.  It is the latest bakeoff
+to have posted freely available (public domain) data.  There is
+data for English, Italian, Basque, Catalan, Chinese,
+Italian, Romanian and Spanish, all in the same format.  The
+top-level data link is here:
+</p>
+<ul>
+<li><a href="http://www.senseval.org/senseval3/data.html">Senseval 3 Data</a></li>
+</ul>
+
+
+<h3>Senseval English Data</h3>
+
+<p>
+We'll begin with English data, which resides in the following two gzipped
+tarballs:
+</p>
+<ul>
+<li><a href="http://www.cs.unt.edu/~rada/senseval/senseval3/data/EnglishLS/EnglishLS.train.tar.gz">English Training Data</a></li>
+<li><a href="http://www.cs.unt.edu/~rada/senseval/senseval3/data/EnglishLS/EnglishLS.test.tar.gz">English Test Data</a></li>
+</ul>
+
+<p>
+Unpack both tarballs into a directory called
+<code>$senseval-en</code>.  A listing of directory
+<code>$senseval-en</code> should show the following
+9 files, which is all we'll need.
+</p>
+<pre class="code">
+EnglishLS.README                  EnglishLS.sensemap  EnglishLS.train
+EnglishLS.dictionary.mapping.xml  EnglishLS.test      EnglishLS.train.key
+EnglishLS.dictionary.xml          EnglishLS.test.key  EnglishLS.words
+</pre>
+
+<h3>Senseval Scoring</h3>
+
+<p> The Senseval 3 distribution also contains scoring software written
+in C.  We'll provide output in their official format, but use
+LingPipe's classification scorer for purposes of this demo.  </p>
+
+<h3>Results of the Evaluation</h3>
+<p>
+The entire task and a report on the 27 submitted systems and their
+coarse- and fine-grained scores is conveniently available in
+a single paper:
+</p>
+<ul>
+<li>
+Rada Mihalcea, Timothy Chklovsky, and Adam Kilgarriff. 2004. <a href="http://www.kilgarriff.co.uk/Publications/2004-MihalceaChklovskiKilg-SENSEVAL.pdf">The Senseval-3 English lexical sample task</a>.  In <i>Senseval-3 Workshop</i>.
+</li>
+</ul>
+
+<p>
+Given that a fairly straightforward regularized regression
+approach with feature selection won the bakeoff,
+we don't understand
+why the authors conclude that the evaluation &quot;shows once again
+that voting schemes that combine several learning algorithms
+outperform the accuracy of individual classifiers&quot;.
+</p>
+
+<h2>Training, Test and Answer Formats</h2>
+
+<div class="sidebar">
+<h2>There's an XML Standard for a Reason</h2>
+<p>
+I just don't understand why computer scientists
+can't follow simple standards like XML.  It drives me (Bob)
+crazy that every time I tackle one of these data sets,
+the first step is always correcting the ill-formed data.
+</p>
+</div>
+
+<p>
+The Senseval data looks superficially like XML, but is not, in fact,
+well-formed XML data.  
+</p>
+
+
+<p>
+Even more problematic is the fact that it's
+been tokenized by the task organizers with single whitespaces inserted
+between tokens. 
+</p>
+
+<h3>Dictionary</h3>
+
+<p>
+The first file we'll consider is the English &quot;dictionary&quot;:
+</p>
+<ul>
+<li><code>$senseval-en/EnglishLS.dictionary.xml</code></li>
+</ul>
+<p>
+This file contains definitions of lexical items and their senses.  There's
+no top-level element, just a sequence of
+<code>lexelt</code> elements.
+Here's the first entry for the verb <i>activate</i> (with line breaks
+inserted between attributes for readability; in the file, each
+<code>sense</code> element is on its own line):
+</p>
+
+<pre class="code">
+...
+&lt;lexelt item=&quot;activate.v&quot;&gt;
+&lt;sense id=&quot;38201&quot; source=&quot;ws&quot; 
+       synset=&quot;activate actuate energize start stimulate&quot; 
+       gloss=&quot;to initiate action in; make active.&quot;/&gt;
+&lt;sense id=&quot;38202&quot; source=&quot;ws&quot; 
+       synset=&quot;activate&quot; 
+       gloss=&quot;in chemistry, to make more reactive, as by heating.&quot;/&gt;
+&lt;sense id=&quot;38203&quot; source=&quot;ws&quot; 
+       synset=&quot;activate assign ready&quot; 
+       gloss=&quot;to assign (a military unit) to active status.&quot;/&gt;
+&lt;sense id=&quot;38204&quot; source=&quot;ws&quot; 
+       synset=&quot;activate&quot; 
+       gloss=&quot;in physics, to cause radioactive properties in (a substance).&quot;/&gt;
+&lt;sense id=&quot;38205&quot; source=&quot;ws&quot; 
+       synset=&quot;activate aerate oxygenate&quot; 
+       gloss=&quot;to cause decomposition in (sewage) by aerating.&quot;/&gt;
+&lt;/lexelt&gt;
+...
+</pre>
+
+<div class="sidebar">
+<h2>Please Don't Adulterate the Data</h2>
+<p>
+The second thing I (Bob) don't understand is why data gets adulterated.
+This is language data.  Whitespaces, capitalization, and other
+text features matter.  Do the distributors really think we can't
+tokenize?  Or that we all want to tokenize the same way?  Yet everyone
+from the LDC to CoNLL adulterates the raw data.
+</p>
+</div>
+
+
+<p>
+The dictionary defines the words and their senses.  For instance, the
+verb <code>activate</code> has five senses, numbered 38201 to 38205.
+</p>
+<p>
+The source of the word senses is indicated by the <code>source</code> attribute.
+the value for this entry, <code>ws</code>, indicates the senses are drawn
+drawn from <a href="http://www.wordsmyth.net">WordSmyth</a>,
+which has the following <a href="http://www.wordsmyth.net/live/home.php?script=search&amp;matchent=activate&amp;matchtype=exact">entry for &quot;activate&quot;</a>.
+</p>
+<p>
+Entries for English nouns have their source attribute set to
+<code>wn</code>, with word senses was drawn from <a
+href="http://wordnet.princeton.edu/">WordNet</a>.  Other sources were
+used for the other languages.
+</p>
+
+<p>
+The <code>synset</code> attribute provides a list of synonyms for
+the word, drawn from the source indicated.  
+</p>
+
+<p>The <code>gloss</code> attribute provides a dictionary style
+deifnition for the term.
+</p>
+
+<h3>Training Data</h3>
+<p>
+The training data is in the following file:
+</p>
+<ul>
+<li><code>$senseval-en/EnglishLS.train</code></li>
+</ul>
+<p>
+Like the dictionary,
+there is no top-level element wrapping everything, as required in XML.
+Instead, for each word for which there is training data is enlosed in
+<code>lexelt</code> pseudo-tags.  Here's the first example,
+with line-breaks in
+place of some single spaces in the <code>context</code> element for
+readability:
+</p>
+<pre class="code">
+&lt;lexelt item=&quot;activate.v&quot;&gt;
+
+&lt;instance id=&quot;activate.v.bnc.00024693&quot; docsrc=&quot;BNC&quot;&gt;
+&lt;answer instance=&quot;<b>activate.v</b>.bnc.<b>00024693</b>&quot; senseid=&quot;<b>38201</b>&quot;/&gt;
+&lt;context&gt;
+Do you know what it is , and where I can get one ?  We suspect you had
+seen the Terrex Autospade , which is made by Wolf Tools .  It is quite
+a hefty spade , with bicycle - type handlebars and a sprung lever at
+the rear , which you step on to <b>&lt;head&gt;activate&lt;/head&gt;</b> it
+. Used correctly , you should n't have to bend your back during
+general digging , although it wo n't lift out the soil and put in a
+barrow if you need to move it !  If gardening tends to give you
+backache , remember to take plenty of rest periods during the day ,
+and never try to lift more than you can easily cope with .
+&lt;/context&gt;
+&lt;/instance&gt;
+
+...
+
+&lt;/lexelt&gt;
+</pre>
+<p>
+Note the tokenization in strings like <code>wo&nbsp;n't</code> and
+<code>the&nbsp;day&nbsp;,&nbsp;</code>.
+In the header, we have highlighted in bold the name of the word, in
+this case <b style="font-size:75%"><code>activate.v</code></b>, the identifier for the
+instance, <b style="font-size:75%"><code>00024693</code></b>, and the sense identifier for
+the intended sense of the word, <b style="font-size:75%"><code>38201</code></b>.  In the
+text sample, within the <code>context</code> element, the mention of
+the word in question is wrapped with a <code>head</code> element,
+namley <b style="font-size:75%"><code>&lt;head&gt;activate&lt;/head&gt;</code></b>.
+</p>
+
+<h3>Test Data</h3>
+<p>
+The test data is just like the training data, only without the
+element <code>answer</code> providing the sense identification.
+</p>
+<pre class="code">
+&lt;instance id=&quot;eat.v.bnc.00064338&quot; docsrc=&quot;BNC&quot;&gt;
+&lt;context&gt;
+My 10&amp;frac12 ; - month - old Bearded Collie is obsessed with wood .
+At home he has chewed the door frame and part of the back door , as
+well as the kitchen cupboards , although these were done when he was a
+lot younger .  However , he is still obsessed with wood and
+&lt;head&gt;eating&lt;/head&gt; it in the park . He picks up sticks and sits down
+to eat them .  I try to get them off him but am not always successful .
+&lt;/context&gt;
+&lt;/instance&gt;
+</pre>
+<p>
+Note, in particular, that the word to disambiguate is wrapped in a <code>head</code> element.  Furthermore, note that the word here
+is the present participle form of &quot;eat&quot;, namely
+&quot;eating&quot;.  This test case provides an example of the other
+issue with the not-quite-XML, namely that there are unescaped
+ampersands.  This looks like the data was derived from something that
+was in SGML newswire format with the <code>frac12</code> entity, which
+would have looked like <code>&amp;frac12;</code> in the original.  In
+the course of tokenizing the input, the Senseval data organizers
+separated out the semicolon.  There are dozens of such entity escapes
+remaining in the corpus.
+</p>
+
+<h3>Answer Key Format</h3>
+<p>
+The answer key is a simple line-oriented format, with each line
+containing a lexical element (e.g. <code>activate.v</code>), an
+instance identifier (e.g. <code>activate.v.bnc.00008457</code>), and a
+list of one or more sense identifiers
+(e.g. <code>38201&nbsp;38203</code>):
+</p>
+<pre class="code">
+activate.v activate.v.bnc.00008457 38201
+activate.v activate.v.bnc.00061340 38201
+activate.v activate.v.bnc.00066993 38201 U
+activate.v activate.v.bnc.00067831 38201
+activate.v activate.v.bnc.00134704 38201 38203
+activate.v activate.v.bnc.00146646 38201
+...
+disc.n disc.n.bnc.00184283 disc%1:06:00:: disc%1:25:00::
+disc.n disc.n.bnc.00184284 disc%1:06:00:: disc%1:25:00::
+disc.n disc.n.bnc.00213452 disc%1:06:03::
+....
+</pre>
+<p>
+Note that the format of sense identifiers is different for nouns and
+verbs.  When there is more than one sense identifier on a line, it is
+treated as if either answer is equally acceptable.  We're guessing
+that the <code>U</code> appearing in the third line above is for
+&quot;unknown&quot;.  It is not mentioned in the <a
+href="http://www.cse.unt.edu/~rada/senseval/senseval3/scoring/documentation.txt">scoring
+documentation</a>.
+</p>
+
+<h3>System Answer Format</h3>
+<p>
+For the official evaluation, there is a description of the <a
+href="http://www.cse.unt.edu/~rada/senseval/senseval3/scoring/answer-format.txt">official
+format for answers</a>.  System output for each sample must be
+provided on a single line, as in:
+</p>
+
+<pre class="code">
+brother.n 00001 501566
+brother.n 00002 501566     999997     !!
+brother.n 00006 501566/0.5 501573/0.4 503751/0.1
+brother.n 00015 503751/94  999999/87             !! comment . . .
+</pre>
+<p>
+The elements of the example correspond to the bold elements of
+the sample above:  <code>brother.n</code> is the lexical element,
+<code>00001</code> is an instance ID, and <code>501566</code>,
+<code>99997</code>, and <code>501573</code> are all instances of
+sense tags.
+</p>
+<p>
+What's interesting about this format is that systems may provide
+weighted answers.  The second line indicates that the system reduced
+the choices to one of two sense tags, <code>501566</code> or
+<code>999997</code>, whereas in the third line, three tags are given
+with real-valued weights.  The fourth line illustrates that the
+weights need not be scaled.  If there are no weights, a uniform
+distribution is assumed in which each answer is assumed to be equally
+likely.  In all cases, the weights are scaled to probabilities (so
+that they sum to 1.0).
+</p>
+
+<h3>Scoring</h3>
+<p>
+Although the <a
+href="http://www.cse.unt.edu/~rada/senseval/senseval3/scoring/documentation.txt">Senseval
+scoring document</a> is very confusing, Dan Melamed and Phil Resnik's
+<a
+href="http://www.cse.unt.edu/~rada/senseval/senseval3/scoring/scorescheme.txt">scoring
+proposal</a> is very clear.  The score for a given test case is simply
+the sum of weights provided by the system response for each sense that
+is among the valid answers.
+</p>
+<p>
+There is an interesting discussion of scoring, including Senseval,
+in the following paper:
+</p>
+<ul>
+<li>Dan Klein and Chris Manning. 2002.
+<a href="http://www.cs.berkeley.edu/~klein/papers/klein_and_manning-conditional_models-EMNLP_2002.pdf">Conditional structure versus conditional estimation in NLP models</a>.  In <i>EMNLP 2002</i>.
+</li>
+</ul>
+<p>
+Klein and Manning contrast Senseval's sum of scores approach to the
+more usual product of scores approach.  We'll present both evaluations
+here.
+</p>
+
+
+<h2>Demo Walkthrough</h2>
+
+<p>
+For the purposes of this demo, we approach word sense disambiguation
+as a simple text classification problem.  We will use the full text
+in the context around the training examples to train a text classifier.
+We will then simply run that classifier on the new examples.  Almost
+all of the work in the code is in I/O; there are only a handful of
+lines that actually involve classification.
+</p>
+
+<h3>The Source Code</h3>
+
+<p>
+The tutorial assumes you are running inside the lingpipe distribution at
+<code>$lingpipe/lingpipe/demos/tutorial/wordSense/</code>.
+The code is in a single file, which contains multiple class definitions:
+</p>
+
+<ul>
+<li><a href="src/Senseval3.java"><code>src/Senseval3.java</code></a></li>
+</ul>
+
+<p>
+The build file we use for running the tutorial is:
+</p>
+<ul>
+<li><a href="build.xml"><code>build.xml</code></a></li>
+  </ul>
+
+<p>
+Everything's run statically in the code from the <code>main()</code> method.
+</p>
+
+<h3>Running the Demo</h3>
+<p>
+The Ant target <code>run</code> will perform a complete Senseval 3 run.
+It's necessary to provide a pointer to <code>$senseval-en</code>, which
+is the location of the unpacked Senseval 3 data.  In our case, we put
+it in <code>e:\data\senseval3\unpacked\english</code>, so we use the
+following code to run, with an explicit property specification
+<code>-Dsenseval.dir=...</code>:
+</p>
+
+<pre class="code">
+cd $demo-dir
+ant -Dsenseval.dir=e:\data\senseval3\unpacked\english run
+</pre>
+
+<p>Running it out of the box produces the following
+(ellided) output:
+</p>
+
+<pre class="code">
+Building jar: C:\carp\mycvs\lingpipe\demos\tutorial\wordSense\wordSense.jar
+
+Dictionary File=E:\data\senseval3\unpacked\english\EnglishLS.dictionary.xml
+Training File=E:\data\senseval3\unpacked\english\EnglishLS.train
+Testing File=E:\data\senseval3\unpacked\english\EnglishLS.test
+Answer Key File=E:\data\senseval3\unpacked\english\EnglishLS.test.key
+System Response File=C:\carp\mycvs\lingpipe\demos\tutorial\wordSense\systemAnswer.txt
+
+Reading Dictionary.
+     #entries=57
+
+Reading Training Data.
+     #training words=57
+
+Reading Test Data.
+     #test cases=3944
+
+Training Model.
+    training different.a [5 senses]
+    training rule.v [3 senses]
+    ...
+    training expect.v [3 senses]
+    finished training.
+
+Running Model over Test Data.
+     finished test data.
+
+FINISHED.
+</pre>
+
+<p>
+The result is a file <code>systemAnswer.txt</code> that looks as follows
+(with most of the content elided):
+</p>
+
+<pre class="code">
+activate.v activate.v.bnc.00008457 38201/1000
+activate.v activate.v.bnc.00061340 38201/1000
+activate.v activate.v.bnc.00061975 38201/1000
+...
+appear.v appear.v.bnc.00041843 190902/635 190901/365
+...
+write.v write.v.bnc.00007127 4753408/1000
+write.v write.v.bnc.00007179 4753408/1000
+write.v write.v.bnc.00007381 4753407/1000
+</pre>
+
+<p>
+We have illustrated one example (<code>00041843</code>) for which
+we provide multiple answers.  Not all classifiers are set up to
+do this, as we discuss shortly.
+</p>
+
+<h3>Evaluating the Results</h3>
+
+<h4>Retrieving the Evaluation Code</h4>
+
+<p>
+Rather than writing our own evaluation code, we use the C code
+supplied by the organizers.  The code's a single C source file which is
+easy to compile.  Here's a link for the tarball download:
+</p>
+
+<ul>
+<li>Download <a href="http://www.cse.unt.edu/~rada/senseval/senseval3/scoring/scoring.tar.gz">Senseval 3 Scoring Code</a></li>
+</ul>
+
+<p>After downloading, just unpack the gzipped tarball into
+a convenient location, which we'll call <code>$senseval-score-dir</code>.
+</p>
+
+<h4>Compiling the Evaluation Code</h4>
+
+<div class="sidebar">
+<h2>Sometimes you need C</h2>
+<p>
+We like <a href="http://gcc.gnu.org/">gcc</a> for compiling C code.
+</p>
+<p>
+If you're
+running Linux or other Unixes, you will likely already have
+gcc on your path.
+</p>
+<p>
+If you're running Windows, I'd suggest
+downloading <a href="http://www.cygwin.com/">Cygwin</a>,
+the Windows unix emulation.  With Cygwin, you'll need
+to download GCC from the <code>devel</code> section of their
+package selection interface.
+</p>
+</div>
+
+<p>Luckily, it's just a single C file, so it's easy to compile:
+</p>
+
+<pre class="code">
+&gt; cd $senseval-score-dir
+&gt; gcc -o scorer2 scorer2.c
+</pre>
+
+<p>
+There is no standard output from the compile, but it
+produces an executable for Windows,
+<code>scorer2.exe</code>, or <code>scorer2</code> for Linux/Unix, that sits in the same directory as
+the source <code>scorer2.c</code>.
+</p>
+
+
+<h4>Running the Evaluator</h4>
+
+<p>
+Running the evaluator is straightforward.  To get so-called &quot;fine-grained&quot;
+scores, all you need is:
+</p>
+
+<pre class="code">
+&gt; $senseval-score-dir/scorer2.exe systemAnswer.txt $senseval-en/EnglishLS.test.key
+</pre>
+
+<p>
+Or, on a linux/Unix machine:
+</p>
+
+<pre class="code">
+&gt; senseval-score-dir/scorer2 systemAnswer.txt senseval-en/EnglishLS.test.key
+</pre>
+
+
+<p>The fine-grained scores treat every sense as distinct.
+Here's what it looks like on my machine:</p>
+
+<pre class="code">
+&gt; e:\data\senseval3\unpacked\scoring\scorer2.exe systemAnswer.txt e:\data\senseval3\unpacked\english\EnglishLS.test.key
+
+Fine-grained score for "systemAnswer.txt" using key "e:\data\senseval3\unpacked\english\EnglishLS.test.key":
+ precision: 0.660 (2601.46 correct of 3944.00 attempted)
+ recall: 0.660 (2601.46 correct of 3944.00 in total)
+ attempted: 100.00 % (3944.00 attempted of 3944.00 in total)
+</pre>
+
+<p>
+Note that if you ran the default classifier, this is the result
+for a character language model-based classifier with default parameters
+(n-gram length 5, 2<sup>16</sup> characters, 5.0 interpoloation parameter).
+This is our recommended out-of-the-box configuration for classification.
+</p>
+
+<p>It is also possible to derive coarse-grained scores in which
+senses are conflated into a smaller set of senses.  For this,
+the conflation file is needed as input, as well as a command-line
+parameter:</p>
+
+<pre class="code">
+&gt; $senseval-score-dir/scorer2.exe systemAnswer.txt $senseval-en/EnglishLS.test.key $senseval-en/EnglishLS.sensemap -g coarse
+</pre>
+
+<p>In our case, here's what it looks like:</p>
+
+<pre class="code">
+&gt; e:\data\senseval3\unpacked\scoring\scorer2.exe systemAnswer.txt e:\data\senseval3\unpacked\english\EnglishLS.test.key e:\data\senseval3\unpacked\english\EnglishLS.sensemap -g coarse
+
+Coarse-grained score for "systemAnswer.txt" using key "e:\data\senseval3\unpacked\english\EnglishLS.test.key":
+ precision: 0.708 (2792.18 correct of 3944.00 attempted)
+ recall: 0.708 (2792.18 correct of 3944.00 in total)
+ attempted: 100.00 % (3944.00 attempted of 3944.00 in total)
+</pre>
+
+<p>Our coarse-grained score puts us further down the pack of scores.
+In fact, looking at the results table, the coarse-grained ordering
+is rather different from the fine-grained one.</p>
+
+
+<h4>How'd we Do?</h4>
+
+<p>
+An F-measure score of 0.660 would've put us dead in the middle of the pack
+for the actual evaluation.  Looking at the 
+<a href="http://www.kilgarriff.co.uk/Publications/2004-MihalceaChklovskiKilg-SENSEVAL.pdf">The Senseval-3 English lexical sample task</a>, which includes the results (pages 4 and 5), the best
+fine-grained score was 0.729.  There would've been 21 submissions
+ahead of ours, one that tied with ours, and 24 teams behind ours.
+With roughly 2500 test cases and a 0.7 performance, the standard
+deviation approximated by a binomial is:
+</p>
+
+<pre class="code">
+sqrt(0.7 * (1 - 0.7) / 2500) = 0.0091
+</pre>
+
+<p>That's a 95% confidence interval of roughly 0.018.  Not considering
+the multi-way test aspects, roughly the top 13 systems or so are
+not &quot;significantly&quot; pairwise distinguishable at 95% confidence.  
+Unfortunately, the best systems are significantly better than our
+off-the-shelf classifiers.
+</p>
+
+<h4>How Hard is WSD?</h4>
+
+<p>
+The most-frequent
+sense baseline here is quite high, at 55.2%.  System scores
+in the 60-70% range are not doing much better than chance.
+We'd actually need a better evaluation setup in order to
+generate the &kappa; statistic, but it'd certainly be in
+the not-so-relevant category.</p>
+
+<p>Inter-annotator agreement on the tagging task is only
+67%, which is about how well our default system performed (66%).  It's
+not clear how the data was adjudicated to create the final
+training data given the low inter-annotator agreement
+(Mihalcea et al., section 2.4).  Their computation of kappa
+is non-standard in that they set the expectation to be a uniform
+distribution rather than the data distribution.
+(See <a href="http://acl.ldc.upenn.edu/J/J96/J96-2004.pdf">Carletta's
+<i>CL</i> squib</a> or <a href="http://citeseer.ist.psu.edu/735876.html">Passonneau's
+LREC paper on kappa variants</a>).
+</p>
+
+
+
+
+<h3>Command-line Parameters</h3>
+
+<p>
+There are five command-line arguments, each with its own property in
+the ant build file <a href="build.xml"><code>build.xml</code></a>.  We
+summarize these in the following table:
+</p>
+
+
+<table>
+<tr><th colspan="4" class="title">Command-line Arguments</th></tr>
+<tr><th>Arg</th><th>Property</th><th>Default Value</th><th>Description</th></tr>
+<tr><td>0</td>
+    <td><code>senseval.dir</code></td>
+    <td><code>${data.dir}/senseval3/unpacked/english</code></td>
+    <td>Directory containing all the data (<code>$senseval-en</code>)</td></tr>
+<tr><td>1</td>
+    <td><code>train.dictionary.file</code></td>
+    <td><code>${senseval.dir}/EnglishLS.train</code></td>
+    <td>Dictionary of word senses, synonyms and definitions.</td></tr>
+<tr><td>2</td>
+    <td><code>train.file</code></td>
+    <td><code>${senseval.dir}/EnglishLS.dictionary.xml</code></td>
+    <td>Training texts with words in context.</td></tr>
+<tr><td>3</td>
+    <td><code>test.file</code></td>
+    <td><code>${senseval.dir}/EnglishLS.test</code></td>
+    <td>File of test cases with words in context.</td></tr>
+<tr><td>3</td>
+    <td><code>answer.file</code></td>
+    <td><code>systemAnswer.txt</code></td>
+    <td>Output file produced by system run.</td></tr>
+<tr><td>5</td>
+    <td><code>classifier.id</code></td>
+    <td><code>0</code></td>
+    <td>Number indicating which classifier to use.</td></tr>
+</table>
+
+<h2>Code Walkthrough</h2>
+
+<p>The code for the entire Senseval entry is in one file,
+<a href="src/Senseval3.java"><code>src/Senseval3.java</code></a>.
+We have done our best to separate the data parsing component
+of the exercise from the actual classification of senses.
+</p>
+
+<h3>Main Method</h3>
+
+<p>Everything runs from a single <code>main()</code> method.
+</p>
+
+<pre class="code">
+public static void main(String[] args) 
+    throws ClassNotFoundException, IOException {
+
+    File dictFile = new File(args[0]);
+    File trainFile = new File(args[1]);
+    File testFile = new File(args[2]);
+    File responseFile = new File(args[3]);
+    sClassifierNumber = Integer.parseInt(args[4]);
+
+    SenseEvalDict dict = new SenseEvalDict(dictFile);
+    TrainingData trainingData = new TrainingData(trainFile);
+    TestData testData = new TestData(testFile);
+
+    SenseEvalModel model = new SenseEvalModel(dict,trainingData);
+
+    respond(model,testData,responseFile);
+}
+</pre>
+
+<p>
+The first few lines merely read in command-line parameters.
+The next lines read in all of the data for the evaluation.
+First, the dictionary is read from the dictionary file,
+then the training data is read from the training file.  Finally,
+the test data is read from the test file.  The formats of
+these files were discussed in the previous sections.
+</p>
+
+<h3>Senseval Data Structures</h3>
+
+<p>
+Rather than get into the ugly details of parsing these
+data formats, we instead present the static classes
+that are constructed from the data.  These are designed
+to be easy to use as the basis of further exploration
+into word-sense disambiguation without mixing up the
+data format details and the classifier and training
+details.
+</p>
+
+<h4>Dictionary Format</h4>
+
+<p>
+The dictionary is simply mapping from strings consisting of
+words plus categories (e.g. <code>activate.v</code>) to
+an array of senses.
+</p>
+
+<pre class="code">
+static class SenseEvalDict extends HashMap&lt;String,Sense[]&gt;
+</pre>
+
+<p>The sense class contains all of the information in
+the Senseval dictionary:
+</p>
+
+<pre class="code">
+static class Sense {
+    String mId;
+    String mSource;
+    String mSynset;
+    String mGloss;
+    ...
+</pre>   
+
+<h4>Training Data Format</h4>
+
+<p>
+Like the dictionary, the text training data is represented as a map
+from words plus categories (e.g. <code>activate.v</code>)
+to the training data for that word.  
+word
+</p>
+
+<pre class="code">
+    static class TrainingData extends HashMap&lt;String,Map&lt;String,List&lt;String&gt;&gt;&gt;
+</pre>
+
+<p>
+The training data for a word plus category is of type
+<code>Map&lt;String,List&lt;String&gt;&gt;</code>.  This mapping
+is from a sense ID (e.g. <code>38202</code> or <code>argument%1:10:02::</code>,
+the format varies by source) to the list of textual contexts for
+that sense.
+</p>
+
+<h4>Test Data Format</h4>
+
+<p>The test data class consists of three parallel lists:
+</p>
+
+<pre class="code">
+static class TestData {
+    List&lt;String&gt; mWordsPlusCats = new ArrayList&lt;String&gt;();
+    List&lt;String&gt; mInstanceIds = new ArrayList&lt;String&gt;();
+    List&lt;String&gt; mTextsToClassify = new ArrayList&lt;String&gt;();
+</pre>
+
+<p>
+Each list has a length that is equal to the number of test
+cases.  The first list contains the words plus categories
+of the test cases, the second contains the instance ID
+for the test case (e.g. <code>difference.n.bnc.00002450</code>),
+and the third the actual textual contexts containing the
+instance of the word to be classified.</p>
+
+<h3>Training</h3>
+
+<p>
+We use the dictionary and training data to build a complete
+Senseval model using the model's constructor:
+</p>
+
+<pre class="code">
+    static class SenseEvalModel extends HashMap&lt;String,Classifier&gt; {
+
+        SenseEvalModel(SenseEvalDict dict, TrainingData trainingData)
+            throws ClassNotFoundException, IOException  {
+
+            for (String wordPlusCat : trainingData.keySet()) {
+                Map&lt;String,List&lt;String&gt; senseToTextList = trainingData.get(wordPlusCat);
+                String[] senseIds = senseToTextList.keySet().&lt;String&gt;toArray(new String[0]);
+
+                ObjectHandler&lt;Classified&lt;CharSequence&gt;&gt; trainer
+                    = createClassifierTrainer(senseIds);
+
+                for (String senseId : senseToTextList.keySet()) {
+                    Classification classificationForSenseId = new Classification(senseId);
+                    List&lt;String&gt; trainingTextList = senseToTextList.get(senseId);
+                    for (String trainingText : trainingTextList) {
+                        Classified&lt;CharSequence&gt; classified
+                            = new Classified&lt;CharSequence&gt;(trainingText,classificationForSenseId);
+                        trainer.handle(classified);
+                    }
+                }
+
+                BaseClassifier&lt;CharSequence&gt; classifier
+                    = (BaseClassifier&lt;CharSequence&gt;)
+                    AbstractExternalizable.compile((Compilable)trainer);
+                put(wordPlusCat,classifier);
+            }
+        }
+
+    }
+</pre>
+
+<div class="sidebar">
+<h2>Unfortunate Cast Requirement</h2>
+<p>
+There is no generic interface in LingPipe for compilable
+classifier estimators.  What we need is something that
+can handle data through the <code>ClassificationHandler</code>
+interface and compile to something that is itself a
+classifier.  As is, the cast of the compiled object to
+<code>BaseClassifier</code> in the penultimate statement of
+the model code may throw a runtime exception if the
+classification handler does not compile to a classifier.
+</p>
+<p>
+The problem here is the round trip through
+serialization undertaken during compilation.
+Although it is tempting to refine the 
+<code>Compilable</code>
+interface with a generic type argument, which would be the
+type of the compiled object upon re-reading, there
+would still need to be a cast of the result from
+the <code>ObjectInput</code>.  
+</p>
+</div>
+
+
+<p>
+Although this code looks dense, most of it's simply negotiating
+the data structures previously introduced.  The outer loop walks
+over all of the words plus categories in the training data.
+Then, it extracts their sense to text list and the array of sense ids
+for it.  these sense ids are used as the categories in
+constructing a trainable classifier.  We have assigned it to the type
+of classification handler whose classified elements are character
+sequences (<code>CharSequence</code>) and the classification is a simple 
+first-best classification result (<code>Classification</code>).
+This just means it can take classified character sequences as training
+data.  We come back to how the classifiers are constructed in the next
+section.
+</p>
+
+<p>
+Next, for each sense for the word, we take a classification corresponding
+to that sense and use it to train the classifier trainer with each
+trianing text.  
+</p>
+
+<p>
+Finally, the classifier is compiled and added to the mapping
+(using the superclass's <code>put()</code> method).  
+</p>
+
+<h3>Constructing the Classifier</h3>
+
+<p>The actual classifier construction is broken off into
+a separate method, because it allows so many options.  It's
+basically a large integer switch statement, the bodies of
+the cases of which construct and return classifiers.  
+</p>
+
+<h4>Character LM Classifiers</h4>
+
+<p>The first cases are for character language-model based classifiers.
+As the texts are long and the begins/ends not special, we have used
+standard process LM classifiers rather than boundary models.</p>
+
+
+<pre class="code">
+static ObjectHandler&lt;Classified&lt;CharSequence&gt;&gt; createClassifierTrainer(String[] senseIds) {
+
+    switch (sClassifierNumber) {
+
+    case 0:  // DEFAULT CHARACTER LM CLASSIFIER
+
+        return DynamicLMClassifier.createNGramProcess(senseIds,5);
+    ...
+
+</pre>
+
+<p>The first case is our default recommended classification model for
+English, a 5-gram character language model classifier with default
+parameters.</p>
+
+<p>The second case is a configurable version of the process n-gram
+language model classifiers:
+</p>
+
+<pre class="code">
+case 1:  // CONFIGURABLE CHARACTER LM CLASSIFIER
+
+    LanguageModel.Dynamic[] lms5 = new LanguageModel.Dynamic[senseIds.length];
+    for (int i = 0; i &lt; lms5.length; ++i)
+        lms5[i] = new NGramProcessLM(6,     // n-gram
+                                     128,   // num chars
+                                     1.0);  // interpolation ratio
+    return new DynamicLMClassifier&lt;LanguageModel.Dynamic&gt;(senseIds,lms5);
+}
+</pre>
+
+<p>
+This allows the n-gram process language models to be configured for
+n-gram (6 here), number of characters (set to 128 for ASCII input), and
+the interpolation ratio (set to 1.0, which is less smoothingd).</p>
+
+
+
+<h4>Token LM and Naive Bayes Classifiers</h4>
+
+<p>If the features are just token counts, naive Bayes classification
+is just a token unigram model.  We have a special class for this case
+with its own constructor:
+</p>
+
+<pre class="code">
+case 2:  // DEFAULT NAIVE BAYES CLASSIFIER
+
+    return new NaiveBayesClassifier(senseIds,SPACE_TOKENIZER_FACTORY);
+</pre>
+
+<p>In order to construct a token-based classifier, we need a tokenizer.
+Here we've used one we'll explain in the next section that simply
+breaks on spaces.  This is fine for this context as the organizers
+already decided on token boundaries for us and inserted spaces
+between them.</p>
+<p>
+Further note that LingPipe's naive Bayes classifier is configured to using
+boundary character n-gram smoothing for the tokens.</p>
+
+<p>The default token unigram and bigram are too agressive at unseen
+words.  Ideally, they should be trained with some kind of explicit
+add-one (Laplace prior) smoothing.  Here's the default version:
+</p>
+
+
+<pre class="code">
+case 3: // DEFAULT TOKEN UNIGRAM LM CLASSIFIER
+
+    return DynamicLMClassifier.createTokenized(senseIds,
+                                               SPACE_TOKENIZER_FACTORY,
+                                               1);
+
+case 4: // DEFAULT TOKEN BIGRAM LM CLASSIFIER
+
+    return DynamicLMClassifier.createTokenized(senseIds,
+                                               SPACE_TOKENIZER_FACTORY,
+                                               2);
+</pre>
+
+<p>The final tokenized language model classifier is fully configurable.
+We set it up to use the default smoothing character language models,
+the bounded n-gram character language models with default params for
+n-gram length (5), the appropriate number of characters for ASCII
+(128), and the default smoothing (5.0, the length of the n-gram),
+and the default boundary character, the non-code-point character
+<code>'\uFFFF'</code>.
+</p>
+
+<pre class="code">
+case 5:  // CONFIGURABLE TOKENIZED LM CLASSIFIER W. CHARACTER BOUNDARY LM SMOOTHING
+
+    LanguageModel.Dynamic[] lms2 = new LanguageModel.Dynamic[senseIds.length];
+    for (int i = 0; i &lt; lms2.length; ++i)
+        lms2[i] = new TokenizedLM(SPACE_TOKENIZER_FACTORY,
+                                  2, // n-gram length
+                                  new NGramBoundaryLM(5,128,5.0,'\uFFFF'),
+                                  new NGramBoundaryLM(5,128,5.0,'\uFFFF'),
+                                  1.0); // interpolation param
+    return new DynamicLMClassifier&lt;LanguageModel.Dynamic&gt;(senseIds,lms2);
+</pre>
+
+<p>Note that a tokenizer factory is required.  We have included
+a special tokenizer factory with this class, which breaks on spaces.
+We return to tokenization in the next section.</p>
+
+<h4>TF/IDF Classifier</h4>
+<p>
+The term frequency (TF) and inverse document frequency (IDF) 
+classifier requires a tokenizer factory in its construction.
+</p>
+
+<pre class="code">
+case 6:  // TF-IDF CLASSIFIER
+
+    FeatureExtractor&lt;CharSequence&gt; featureExtractor5
+        = new TokenFeatureExtractor(NORM_TOKENIZER_FACTORY);
+    return new TfIdfClassifierTrainer&lt;CharSequence&gt;(featureExtractor5);
+</pre>
+
+<p>Note that this class is using the normalized tokenizer factory.  This
+factory lower cases, stems and stoplists entries, as we describe in the
+next section.</p>
+
+<h4>Nearest Neighbors Classifier</h4>
+
+<p>Finally, we consider the K nearest neighbors (KNN) classifier.
+This requires several parameters.  First, we require a feature
+extractor to convert input character sequences into tokens.
+We use a normalizing tokenizer factory here, which we describe
+more fully in the next section.  The other explicit parameter is
+the number K of neighbors, here set to 20.  For a KNN classifier,
+the 20 closest neighbors to an input are consulted and their
+results averaged.
+</p>
+        
+<pre class="code">
+case 7:  // K-NEAREST NEIGHBORS DEFAULT CLASSIFIER
+    FeatureExtractor&lt;CharSequence&gt; featureExtractor6
+        = new TokenFeatureExtractor(NORM_TOKENIZER_FACTORY);
+    return new KnnClassifier&lt;CharSequence&gt;(featureExtractor6, 
+                                           20);  // num neighbors to average
+</pre>
+
+
+<p>KNN classification will have trouble with this data set because
+for some senses, the number of training instances is so small that
+it can never dominate with 20 neighbors.  The problem with reducing
+the number of neighbors is that it greatly increases the
+variance of the classifier.</p>
+
+<p>In general, KNN classifiers require a specified distance metric
+to find the nearest neighbors.  The default is Euclidean distance,
+as used in th e previous classifier.  We may also consider other
+distances, such as the cosine distance, which is popular for
+bag-of-words processing for natural language classification:
+</p>
+
+<pre class="code">
+case 8:  // K-NEAREST NEIGHBORS DEFAULT CLASSIFIER (COSINE DISTANCE)
+    FeatureExtractor&lt;CharSequence&gt; featureExtractor6
+        = new TokenFeatureExtractor(NORM_TOKENIZER_FACTORY);
+    return new KnnClassifier&lt;CharSequence&gt;(featureExtractor6, 
+                                           new CosineDistance(),
+                                           20);  // num neighbors to average
+</pre>
+
+<h3>Tokenizers</h3>
+
+<p>For the token-sensitive models, we investigate two tokenizers, each
+with its own factory.</p>
+
+<h4>Space-based Tokenization</h4>
+
+<p>We can tokenize on spaces using a simple regular-expression-based
+tokenizer factory, which is completely thread safe and serializable.</p>
+
+<pre class="code">
+static final TokenizerFactory SPACE_TOKENIZER_FACTORY
+    = new RegExTokenizerFactory(&quot;\\S+&quot;);
+</pre>
+
+<p>Tokens are defined as maximally long sequences of non-whitespace
+characters (<code>\S+</code>, with appropriately escaped backslash).
+</p>
+<p>
+Also note that we have made the tokenizer factory serializable
+so that it may be compiled along with the models.  
+</p>
+
+
+<h4>Normalizing Tokenization</h4>
+
+<p>
+Normalizing tokenization applies several filter tokenizers to the
+result of space tokenization:
+</p>
+
+<pre class="code">
+static final TokenizerFactory NORM_TOKENIZER_FACTORY
+    = normTokenizerFactory();
+
+static TokenizerFactory normTokenizerFactory() {
+    TokenizerFactory factory = SPACE_TOKENIZER_FACTORY;
+    factory = new LowerCaseTokenizerFactory(factory);
+    // factory = EnglishStopTokenizerFactory(factory);
+    // factory = PorterStemmerTokenizerFactory(factory);
+    return factory;
+}
+</pre>
+
+<p>This takes the result of the space-based tokenizer, lower cases
+all the tokens, removes English stop words, then applies the Porter
+stemmer to the output.  We've commented out the stoplisting and
+the stemming, but these can be added back in to see the difference.</p>
+
+<h4>Character N-gram Tokenization</h4>
+
+<p>LingPipe implements a tokenizer based on taking n-grams of input
+characters.  These are specified by a range of sizes, such as the
+following:
+</p>
+
+<pre class="code">
+static final TokenizerFactory NGRAM_TOKENIZER_FACTORY
+    = new NGramTokenizerFactory(3,4);
+</pre>
+
+<p>As specified, this tokenizer returns all length 3 and
+length 4 substrings of the input being tokenized.
+</p>
+
+<h3>Running the Test Cases</h3>
+
+<p>The code for running the test cases is as simple as usual.
+We just feed the text to a classifier to get a classification
+result.</p>
+
+<pre class="code">
+static void respond(SenseEvalModel model, TestData testData, File file)
+...
+    for (int i = 0; i &lt; testData.mWordsPlusCats.size(); ++i) {
+        String wordPlusCat = testData.mWordsPlusCats.get(i);
+        Classifier classifier = model.get(wordPlusCat);
+
+        String instanceId = testData.mInstanceIds.get(i);
+
+        String textToClassify = testData.mTextsToClassify.get(i);
+
+        Classification classification = classifier.classify(textToClassify);
+
+        if (classification instanceof ConditionalClassification) {
+            ConditionalClassification condClassification
+                = (ConditionalClassification) classification;
+            for (int rank = 0; rank &lt; condClassification.size(); ++rank) {
+                int conditionalProb = (int) java.lang.Math.round(1000.0
+                                                                 * condClassification.conditionalProbability(rank));
+                if (rank &gt; 0 &amp;&amp;conditionalProb &lt; 1) break;
+                    String category = condClassification.category(rank);
+                    ...
+            }
+        } else {
+            String category = classification.bestCategory();
+            ...
+        }
+...
+</pre>
+
+<p>
+The code is more complex, as we are given two data structures,
+the classifiers in the form of a <code>SenseEvalModel</code>
+and the test data in the from of an instance of <code>TestData</code>.
+The file is where the output is written, but we have ellided the
+formatting information here (ellipses [<code>...</code>] in text).
+</p>
+
+
+<p>
+The code first has to iterate over the test categories,
+which are indexed by the word plus category for the
+task.  Then we just retrieve the classifier from the model.
+We then extract the text to classify from the test data.
+Next, we just run the classifier on the text being
+classified.  
+</p>
+
+<h4>N-best Output</h4>
+<p>
+Finally, if the result is a conditional
+classification, we return all n-best results (quantized to
+a 0-1000 scale).  This is allowed by Senseval scoring, though
+given their arithmetic mean scoring (probabilistic log
+loss scoring involves the log of the geometric average), it
+doesn't help much.  (Without this, the score of our default
+model is 0.659 rather than 0.660).  Given that most results
+of the conditional classifiers are highly skewed due to lack
+of intra-text dependency modeling, we don't have highly
+accurate confidence estimates.
+</p>
+
+<h4>Confidence Thresholded Output</h4>
+<p>
+The Senseval evaluation allows a system to not provide an
+answer.  No answers count against recall performance, but
+not against precision.  Several of the classifiers provide
+scores that can be used for such thresholding.  For instance,
+we can require at least n votes out of m in our KNN
+implementations, or we could require cross-entropy above
+a given threshold in our language model classifiers.
+</p>
+
+
+<h3>Results</h3>
+
+<p>Here are the resulting scores from the scorer for the various models.
+Because they all try every example, precision and recall are equal,
+and we report them as accuracy.  Note that these are the fine-grained
+sense evaluations.  For some classifiers, we've reported results for multiple
+parameterizations without defining new cases (that is, we just edited
+the source and re-ran).
+</p>
+
+<table>
+<tr><th class="title" colspan="4">WSD Results</th></tr>
+<tr><th>Accuracy (fine)</th><th>Time</th><th>ID</th><th>Classifier</th></tr>
+<tr><td colspan="4"></td></tr>
+<tr><td>0.660</td>
+    <td>45s</td>
+    <td>0</td>
+    <td>default character n-gram (5-gram, 16K chars, interp=5.0)</td></tr>
+<tr><td colspan="4"></td></tr>
+<tr><td>0.660</td>
+    <td>82s</td>
+    <td>1</td>
+    <td>character process 6-gram, 128 chars, interp=1.0</td></tr>
+<tr><td colspan="4"></td></tr>
+<tr><td>0.629</td>
+    <td>9s</td>
+    <td>2</td>
+    <td>Naive Bayes (space tokenizer)</td></tr>
+<tr><td>0.638</td>
+    <td>12s</td>
+    <td>2b</td>
+    <td>Naive Bayes (norm tokenizer)</td></tr>
+<tr><td colspan="4"></td></tr>
+<tr><td>0.629</td>
+    <td>9s</td>
+    <td>3</td>
+    <td>Default Token Unigram (space tokenizer)</td></tr>
+<tr><td>0.638</td>
+    <td>11s</td>
+    <td>3b</td>
+    <td>Default Token Unigram (norm tokenizer)</td></tr>
+<tr><td colspan="4"></td></tr>
+<tr><td>0.631</td>
+    <td>11s</td>
+    <td>4</td>
+    <td>Default Token bigram (space tokenizer)</td></tr>
+<tr><td>0.638</td>
+    <td>13s</td>
+    <td>4b</td>
+    <td>Default Token bigram (norm tokenizer)</td></tr>
+<tr><td colspan="4"></td></tr>
+<tr><td>0.653</td>
+    <td>24s</td>
+    <td>5</td>
+    <td>Configurable token n-gram (norm tokenizer, bigram, n-gram boundary lm 4/128/1.0, 0.25 interp)</td></tr>
+<tr><td>0.654</td>
+    <td>26s</td>
+    <td>5b</td>
+    <td>Configurable token n-gram (norm tokenizer, trigram, n-gram boundary lm 4/128/1.0, 0.1 interp)</td></tr>
+<tr><td colspan="4"></td></tr>
+<tr><td>0.650</td>
+    <td><b>5s</b></td>
+    <td>6</td>
+    <td>TF/IDF classifier (space tokenizer)</td></tr>
+<tr><td>0.651</td>
+    <td>8s</td>
+    <td>6b</td>
+    <td>TF/IDF classifier (norm tokenizer)</td></tr>
+<tr><td>0.630</td>
+    <td>11s</td>
+    <td>6c</td>
+    <td>TF/IDF classifier (character 3-gram tokenizer)</td></tr>
+<tr><td>0.660</td>
+    <td>22s</td>
+    <td>6d</td>
+    <td>TF/IDF classifier (character 4-gram tokenizer)</td></tr>
+<tr><td>0.666</td>
+    <td>36s</td>
+    <td>6e</td>
+    <td>TF/IDF classifier (character 5-gram tokenizer)</td></tr>
+<tr><td>0.662</td>
+    <td>54s</td>
+    <td>6f</td>
+    <td>TF/IDF classifier (character 6-gram tokenizer)</td></tr>
+<tr><td><b>0.668</b></td>
+    <td>134s</td>
+    <td>6g</td>
+    <td>TF/IDF classifier (character 4-, 5-, and 6-gram tokenizer)</td></tr>
+<tr><td colspan="4"></td></tr>
+<tr><td>0.587</td>
+    <td>8s</td>
+    <td>7</td>
+    <td>KNN classifier (space tokenizer, Euclidean distance, k=20)</td></tr>
+<tr><td>0.565</td>
+    <td>10s</td>
+    <td>7b</td>
+    <td>KNN classifier (norm tokenizer, Euclidean distance, k=20)</td></tr>
+<tr><td>0.521</td>
+    <td>10s</td>
+    <td>7c</td>
+    <td>KNN classifier (space tokenizer, Euclidean distance, k=1)</td></tr>
+<tr><td>0.504</td>
+    <td>10s</td>
+    <td>7c</td>
+    <td>KNN classifier (space tokenizer, Euclidean distance, k=2)</td></tr>
+<tr><td>0.553</td>
+    <td>10s</td>
+    <td>7d</td>
+    <td>KNN classifier (space tokenizer, Euclidean distance, k=4)</td></tr>
+<tr><td>0.580</td>
+    <td>10s</td>
+    <td>7e</td>
+    <td>KNN classifier (space tokenizer, Euclidean distance, k=8)</td></tr>
+<tr><td>0.581</td>
+    <td>10s</td>
+    <td>7f</td>
+    <td>KNN classifier (space tokenizer, Euclidean distance, k=16)</td></tr>
+<tr><td>0.585</td>
+    <td>10s</td>
+    <td>7g</td>
+    <td>KNN classifier (space tokenizer, Euclidean distance, k=32)</td></tr>
+<tr><td>0.569</td>
+    <td>10s</td>
+    <td>7g</td>
+    <td>KNN classifier (space tokenizer, Euclidean distance, k=64)</td></tr>
+<tr><td colspan="4"></td></tr>
+<tr><td>0.587</td>
+    <td>8s</td>
+    <td>8</td>
+    <td>KNN classifier (space tokenizer, cosine distance, k=20</td></tr>
+<tr><td>0.581</td>
+    <td>9s</td>
+    <td>8b</td>
+    <td>KNN classifier (norm tokenizer, cosine distance, k=20</td></tr>
+<tr><td>0.598</td>
+    <td>41s</td>
+    <td>8c</td>
+    <td>KNN classifier (character 5-gram tokenizer, cosine distance, k=20</td></tr>
+<tr><td>0.611</td>
+    <td>41s</td>
+    <td>8d</td>
+    <td>KNN classifier (character 5-gram tokenizer, cosine distance, k=10</td></tr>
+<tr><td>0.618</td>
+    <td>43s</td>
+    <td>8d</td>
+    <td>KNN classifier (character 5-gram tokenizer, cosine distance, k=10, distance weighted)</td></tr>
+</table>
+
+<p>
+Overall, the best accuracy (66.8%) is achieved with a TF/IDF classifier
+over character 4,5,6-grams.  Unfortunately, this model also required
+2 gigabytes of memory (on a 64-bit Java) to hold the entire set of
+training models in memory.  The more modest requirements for speed
+and time of the simple 5-gram character tokenizer make it more
+attactive. The TF/IDF classifier with the simple space tokenizer 
+is the fastest, and only 1.8% less accurate than the best classifier,
+although it's more than 20 times as fast and uses much less memory.
+</p>
+
+<p>In other text classification experiments, we've found the
+character language model classifiers to work better than any
+choice of token n-gram for TF/IDF.</p>
+
+<p>We have also reported rough timings reported by Ant.  The
+test machine is a dual AMD Opteron 1.8GHz, 512MB RAM, PC2700 
+ECC Memory, JDK 1.6, -server mode, WinXP x64 SP2).</p>  
+
+<h2>Improving WSD Performance</h2>
+
+<p>The systems in the Senseval 3 bakeoff that performed better than
+our approach imported much richer feature sets.  They used everything
+from part-of-speech taggers to full syntactic parsers, dictionaries
+and thesauri (such as WordNet), and large corpora over which they
+trained using semi-supervised methods. On top of this, there was
+a lot of work on feature selection and weighting.  </p>
+
+<p>The better-scoring systems also tended to use discriminitive
+classification methods, such as SVMs, perceptrons or
+various forms of linear regression. 
+</p>
+
+<h2>Unsupervised Word Sense Disambiguation</h2>
+
+<p>Unsupervised WSD is essentially a clustering problem.
+From the performance of KNN classifiers, it'd seem that
+a character 5-gram tokenizer and cosine distance are the
+best bets for basic textual features.</p>
+
+<p>Then it is simply a matter of taking the input texts
+and running them through clustering.  Rather than doing
+that here, we refer you to the clustering tutorial, where
+we work through an example of proper name clustering:
+</p>
+
+<ul>
+<li><a href="../cluster/read-me.html#johnSmithClustering">John Smith Clustering</a> (in the clustering tutorial)</li>
+</ul>
+
+
+
+
+<h2>References</h2>
+
+<p>
+The best place to look is the proceedings of the Senseval workshops:
+</p>
+<ul>
+<li><a href="http://www.senseval.org">Senseval Home Page</a></li>
+</ul>
+
+<p>
+Here's the overview paper for Senseval 3 and a link to the
+table of contents (which has links to the PDFs).
+</p>
+
+<ul>
+<li>
+Rada Mihalcea, Timothy Chklovsky, and Adam Kilgarriff. 2004. <a href="http://www.kilgarriff.co.uk/Publications/2004-MihalceaChklovskiKilg-SENSEVAL.pdf">The Senseval-3 English lexical sample task</a>.  In <i>Senseval-3 Workshop</i>.
+</li>
+<li>
+<a href="http://acl.ldc.upenn.edu/acl2004/senseval/index.html">Senseval 3 Proceedings</a> (with hyper links).
+</li>
+</ul>
+
+<p>Both of the textbooks in the field have whole chapters
+devoted to word sense disambiguation:
+</p>
+
+<ul>
+<li>
+Chris Manning and Hinrich Schuetze.
+1999.
+Foundations of Statistical Natural Language Processing.
+MIT Press.
+</li>
+<li>
+Dan Jurafsky and James Martin.
+2000.
+Speech and Language Processing.
+Prentice-Hall.
+</li>
+</ul>
+
+<p>Here's a link to a powerpoint presentation of
+a tutorial on WSD:
+</p>
+
+<ul>
+<li>Ted Pedersen and Rada Mihalcea.  2005. <a href="http://www.d.umn.edu/~tpederse/Tutorials/ADVANCES-IN-WSD-ACL-2005.ppt">Advances in Word Sense Disambiguation</a> [.ppt]  ACL Tutorial.</li>
+</ul>
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+
+
+
+
+
+
+

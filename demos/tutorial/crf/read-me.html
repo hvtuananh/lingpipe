@@ -1,0 +1,2792 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Conditional Random Field (CRF) Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">CRF Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a class="current" href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+
+
+<div id="content" class="content">
+
+<h2>What are (Chain) Conditional Random Fields?</h2>
+
+<div class="sidebar">
+<h2>Why I Hate CRFs</h2>
+<p>Three years or so ago, I (Bob) wrote a
+provocatively titled blog post:
+</p>
+<ul>
+<li>
+<a href="http://lingpipe-blog.com/2006/11/22/why-do-you-hate-crfs/">Why do you Hate CRFs</a>.
+</li>
+</ul>
+<p>The post details why CRFs are a pain.  I still believe
+what I wrote, but sometimes you just have to suck it
+up and work through the pain.  Even though CRFs
+are a pain to design, fit, and tune, and they're not
+exactly the most efficient tagging technology, they do provide
+state-of-the-art first-best (and probably n-best) accuracy.
+</p>
+</div>
+
+<p>LingPipe implements first-order chain conditional random fields
+(CRF).  A chain conditional random field is a model for labeling
+sequences of tokens with tags drawn from a finite set.  Typical
+applications include part-of-speech tagging and by coding chunks
+as sequences of tags, named-entity and other chunking problems,
+such as sentence detection.</p>
+
+<h3>Logistic Regression Refresher</h3>
+
+<p>Chain CRFs extend the classification strategy embodied in
+logistic regression to sequence tagging.  For more info on
+logistic regression, see our:
+</p>
+
+<ul>
+<li><a href="../logistic-regression/read-me.html">Logistic Regression Tutorial</a></li>
+</ul>
+
+<p>Logistic regression involves classifying objects based on feature
+vectors extracted from the objects by a chain CRF-specific feature
+extractor.  Each category <code>k</code> is assigned a coefficient
+vector <code>&beta;[k]</code>.  Then for a given feature vector
+<code>x</code> extracted from an object, the dot product
+<code>&beta;[k]*x</code> provides an unnormalized probability on the
+log scale,</p>
+
+<p><code>
+&nbsp;
+&nbsp;
+&nbsp;
+Pr(cat = k|x) = &beta;[k] * x / Z(x),
+</code></p>
+
+<p>where</p>
+
+<p><code>
+&nbsp;
+&nbsp;
+&nbsp;
+Z(x) = <big>&Sigma;</big><sub>k</sub> &beta;[k] * x.
+</code></p>
+
+<p>In the LingPipe implementation, we assume that <code>&beta;[0] =
+0</code>; this does not lose any generality and uniquely identifies
+the model.</p>
+
+<h3>Conditional Random Fields</h3>
+
+<p>A sequence tagging problem, such as part-of-speech tagging, can be
+viewed as a sequence classification problem where the categories are
+sequences of tags.  If there are K different tags, a sequence of
+length N has up to <code>K**N</code> possible sequences of tags
+(though some may be eliminated on structural grounds).  CRFs carry out
+logistic regression over these possible sequences.</p>
+
+<h4>First-Order Chain Feature Extraction</h4>
+
+<p>In order to efficiently compute the best tagging(s) given an
+input sequence, the features are restricted to depend only on
+local features of the output tags.  In first-order chain CRFs,
+features may only depend on pairs of output tags.  Although we
+can think of this as providing one tag of context in predicting
+the next tag, very much like a first-order HMM, CRFs are critically
+different in that they are normalized over the entire input sequence.
+</p>
+
+<p>Suppose we have an input sequence of length <code>N</code>,
+<code>x[1],...,x[N]</code>.  And suppose we have <code>K</code> output
+categories coded as integers <code>1,...,K</code>.  We extract
+features for each position based on the position in the input
+(<code>1,...,N</code>) and for each previous tag
+(<code>1,...,K</code>).  If <code>feats()</code> is the feature
+extractor for a given position and previous tag, it is run
+with all of the following arguments:</p>
+
+<p><code>
+&nbsp;&nbsp;
+feats(pos=1,prevTag=null),
+<br />
+&nbsp;&nbsp;
+feats(pos=2,prevTag=1), ..., feats(pos=2,prevTag=K),
+<br />
+&nbsp;&nbsp;
+...,
+<br />
+&nbsp;&nbsp;
+feats(pos=N,prevTag=1), ..., feats(pos=N,prevTag=K).</code>
+</p>
+
+<p>For additional efficiency, we factor the feature extractor
+into two parts, one of which pays attention to the previous tag,
+and one of which doesn't.  The reason for this is that the
+computation for the non-previous-tag-dependent features can be
+shared, and these are most of the features used.</p>
+
+
+<h4>Coefficient Vectors by Tag</h4>
+
+<p>A CRF consists of a coefficient vector <code>&beta;[k]</code> for
+each of <code>K</code> output tags, <code>1,...,K</code>.
+</p>
+
+<p>Just as with logistic regression, training CRFs constitutes
+fitting coefficient vectors based on training data.</p>
+
+<h4>Linear Predictor</h4>
+
+<p>Like the case of logistic regression, we compute unnormalized
+non-negative scores for each outcome, here a tag sequence, then
+normalize by dividing by the sum of these values.  Consider the
+sequence of output tags <code>k[1],...,k[N]</code>.  The value
+for this output for input sequence <code>x[1],...,x[N]</code> is
+given by:</p>
+
+<p><code>
+&nbsp;&nbsp;
+&phi;(k[1],...,k[N] | x[1],...,x[N])
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+= feats(1,null) * &beta;[k[1]]
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
++ feats(2,k[1]) * &beta;[k[2]]
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
++ ...
++ feats(N,k[N-1]) * &beta;[k[N]]
+</code></p>
+
+<p>We then compute the probability of the output by normalizing, just
+as in logistic regression, setting</p>
+
+<p><code>
+&nbsp;&nbsp;
+p(k[1],...,k[N] | x[1],...,x[N])
+<br />
+&nbsp;&nbsp;
+&nbsp;&nbsp;
+= &phi;(k[1],...,k[N] | x[1],...,x[N]) / Z(x[1],...,x[N]),
+</code></p>
+
+<p>where</p>
+
+<p><code>
+&nbsp;&nbsp;
+Z(x[1],...,x[N])
+<br />
+&nbsp;&nbsp;
+&nbsp;&nbsp;
+= <big>&Sigma;</big><sub>k[1] in 1:K</sub> ... <big>&Sigma;</big><sub>k[N] in 1:K</sub>
+&phi;(k[1],...,k[N] | x[1],...,x[N])
+</code></p>
+
+<h4>Global Normalization and Label Bias</h4>
+
+<p>One of the motivations of conditional random fields was
+to avoid the label-bias problem found in hidden Markov
+models and the obvious generalization of logistic
+regression to sequences (known in natural language processing
+somewhat confusingly as &quot;maximum entropy Markov models&quot; (MEMM)).
+MEMMs are like conditional random fields, but normalize their
+probabilities on a per-tag basis rather than over the whole sequence.
+</p>
+
+<p>Label bias arises when the choice of an upstream (earlier)
+tag resets probabilities, allowing a choice of bad downstream
+tags based on the upstream tag.  By normalizing all at once,
+longer-distance effects are taken into account, even though the
+features are only extracted locally.  This is because we're
+finding a globally optimum set of features, and it doesn't have
+to be normalized on a tag-by-tag basis.  Therefore, if there
+is no good downstream tags, they'll be downweighted, whereas in
+HMMs, even if there is no weight in training, they'll get
+normalized on a per-tag basis in such a way they'll still be
+viable tags.</p>
+
+<h2>Overview of LingPipe's CRF APIs</h2>
+
+<p>LingPipe codes up first-order chain CRFs in the package
+<code>com.aliasi.crf</code>, with applications to tagging and
+to chunking.  In the rest of the tutorial we will go into detail
+with code samples; in this preliminary section we just provide
+an overview of what's to come.
+</p>
+
+<h3>CRFs for Tagging</h3>
+
+
+<h4>Tagging Package</h4>
+
+<p>The general interfaces for taggers, which assign labels to each symbol
+in a sequence of symbols, is in <code>com.aliasi.tag</code>.  It
+contains interfaces for first-best sequence taggers, n-best sequence
+taggers, and for computing marginal probabilities of tags for
+symbols given a sequence.  This package also contains evaluation
+tools for tagging.</p>
+
+<h4>Chain CRF Class</h4>
+
+<p>LingPipe's implementation of chain CRFs as sequence taggers is in the
+package <a
+href="../../../docs/api/com/aliasi/crf/ChainCrf.html"><code>com.aliasi.crf.ChainCrf</code></a>.
+</p>
+
+<h3>CRFs for Chunking</h3>
+
+
+<h4>Chunking Package</h4>
+
+<p>The general interface for chunkers, which extract chunks from input
+strings, is found in <code>com.aliasi.chunk</code>.  The chunking
+package contains interfaces for first-best chunking, n-best chunking,
+and for extracting chunks in order of marginal probabilities given
+the input text.  There are also evaluation tools for chunkers.
+</p>
+
+<h4>Chain CRF Chunking Class</h4>
+
+<p>LingPipe's implementation of implementation for chunkers
+is in <a
+href="../../../docs/api/com/aliasi/crf/ChainCrfChunker.html"><code>com.aliasi.crf.ChainCrfChunker</code></a>.  It relies on the implementation
+of linear chain CRFs in the class <code>crf.ChainCrf</code>.
+</p>
+
+<p>The CRF chunker translates translates between taggings and
+chunkings using an instance of
+<code>com.aliasi.chunk.TagChunkCodec</code>.  For instance,
+we will consider the standard begin/in/out (BIO) encoding
+of chunks as tags in this tutorial.</p>
+
+
+<h3>Static Estimators (Factories)</h3>
+
+<p>Both the tagging and chunking CRFs are estimated using a static
+factory method.</p>
+
+<h4>Corpus Implementations</h4>
+
+<p>Training in both cases is based on a corpus of training
+data implementing <a href="../../../docs/api/com/aliasi/corpus/Corpus.html"><code>com.aliasi.corpus.Corpus</code></a>.  For tagging, it is
+a corpus of <code>tag.Tagging</code> objects; for chunking, it
+is a corpus of <code>chunk.Chunking</code> objects.</p>
+
+<h4>Feature Extractors</h4>
+
+<p>In order to estimate coefficients, the training corpus needs to be
+converted to vector format.  Feature extraction for chain CRFs is more
+complex than for something like logistic regression because of the need
+for repeated extractions from the same context for different positions
+in the inputand different previous tags.</p>
+
+<p>There is a special interface for chain CRF feature extractors, <a
+href="../../../docs/api/com/aliasi/crf/ChainCrfFeatureExtractor.html"><code>crf.ChainCrfFeatureExtractor</code></a>.
+A feature extractor takes an input sequence of tokens and set of
+possible tags, and produces an instance of <a
+href="../../../docs/api/com/aliasi/crf/ChainCrfFeatures.html"><code>crf.ChainCrfFeatures</code></a>.</p>
+
+<p>The returned features object in turn provides feature maps for
+nodes, based on the input tokens and position, and edges, based on the
+input tokens, position, and a previous tag.  It is constructed once
+for a given input and then used to populate the lattice required for
+decoding with feature vectors.   This allows operations performed on
+the input sequence to be cached and reused.  For instance, part-of-speech
+tags would be computed once at features object construction time and
+then reused in calls to get node or edge feature maps.
+</p>
+
+<h4>Stochastic Gradient Implementation</h4>
+
+<p>Estimation is based on stochastic gradient descent, the same
+method used for logistic regression estimation.  The difference
+is that for CRFs, the forward-backward algorithm must be used
+to compute expectations; otherwise, the algorithms are identical.
+</p>
+
+<p>There is only one underlying implementation of CRF estimation, and
+it is found in the <code>crf.ChainCrf</code>; the chunking CRF just
+delegates its factory call to the chain CRF estimation factory after
+converting its inputs from chunks to tags.  </p>
+
+<p>Training involves setting a range of parameters similar to those
+described in LingPipe's <a href="../logistic-regression/read-me.html">logistic regression tutorial</a>, including parameters for the learning
+rate and annealing rate.</p>
+
+<p>Unlike logistic regression, which uses lazy prior updates
+for a purely stochastic gradient, the CRF stochastic gradient
+implementation blocks the prior updates.  This means that the
+gradient for the prior is only applied every so often, typically
+every 10 to 100 items or so.  The larger the block size, the
+faster the processing.   We've found block sizes of around 50
+provide a good balance between speed and stochasticity, returning
+virtually the same results as block sizes of 1.
+</p>
+
+<h4>Feature Caching</h4>
+
+<p>Because of the lattice required for forward-backward decoding, CRFs
+require N node feature vectors and K*(N-1) edge feature vectors, where
+K is the number of possible tags and N is the number of tokens.</p>
+
+
+<h4>Coefficient Priors</h4>
+
+<p>Coefficients in CRFs are given priors in exactly the same way as
+coefficients in logistic regression, using an instance of <a
+href="../../../docs/api/com/aliasi/stats/RegressionPrior.html"><code>stats.RegressionPrior</code></a>.
+The most commonly found priors are implemented, including Gaussian
+(L2), Laplace (L1), Cauchy (student T), and maximum likelihood
+(uniform).
+</p>
+
+<h4>Learning and Annealing Rates</h4>
+
+<p>The stochastic gradient descent allows constant learning rates,
+or allows learning rates to be annealed (gradually lowered over
+time).  Annealing is technically required to ensure convergence,
+but often can be eliminated in practice where resulting estimates
+need only be close enough.</p>
+
+<p>Annealing is handled through an instance of <a
+href="../../../docs/api/com/aliasi/stats/AnnealingSchedule.html"><code>stats.AnnealingSchedule</code></a>.
+The common annealing schedules are implemented, including constant
+learning rates (no annealing), exponential learning rate decay, and
+inverse learning rate decay.</p>
+
+<h4>Reporting During Estimation</h4>
+
+<p>Just as for logistic regression, an instance of <a
+href="../../../docs/api/com/aliasi/io/Reporter.html"><code>io.Reporter</code></a>
+is used to provide feedback during estimation.  The verbosity of the reporter, and the destination of its reports may be set programmatically in the same way as is typically done for loggers.</p>
+
+<h2>CRF Taggers</h2>
+
+<p>We'll first describe tagging using CRFs with a very simple
+toy example for part-of-speech tagging.  The objects being
+tagged will be simple sequences of strings, so the corpus
+for training needs to be specified so the handlers deal with
+<code>Tagging&lt;String&gt;</code> instances.</p>
+
+<h3>Corpus Implementation</h3>
+
+<p>Here's a simple hard-coded corpus, as implemented in
+<a href="src/TinyPosCorpus.java"><code>src/TinyPosCorpus.java</code></a>.
+First, the specification of what it implements:
+</p>
+
+<pre class="code">
+public class TinyPosCorpus
+    extends Corpus&lt;ObjectHandler&lt;Tagging&lt;String&gt;&gt;&gt; {
+...
+</pre>
+
+<p>This corpus is going to use a handler that handles objects
+of type <code>Tagging&lt;String&gt;</code>.  We hard code the words
+and tags with a simple array:</p>
+
+<pre class="code">
+    static final String[][][] WORDS_TAGSS = new String[][][] {
+        { { &quot;John&quot;, &quot;ran&quot;, &quot;.&quot; }, { &quot;PN&quot;, &quot;IV&quot;, &quot;EOS&quot; } },
+        { { &quot;Mary&quot;, &quot;ran&quot;, &quot;.&quot; }, { &quot;PN&quot;, &quot;IV&quot;, &quot;EOS&quot; } },
+        { { &quot;John&quot;, &quot;jumped&quot;, &quot;!&quot; }, { &quot;PN&quot;, &quot;IV&quot;, &quot;EOS&quot; } },
+        { { &quot;The&quot;, &quot;dog&quot;, &quot;jumped&quot;, &quot;!&quot; }, { &quot;DET&quot;, &quot;N&quot;, &quot;IV&quot;, &quot;EOS&quot; } },
+        { { &quot;The&quot;, &quot;dog&quot;, &quot;sat&quot;, &quot;.&quot; }, { &quot;DET&quot;, &quot;N&quot;, &quot;IV&quot;, &quot;EOS&quot; } },
+        { { &quot;Mary&quot;, &quot;sat&quot;, &quot;!&quot; }, { &quot;PN&quot;, &quot;IV&quot;, &quot;EOS&quot; } },
+        { { &quot;Mary&quot;, &quot;likes&quot;, &quot;John&quot;, &quot;.&quot; }, { &quot;PN&quot;, &quot;TV&quot;, &quot;PN&quot;, &quot;EOS&quot; } },
+        { { &quot;The&quot;, &quot;dog&quot;, &quot;likes&quot;, &quot;Mary&quot;, &quot;.&quot; }, { &quot;DET&quot;, &quot;N&quot;, &quot;TV&quot;, &quot;PN&quot;, &quot;EOS&quot; } },
+        { { &quot;John&quot;, &quot;likes&quot;, &quot;the&quot;, &quot;dog&quot;, &quot;.&quot; }, { &quot;PN&quot;, &quot;TV&quot;, &quot;DET&quot;, &quot;N&quot;, &quot;EOS&quot; } },
+        { { &quot;The&quot;, &quot;dog&quot;, &quot;ran&quot;, &quot;.&quot; }, { &quot;DET&quot;, &quot;N&quot;, &quot;IV&quot;, &quot;EOS&quot;, } },
+        { { &quot;The&quot;, &quot;dog&quot;, &quot;ran&quot;, &quot;.&quot; }, { &quot;DET&quot;, &quot;N&quot;, &quot;IV&quot;, &quot;EOS&quot;, } }
+    };
+</pre>
+
+<p>The idea here is that each lien represents first the tokens, then the tags,
+both as arrays of strings.  That allows the visitor method for training
+to simply iterate over the array:
+</p>
+
+<pre class="code">
+    public void visitTrain(ObjectHandler&lt;Tagging&lt;String&gt;&gt; handler) {
+        for (String[][] wordsTags : WORDS_TAGSS) {
+            String[] words = wordsTags[0];
+            String[] tags = wordsTags[1];
+            Tagging&lt;String&gt; tagging
+                = new Tagging&lt;String&gt;(Arrays.asList(words),
+                                      Arrays.asList(tags));
+            handler.handle(tagging);
+        }
+    }
+</pre>
+
+<p>We won't use the corpus for testing, so the test visitor is implemented
+as a no-op (not shown).</p>
+
+<h3>Feature Extractors</h3>
+
+<p>We'll implement the simplest possible feature extractors for a CRF,
+which only record the current token and previous tag respectively.
+This is the same set of features used in a traditional hidden Markov
+model (HMM).  </p>
+
+<p>The code for feature extractors is in <a href="src/SimpleChainCrfFeatureExtractor.java"><code>src/SimpleChainCrfFeatureExtractor.java</code></a>.</p>
+
+<h4>Chain CRF Feature Extractor</h4>
+
+<p>The top-level shell is an implementation of <code>crf.ChainCrfFeatureExtractor</code>
+over string input tokens.  This is declared as</p>
+
+<pre class="code">
+public class SimpleChainCrfFeatureExtractor
+    implements ChainCrfFeatureExtractor&lt;String&gt;,
+               Serializable {
+...
+</pre>
+
+<p>This declares our node feature extractor to operate over token
+sequences consisting of strings.  Also note that it is declared to be
+serializable, which will allow it to be serialized along with the rest
+of the CRF after training.</p>
+
+<p>There is only a single method, which returns a new features instance,
+</p>
+
+<pre class="code">
+...
+    public ChainCrfFeatures&lt;String&gt; extract(List&lt;String&gt; tokens,
+                                            List&lt;String&gt; tags) {
+        return new SimpleChainCrfFeatures(tokens,tags);
+    }
+...
+</pre>
+
+<h4>Chain CRF Features</h4>
+
+<p>The chain CRF features object implementation does the work.
+It's declared as a static inner class because nothing on the outside
+needs to know about its identity other than as an extension of the
+abstract base class <code>crf.ChainCrfFeatures</code>.  The implementation
+is thus declared as</p>
+
+<pre class="code">
+...
+    static class SimpleChainCrfFeatures
+        extends ChainCrfFeatures&lt;String&gt; {
+...
+</pre>
+
+<p>and the constructor simply sends the list of tokens
+and tags up to the superclass for management.</p>
+
+<pre class="code">
+...
+        public SimpleChainCrfFeatures(List&lt;String&gt; tokens,
+                                      List&lt;String&gt; tags) {
+            super(tokens,tags);
+        }
+...
+</pre>
+
+<p>The real work is done in the method that returns node features,
+</p>
+
+<pre class="code">
+...
+        public Map&lt;String,Integer&gt; nodeFeatures(int n) {
+            return Collections
+                .singletonMap(&quot;TOK_&quot; + token(n),
+                              Integer.valueOf(1));
+        }
+...
+</pre>
+
+<p>and the method that returns edge features,</p>
+
+<pre class="code">
+...
+        public Map&lt;String,Integer&gt; edgeFeatures(int n, int k) {
+            return Collections
+                .singletonMap(&quot;PREV_TAG_&quot; + tag(k),
+                              Integer.valueOf(1));
+        }
+    }
+}
+</pre>
+
+<div class="sidebar">
+<h2>Nodes for Efficiency</h2>
+<p>All features could be extracted through edges, which are
+more general than nodes in that they also supply the previous
+tag.  The reason
+there are two methods is that it is much more efficient to
+extract features that are not previous-label dependent through
+the node method
+so that they can be reused for all of
+the possible previous labels (tags).
+</p>
+</div>
+
+<p>The node features consist of a mapping from a single key
+representing the token, which is retrieved using the method
+<code>token(int)</code> on the abstract base class,
+<code>crf.ChainCrfFeatures</code>.  The feature is represented by
+the prefix <code>TOK_</code> followed by the token string itself.
+The value here is 1.</p>
+
+<p>The edge feature map is represented and
+extracted in the same way.</p>
+
+<p>The
+<code>java.util.Collections</code> convenience method
+<code>singletonMap</code> is useful for this operation.
+It's particularly convenient due to the availability of
+type inference on methods, which allows us to drop the
+type of the returned map.
+
+In general,
+an instance of LingPipe's <code>util.ObjectToDoubleMap</code> might be
+used.
+
+</p>
+
+
+<p>Note that we have used a more specific return type, namely
+<code>Map&lt;String,Intger&gt;</code>, which represents a feature
+vector as a mapping from string-based feature names to numerical values.
+This is legal because <code>Integer</code> extends the specified
+wildcard type, <code>(? extends Number)</code>.</p>
+
+<p>Note that we have left out the <code>serialVersionUID</code>
+declaration for the top-level class; it is only necessary for forward
+compatibility of serialized versions (and to stop the lint tool from
+griping during compile).</p>
+
+
+<h3>Estimating CRF Taggers</h3>
+
+<p>The trainer for the simple POS tagging CRF is in
+<a href="src/SimplePosTrain.java"><code>src/SimplePosTrain.java</code></a>.</p>
+
+<p>
+We need to marshal several arguments before training a CRF tagger.
+In the simple trainer, we just create them all in the static
+<code>main()</code> method, starting with the corpus and feature
+extractors we just described:</p>
+
+<pre class="code">
+public class SimplePosTrain {
+
+    public static void main(String[] args) throws IOException {
+
+        Corpus&lt;ObjectHandler&lt;Tagging&lt;String&gt;&gt;&gt; corpus
+            = new TinyPosCorpus();
+
+        ChainCrfFeatureExtractor&lt;String&gt; featureExtractor
+            = new SimpleChainCrfFeatureExtractor();
+
+        boolean addIntercept = true;
+
+        int minFeatureCount = 1;
+
+        boolean cacheFeatures = false;
+
+        boolean allowUnseenTransitions = true;
+...
+</pre>
+
+<p>We just create a corpus instance and feature extractor instance.
+We set the minimum count for features to not be pruned from the
+corpus to 1.  We also set the flag for automating adding an intercept
+feature to feature vectors (with feature identifier 0 and value 1.0).
+There is a second flag which tells the estimator not to cache
+the feature vectors (this saves space, but is slower).
+</p>
+
+<p>The next step is to set a flag to allow unseen transitions in the
+output taggings, which means that we are not restricted to taggings
+with starts, ends, or transitions that were seen in the training data.
+For instance, even if the category NN was never seen starting a
+sentence in the training data, or an (ADJ,NN) tag pair was never seen
+in the training data in that order, we will allow them as potential
+outputs if their estimated scores are high enough.  Setting this flag
+to <code>false</code> can speed up processing for first-best, n-best
+and marginal taggings, because it eliminates vector multiplications
+for illegal tag positions or transitions.  </p>
+
+<p>Next, we need to set up the prior.  Here, we'll use a Gaussian
+prior with a prior variance of 10.0, which is pretty diffuse (meaning
+it doesn't force features very hard back to the prior mean of 0.0).</p>
+
+<pre class="code">
+...
+        double priorVariance = 4.0;
+        boolean uninformativeIntercept = true;
+        RegressionPrior prior
+            = RegressionPrior.gaussian(priorVariance,
+                                       uninformativeIntercept);
+        int priorBlockSize = 3;
+...
+</pre>
+
+<p>We have also set a prior block size of 3, which means that we
+update the coefficients by the prior gradient every three instances.
+Appropriate scaling of the learning rate based on the block size
+is carried out automatically.</p>
+
+<p>Next, we set up the learning rate annealing schedule.  We'll
+use an exponential decay and a fairly high initial learning rate:
+</p>
+
+<pre class="code">
+...
+        double initialLearningRate = 0.05;
+        double learningRateDecay = 0.995;
+        AnnealingSchedule annealingSchedule
+            = AnnealingSchedule.exponential(initialLearningRate,
+                                            learningRateDecay);
+...
+</pre>
+
+<p>We then set the three search parameters, which indicate the minimum
+and maximum number of epochs, as well as the minimum amount by which
+the log likelihood must improve (relatively) per epoch to go beyond
+the minimum number of epochs.</p>
+
+<pre class="code">
+...
+        double minImprovement = 0.00001;
+        int minEpochs = 2;
+        int maxEpochs = 2000;
+...
+</pre>
+
+<p>Finally, we set up a reporter which reports at the debug
+level to the standard output, so we can watch what happens
+during training on the console:</p>
+
+<pre class="code">
+...
+        Reporter reporter
+            = Reporters.stdOut().setLevel(LogLevel.DEBUG);
+...
+</pre>
+
+<p>At last, we are in a position to the call the estimation method,
+which takes all of the previously defined variables as arguments:</p>
+
+<pre class="code">
+        ChainCrf&lt;String&gt; crf
+            = ChainCrf.estimate(corpus,
+                                featureExtractor,
+                                addIntercept,
+                                minFeatureCount,
+                                allowUnseenTransitions,
+                                prior,
+                                annealingSchedule,
+                                minImprovement,
+                                minEpochs,
+                                maxEpochs,
+                                reporter);
+</pre>
+
+<p>The remainder of the method simply writes the model to
+a file in serialized form using the utility method
+in <code>util.AbstractExternalizable</code>:</p>
+
+<pre class="code">
+        File modelFile = new File(args[0]);
+        AbstractExternalizable.serializeTo(crf,modelFile);
+</pre>
+
+<p>Because Java serialization is used to store the model,
+it may be written to any output stream by wrapping the
+stream in an object output stream and writing the CRF
+to the stream.</p>
+
+<h4>Running the Trainer</h4>
+
+<p>It is all set up in Ant to run with the following
+command (from the <code>tutorial/crf</code> directory):</p>
+
+<pre class="code">
+lingpipe\trunk\demos\tutorial\crf&gt; ant simple-pos-train
+Estimating
+      :00 ChainCrf.estimate Parameters
+      :00 featureExtractor=SimpleChainCrfFeatureExtractor@158b649
+      :00 addInterceptFeature=true
+      :00 minFeatureCount=1
+      :00 cacheFeatureVectors=false
+      :00 allowUnseenTransitions=true
+      :00 prior=GaussianRegressionPrior(Variance=4.0, noninformativeIntercept=true)
+      :00 annealingSchedule=Exponential(initialLearningRate=0.05, base=0.995)
+      :00 minImprovement=1.0E-5
+      :00 minEpochs=2
+      :00 maxEpochs=2000
+      :00 priorBlockSize=3
+      :00 Computing corpus tokens and features
+      :00 Corpus Statistics
+      :00 Num Training Instances=11
+      :00 Num Training Tokens=42
+      :00 Num Dimensions After Pruning=17
+      :00 Tags={0=PN, 1=IV, 2=EOS, 3=DET, 4=N, 5=TV}
+      :00 epoch=    0 lr=0.050000000 ll=   -59.7809 lp=  -223.3503 llp=  -283.1311 llp*=  -283.1311
+      :00 epoch=    1 lr=0.049750000 ll=   -49.2419 lp=  -223.5537 llp=  -272.7956 llp*=  -272.7956
+      :00 epoch=    2 lr=0.049501250 ll=   -40.7240 lp=  -223.8438 llp=  -264.5677 llp*=  -264.5677
+...
+      :00 epoch=  108 lr=0.029097972 ll=    -3.5685 lp=  -230.4528 llp=  -234.0213 llp*=  -234.0213
+      :00 epoch=  109 lr=0.028952482 ll=    -3.5671 lp=  -230.4540 llp=  -234.0211 llp*=  -234.0211
+      :00 epoch=  110 lr=0.028807720 ll=    -3.5658 lp=  -230.4552 llp=  -234.0210 llp*=  -234.0210
+      :00 Converged with rollingAverageRelativeDiff=9.966186465104444E-6
+      :00 Feat Extraction Time=:00
+      :00 Forward Backward Time=:00
+      :00 Update Time=:00
+      :00 Prior Update Time=:00
+      :00 Loss Time=:00
+
+Compiling to file=simplePos.ChainCrf
+BUILD SUCCESSFUL
+Total time: 1 second
+</pre>
+
+<p>The first part of the print out simply reports the input
+parameters.</p>
+
+<p>As with logistic regression training, when the reporter is set to
+debug level reporting, each epoch's score is reported.  Like for
+logistic regression, we report the epochs' learning rate (lr), log
+likelihoods (ll), log priors (lp), the sum of log likelihood and log
+prior (llp), which is the objective function, and the maximum value of
+the objective so far (llp*).</p>
+
+<p>The log likelihood is the probability of the training
+data given the current parameters.   The log prior is the
+log probability of the current parameters given the prior.
+The sum of the log prior and log likelihood defines the
+objective function whose gradient is climbed during
+estimation (using stochastic gradient descent).</p>
+
+<p>Maximum likelihood coefficients can be computed by setting the
+prior to be uninformative.  Otherwise, coefficients will balance
+minimizing the prior (by being as small as possible) and the
+likelihood function (by being as close to the maximum likelihood
+solution [as a group] as possible).
+</p>
+
+<h4>Training for Convergence</h4>
+
+<p>The goal of training is to get the SGD algorithm to converge to a
+minimum of the sum of the log likelihood and prior (noted llp in the
+verbose output).  As with logistic regression, first exploration should
+involve a large number of epochs and a relatively modest training rate.
+The training rate should be increased as high as possible while
+maintaining stability of the estimate.  It should also be annealed as
+quickly as possible while maintaining convergence.</p>
+
+<p>Convergence to a high level of accuracy (many decimal places) is
+usually not necessary.  Rarely is there enough training data to
+support the extra precision anyway.  Thus held out evaluations can be
+used to determine whether models are close enough.  </p>
+
+
+<h3>Running CRF Taggers</h3>
+
+<p>It's straightforward to take a compiled CRF tagger and run it on
+new data.  We provide a sample implementation in <a
+href="src/SimplePosTag.java"><code>src/SimplePosTag.java</code></a> that
+displays first-best, n-best, and marginal tagging results.
+</p>
+
+<h4>Running the Simple POS Tag Demo</h4>
+
+<p>Once a model is trained (using <code>ant simple-pos-train</code>,
+as described above), it may be used to decode input sequences of symbols.
+We've provided an ant target that does this:
+</p>
+
+<pre class="code">
+lingpipe\trunk\demos\tutorial\crf&gt; ant simple-pos-run
+
+FIRST BEST
+John/PN ran/IV ./EOS
+
+5 BEST CONDITIONAL
+Rank log p(tags|tokens)  Tagging
+0    -0.19285257035395986 John/PN ran/IV ./EOS
+1    -3.358109848458719 John/N ran/IV ./EOS
+2    -3.931239459222259 John/EOS ran/IV ./EOS
+3    -4.006593072681378 John/PN ran/EOS ./EOS
+4    -4.593808019587663 John/DET ran/IV ./EOS
+
+MARGINAL TAG PROBABILITIES
+Token .. Tag log p(tag|pos,tokens)
+John
+     PN -0.11804521988882044
+     IV -4.157694169296432
+     EOS -3.7176228157431774
+     DET -3.991055779078051
+     N -3.2772606247513387
+     TV -4.186642002447862
+ran
+     PN -4.136730600811648
+     IV -0.08419970812374089
+     EOS -3.4907943870346685
+     DET -4.912971648808058
+     N -4.424359623821775
+     TV -4.201827184540062
+.
+     PN -4.881890987444048
+     IV -5.41613925820661
+     EOS -0.029776364673478994
+     DET -5.12562023731763
+     N -5.028825282359939
+     TV -5.334679320548158
+
+BUILD SUCCESSFUL
+Total time: 0 seconds
+</pre>
+
+<p>First, there's first-best output, which is guaranteed to be the
+single most likely tag sequence for the input given the model.
+</p>
+
+<p>Next, there's n-best output, which returns the top whole sequence
+analyses.  Here it's run in conditional probability form (which is a
+bit more expensive than the unnormalized version), which reports
+(natural) log conditional probabilities of the tag sequence given the
+input symbols. The probabilities are on the natural log scale.  
+For instance, <code>exp(-0.19)=0.83</code>, so the first best whole
+string analysis, <code>John/PN ran/IV ./EOS</code>, has a probability
+of 0.83 according to the model.
+</p>
+
+<p>Finally, we report marginal outputs.  For every token in the input,
+we report the (natural log) conditional probability the token gets
+each tag.  These values are computed relative to the entire input
+sequence.  These are also reported as natural log probabilities.</p>
+
+<h4>Code Walkthrough</h4>
+
+<p>The code is in <a href="src/SimplePosTag.java"><code>src/SimplePosTag.java</code></a>.
+It's all in a single main method declared as:
+</p>
+
+<pre class="code">
+public class SimplePosTag {
+
+    public static void main(String[] args)
+        throws ClassNotFoundException, IOException {
+...
+</pre>
+
+<p>Note that the method throws class-not-found and I/O exceptions,
+both of which may arise in general from deserialization.</p>
+
+<p>Next, we read the model file in from file using the
+<code>readObject()</code> method from
+<code>util.AbstractExternalizable</code>: </p>
+
+<pre class="code">
+...
+        File modelFile = new File(args[0]);
+        @SuppressWarnings("unchecked")
+        ChainCrf&lt;String&gt; crf
+            = (ChainCrf&lt;String&gt;)
+            AbstractExternalizable.readObject(modelFile);
+...
+</pre>
+
+<p>We need to suppress the warning from a cast to stop the compiler
+from griping, but it's unavoidable given Java's untyped
+serialization.  If someone supplies the wrong file, the cast
+will break (if not something sooner).
+</p>
+
+<p>Now that we have the CRF, we run through the arguments and
+convert them to lists of symbols by using string's <code>split()</code>
+command to get an input we can analyze:</p>
+
+<pre class="code">
+...
+        for (int i = 1; i &lt; args.length; ++i) {
+            String arg = args[i];
+            List&lt;String&gt; tokens = Arrays.asList(arg.split(" "));
+...
+</pre>
+
+
+<p>Typically, this splitting would be done with a tokenization
+factory, but we're trying to keep the demo simple.</p>
+
+<p>Next, we can extract the first-best output in one line and
+print it:</p>
+
+<pre class="code">
+...
+            Tagging&lt;String&gt; tagging = crf.tag(tokens);
+            System.out.println(tagging);
+
+...
+</pre>
+
+<p>The <code>tag.Tagging</code> implementation also supplies methods
+to access the inptu tokens and output tags programmatically.</p>
+
+<p>We access the n-best outputs through an iterator over scored
+taggings.  Scored taggings are just like taggings, only with a score;
+they implement <code>util.Scored</code> for convenience.  We
+access them in the usual way for an iterator:</p>
+
+<pre class="code">
+...
+            int maxNBest = 5;
+            Iterator&lt;ScoredTagging&lt;String&gt;&gt; it
+                = crf.tagNBestConditional(tokens,maxNBest);
+            for (int rank = 0; rank &lt; maxNBest &amp;&amp; it.hasNext(); ++rank) {
+                ScoredTagging&lt;String&gt; scoredTagging = it.next();
+                System.out.println(rank + "    " + scoredTagging);
+            }
+...
+</pre>
+
+<p>We set the maximum number of n-best results to be 5 and also check
+it in the loop.  The lower the maximum n best, the less memory the
+iterator will use.  We just access the scored tagging and print it.</p>
+
+<p>Finally, we access the marginal tag probabilities through a lattice
+return result.  We can access them programatically as shown in the code:
+</p>
+
+<pre class="code">
+...
+            ForwardBackwardTagLattice&lt;String&gt; fbLattice
+                = crf.tagMarginal(tokens);
+            for (int n = 0; n &lt; tokens.size(); ++n) {
+                System.out.println(tokens.get(n));
+                for (int k = 0; k &lt; fbLattice.numTags(); ++k) {
+                    String tag = fbLattice.tag(k);
+                    double prob = fbLattice.logProbability(n,k);
+                    System.out.println("     " + tag + " " + prob);
+                }
+            }
+</pre>
+
+<p>Note that the tags are accessed by number, with the lattice
+supplying both the size of the tag set through <code>numTags()</code>,
+and dereferencing tag identifiers to string symbols using <code>tag()</code>.
+The log probability of token <code>n</code> receiving tag <code>k</code>
+is then retrieved using the <code>logProbability()</code> method in
+the lattice.</p>
+
+<h2>CRF Chunkers</h2>
+
+<p>In this section, we'll show you how to build a chunker based
+on CRFs.  It's very much like building a tagger, with the additional
+step of transcoding a chunking problem as a tagging problem.</p>
+
+<h3>Transcoding Chunkers at Taggers</h3>
+
+<p>Just as with HMMs, we attack the chunking problems for CRFs
+by transcoding chunking problems as tagging problems.  For CRF
+chunkers, the transcoding is encapsulated in an encoder/decoder
+interface <a href="../../../docs/api/com/aliasi/chunk/TagChunkCodec.html"><code>chunk.TagChunkCodec</code></a>.
+</p>
+
+<h4>Encoding Chunkings as Taggings</h4>
+
+<p>The codec interface supplies an encoder method,
+<code>toStringTagging()</code>, that converts a chunking to a tagging
+implementing <a
+href="../../../docs/api/com/aliasi/tag/StringTagging.html"><code>tag.StringTagging</code></a>.
+This is typically accomplished by means of a tokenizer factory that is
+consistent with the chunking (i.e. all chunkings start and end on
+token boundaries).</p>
+
+<h4>Decoding Taggings to Chunkings</h4>
+
+<p>The reverse mapping from a string tagging to a chunking is
+carried out by the codec method <code>toChunking()</code>.</p>
+
+<h4>Lattice Decoding</h4>
+
+<p>In order to allow efficient n-best chunks to be returned,
+the codec must also implement a chunk iterator given a tag
+lattice implementation along with arrays indicating where
+the tokens start and end.</p>
+
+<h4>Encodability Tests</h4>
+
+<p>The codecs also implement methods that determine if
+a chunking is codable or a tagging is decodable, as well
+as to determine if a sequence of tags is legal, and to
+return the entires et of tags.</p>
+
+<h4>BIO Codec</h4>
+
+<p>As of LingPipe 3.9, there is only one tag-chunk codec
+implementation, <a href="../../../docs/api/com/aliasi/chunk/BioTagChunkCodec.html"><code>chunk.BioTagChunkCodec</code></a>.  This codec uses the standard begin/in/out encoding
+of chunkings as taggings.  It is constructed using a
+tokenizer factory, which it uses to break up the chunking's
+text.  The tokenizer should be consistent with the chunker
+in the sense of each chunk starting or ending on a token
+start or end position.
+</p>
+
+<p>The BIO codec is most easily understood with an example.
+Suppose we have the chunking:
+</p>
+
+<pre class="code">
+<i>Char Sequence</i>
+John J. Smith lives near Washington.
+0123456789012345678901234567890123456
+          1         2         3
+
+<i>Chunk Set</i>
+(0,13):PER
+(25,35):LOC
+</pre>
+
+<p>consisting of a person chunk covering "John Smith"
+and a location chunk covering "Washington".  Next,
+suppose we use the Indo-European tokenizer factory to
+tokenize the input.   The tokens (with start and end [plus 1]
+character offsets) and the tags produced
+by the BIO tag/chunk codec are:</p>
+
+<blockquote><table>
+<tr><th>Token</th><th>Start</th><th>End</th><th>Tag</th></tr>
+<tr><td>John</td><td>0</td><td>4</td>
+    <td>B_PER</td></tr>
+<tr><td>J</td><td>5</td><td>16</td>
+    <td>I_PER</td></tr>
+<tr><td>.</td><td>6</td><td>7</td>
+    <td>I_PER</td></tr>
+<tr><td>Smith</td><td>8</td><td>13</td>
+    <td>I_PER</td></tr>
+<tr><td>lives</td><td>14</td><td>19</td>
+    <td>O</td></tr>
+<tr><td>near</td><td>20</td><td>24</td>
+    <td>O</td></tr>
+<tr><td>Washington</td><td>25</td><td>35</td>
+    <td>B_LOC</td></tr>
+<tr><td>.</td><td>35</td><td>36</td>
+    <td>O</td></tr>
+</table></blockquote>
+
+<p>The token/tag sequences are then provided as input
+to CRF training.</p>
+
+<h3>Feature Extraction</h3>
+
+<p>Feature extraction for CRF chunkers is the same as that for
+taggers, requiring an implementation of the chain CRF feature
+extractor.  The tokens are those supplied by the codec's tokenizer and
+the tags are supplied by the codec coding of chunkings as
+taggings.  </p>
+
+<p>For our simple demo, we'll use exactly the same
+feature extractor as we did for the tagging example.
+</p>
+
+<h3>Estimating CRF Chunkers</h3>
+
+<h4>Training Corpus</h4>
+
+<p>We implement a hard-coded training corpus as we did
+for the part-of-speech tagging case.  The code is in
+<a href="src/TinyEntityCorpus.java"><code>src/TinyEntityCorpus.java</code></a>.
+The declaration shows it requires a chunking handler:
+</p>
+
+<pre class="code">
+public class TinyEntityCorpus
+    extends Corpus&lt;ObjectHandler&lt;Chunking&gt;&gt; {
+...
+</pre>
+
+<p>As with our toy POS corpus, it hard codes an array of
+chunkings:</p>
+
+<pre class="code">
+    static final Chunking[] CHUNKINGS
+        = new Chunking[] {
+        chunking(&quot;&quot;),
+        chunking(&quot;The&quot;),
+        chunking(&quot;John ran.&quot;,
+                 chunk(0,4,&quot;PER&quot;)),
+        chunking(&quot;Mary ran.&quot;,
+                 chunk(0,4,&quot;PER&quot;)),
+        chunking(&quot;The kid ran.&quot;),
+        chunking(&quot;John likes Mary.&quot;,
+                 chunk(0,4,&quot;PER&quot;),
+                 chunk(11,15,&quot;PER&quot;)),
+        chunking(&quot;Tim lives in Washington&quot;,
+                 chunk(0,3,&quot;PER&quot;),
+                 chunk(13,23,&quot;LOC&quot;)),
+        chunking(&quot;Mary Smith is in New York City&quot;,
+                 chunk(0,10,&quot;PER&quot;),
+                 chunk(17,30,&quot;LOC&quot;)),
+        chunking(&quot;New York City is fun&quot;,
+                 chunk(0,13,&quot;LOC&quot;)),
+        chunking(&quot;Chicago is not like Washington&quot;,
+                 chunk(0,7,&quot;LOC&quot;),
+                 chunk(20,30,&quot;LOC&quot;))
+    };
+</pre>
+
+<p>Two static factory convenience methods allow the array of chunkings
+to be relatively compactly defined:</p>
+
+<pre class="code">
+    static Chunking chunking(String s, Chunk... chunks) {
+        ChunkingImpl chunking = new ChunkingImpl(s);
+        for (Chunk chunk : chunks)
+            chunking.add(chunk);
+        return chunking;
+    }
+
+    static Chunk chunk(int start, int end, String type) {
+        return ChunkFactory.createChunk(start,end,type);
+    }
+</pre>
+
+<h4>Training Code</h4>
+
+<p>The code for training a CRF chunker is very much like that for
+training the POS tagger, consisting of a long sequence of variables
+used for estimation, followed by a call to the estimation method,
+followed by a serialization to a specified file.  In fact, we use
+similar parameters for the entity trainer.</p>
+
+<p>The source code for training is in
+<a href="src/SimpleEntityTrain.java"><code>src/SimpleEntityTrain.java</code></a>.
+</p>
+
+<pre class="code">
+public class SimpleEntityTrain {
+
+    public static void main(String[] args) throws IOException {
+        Corpus&lt;ObjectHandler&lt;Chunking&gt;&gt; corpus
+            = new TinyEntityCorpus();
+
+        TokenizerFactory tokenizerFactory
+            = IndoEuropeanTokenizerFactory.INSTANCE;
+        boolean enforceConsistency = true;
+        TagChunkCodec tagChunkCodec
+            = new BioTagChunkCodec(tokenizerFactory,
+                                   enforceConsistency);
+...
+</pre>
+
+<p>Note that we use the new chunking corpus, and create an instance
+of the BIO tag/chunk codec using an Indo-European tokenizer factory.
+The flag to enforce consistency will cause training to raise an
+exception if there is a training chunking that is not consistent with
+the specified tokenizer factory.
+</p>
+
+<p>The other arguments are roughly the same as for the POS
+tagger trainer:</p>
+
+<pre class="code">
+...
+        int minFeatureCount = 1;
+
+        boolean cacheFeatures = true;
+
+        boolean addIntercept = true;
+
+        double priorVariance = 4.0;
+        boolean uninformativeIntercept = true;
+        RegressionPrior prior
+            = RegressionPrior.gaussian(priorVariance,
+                                       uninformativeIntercept);
+        int priorBlockSize = 3;
+
+        double initialLearningRate = 0.05;
+        double learningRateDecay = 0.995;
+        AnnealingSchedule annealingSchedule
+            = AnnealingSchedule.exponential(initialLearningRate,
+                                            learningRateDecay);
+
+        double minImprovement = 0.00001;
+        int minEpochs = 10;
+        int maxEpochs = 5000;
+
+        Reporter reporter
+            = Reporters.stdOut().setLevel(LogLevel.DEBUG);
+...
+</pre>
+
+<p>The call to the factory method for estimation is also
+similar, but requires the tag-chunk codec and a tokenizer
+factory for handling inputs.  These should be the same
+tokenizer factory to ensure consistency. </p>
+
+<pre class="code">
+...
+        ChainCrfChunker crfChunker
+            = ChainCrfChunker.estimate(corpus,
+                                       tagChunkCodec,
+                                       tokenizerFactory,
+                                       featureExtractor,
+                                       addIntercept,
+                                       minFeatureCount,
+                                       cacheFeatures,
+                                       prior,
+                                       priorBlockSize,
+                                       annealingSchedule,
+                                       minImprovement,
+                                       minEpochs,
+                                       maxEpochs,
+                                       reporter);
+...
+</pre>
+
+<p>The code to serialize the model to a file is the same
+as before:</p>
+
+<pre class="code">
+...
+        File modelFile = new File(args[0]);
+        AbstractExternalizable.serializeTo(crfChunker,modelFile);
+    }
+}
+</pre>
+
+<h4>Running the Trainer</h4>
+
+<p>There's an ant task for training to a specified file after
+changing directories to the CRF tutorial directory:</p>
+
+<pre class="code">
+lingpipe\trunk\demos\tutorial\crf&gt; ant simple-entity-train
+
+Estimating
+      :00 Training chain CRF chunker
+      :00 Converting chunk corpus to tag corpus using codec.
+      :00 ChainCrf.estimate Parameters
+      :00 featureExtractor=SimpleChainCrfFeatureExtractor@d8a7efd
+      :00 addInterceptFeature=true
+      :00 minFeatureCount=1
+      :00 cacheFeatureVectors=true
+      :00 allowUnseenTransitions=false
+      :00 prior=GaussianRegressionPrior(Variance=4.0, noninformativeIntercept=true)
+      :00 annealingSchedule=Exponential(initialLearningRate=0.05, base=0.995)
+      :00 minImprovement=1.0E-5
+      :00 minEpochs=10
+      :00 maxEpochs=5000
+      :00 priorBlockSize=3
+      :00 Computing corpus tokens and features
+      :00 Corpus Statistics
+      :00 Num Training Instances=10
+      :00 Num Training Tokens=36
+      :00 Num Dimensions After Pruning=26
+      :00 Tags={0=O, 1=B_PER, 2=B_LOC, 3=I_PER, 4=I_LOC}
+      :00 Caching Feature Vectors
+      :00 epoch=    0 lr=0.050000000 ll=   -26.7467 lp=  -290.7354 llp=  -317.4821 llp*=  -317.4821
+      :00 epoch=    1 lr=0.049750000 ll=   -24.3225 lp=  -290.7784 llp=  -315.1009 llp*=  -315.1009
+      :00 epoch=    2 lr=0.049501250 ll=   -22.3622 lp=  -290.8411 llp=  -313.2033 llp*=  -313.2033
+      :00 epoch=    3 lr=0.049253744 ll=   -20.6893 lp=  -290.9193 llp=  -311.6085 llp*=  -311.6085
+...
+...
+      :00 epoch=  109 lr=0.028952482 ll=    -4.4427 lp=  -295.3488 llp=  -299.7915 llp*=  -299.7915
+      :00 epoch=  110 lr=0.028807720 ll=    -4.4355 lp=  -295.3555 llp=  -299.7911 llp*=  -299.7911
+      :00 epoch=  111 lr=0.028663681 ll=    -4.4285 lp=  -295.3621 llp=  -299.7906 llp*=  -299.7906
+      :00 Converged with rollingAverageRelativeDiff=9.845569372249269E-6
+      :00 Feat Extraction Time=:00
+      :00 Forward Backward Time=:00
+      :00 Update Time=:00
+      :00 Prior Update Time=:00
+      :00 Loss Time=:00
+
+Compiling to file=simpleEntity.ChainCrfChunker
+
+BUILD SUCCESSFUL
+Total time: 1 second
+</pre>
+
+<p>The main difference here is that we turned the learning rate down a
+bit and let it train longer.  That'll usually produce a better solution
+(in terms of the objective function of log likelihood plus log prior;
+the likelihood won't always go up, especially with a string prior).</p>
+
+<p>Also note that in this case, we ran up to the maximum number of
+epochs rather than converging.  This is mainly because we had a lower
+convergence threshold in this example.  These are all parameters to
+tune to get best performance out of the conditional random field
+estimator.</p>
+
+<h3>Running CRF Chunkers</h3>
+
+<p>Before we walk through the code to do chunking, here is what
+the output looks like from the built-in ant task we provide
+for a demo:</p>
+
+<pre class="code">
+lingpipe\trunk\demos\tutorial\crf&gt; ant simple-entity-run
+
+FIRST BEST
+John Smith lives in New York. : [0-10:PER@-Infinity, 20-28:LOC@-Infinity]
+
+10 BEST CONDITIONAL
+Rank log p(tags|tokens)  Tagging
+0    -1.4770389901734227 John Smith lives in New York. : [0-10:PER@-Infinity, 20-28:LOC@-Infinity]
+1    -2.2003980711615068 John Smith lives in New York. : [0-10:PER@-Infinity, 20-29:LOC@-Infinity]
+2    -2.5871005572290713 John Smith lives in New York. : [0-10:PER@-Infinity]
+3    -2.6727698300919283 John Smith lives in New York. : [0-4:PER@-Infinity, 20-28:LOC@-Infinity]
+4    -2.817671646241407 John Smith lives in New York. : [0-10:PER@-Infinity, 20-23:LOC@-Infinity]
+5    -3.3114207441453383 John Smith lives in New York. : [0-10:PER@-Infinity, 24-28:PER@-Infinity]
+6    -3.3961289110800124 John Smith lives in New York. : [0-4:PER@-Infinity, 20-29:LOC@-Infinity]
+7    -3.5368388002299245 John Smith lives in New York. : [0-10:PER@-Infinity, 20-23:PER@-Infinity]
+8    -3.782831397147575 John Smith lives in New York. : [0-4:PER@-Infinity]
+9    -3.937601248049126 John Smith lives in New York. : [0-10:PER@-Infinity, 17-28:LOC@-Infinity]
+
+MARGINAL CHUNK PROBABILITIES
+Rank Chunk Phrase
+0 0-10:PER@-0.42743033470330616 John Smith
+1 20-28:LOC@-1.0601439103952472 New York
+2 0-4:PER@-1.4068707794176127 John
+3 20-23:LOC@-2.348813706950642 New
+4 24-28:PER@-2.725454312173648 York
+5 20-23:PER@-3.0679808609391594 New
+6 11-16:PER@-3.488779736670839 lives
+7 20-28:PER@-3.5393559022676406 New York
+8 24-28:LOC@-3.569822426270683 York
+9 17-28:LOC@-3.5881505770573288 in New York
+
+BUILD SUCCESSFUL
+Total time: 1 second
+</pre>
+
+<p>We first display the first-best output as a chunking.  The spans,
+such as 0-4, indicate the characters covered, such as "John", and the
+characters after the colon, such as "PER", indicate the entity type,
+such as a person.  This first-best answer is actually an error; the
+correct span should be 0-10 to generate the phrase "John Smith".  Note
+that an error isn't the same thing as a bug!  The training data never
+contained the phrase "John Smith", but it had lots of evidence that
+"John" makes a good single-word person entity.</p>
+
+<p>The second part of the ouptut provides the 10 best analyses of
+the whole phrase, along with their conditional (natural log) probability.
+In this case, we see the system isn't particularly confident of any
+of its analyses.  These are also on the natural log scale.  For
+instance, the estimated probability of the first-best analysis
+being correct is <code>exp(-1.48)=0.23</code>, which is not much
+confidence in the first-best analysis.
+</p>
+
+<p>Finally, we present the n-best chunks.  This is different than the
+n-best whole anlayses, though scores are also reported as conditional
+(natural log) probabilities.  Thus the first best chunk, <code>John
+Smith</code> as type <code>PER</code> (person), has estimated
+probability <code>exp(-0.43)=0.65</code>.  We can keep enumerating
+chunks until we get into very low confidence outputs.  Here, we've
+only gone out to considering the phrase <code>in New York</code> as a
+location, the probability of which is estimated as
+<code>exp(-3.59)=0.02</code>.  </p>
+
+
+
+<h3>CRF Chunking Code Walk Through</h3>
+
+<p>Now that we have a CRF chunker, we can use it to produce first-best,
+n-best, or individual chunks in order of likelihood.  These calls are also
+very similar to the part-of-speech tagging example.</p>
+
+<p>The code is in <a href="src/SimpleEntityChunk.java"><code>src/SimpleEntityChunk.java</code></a>.
+Like the POS tagging code, it starts by deserializing the trained chunker and
+casting it to the appropriate type:
+</p>
+
+<pre class="code">
+public class SimpleEntityChunk {
+    public static void main(String[] args)
+        throws ClassNotFoundException, IOException {
+
+        File modelFile = new File(args[0]);
+        @SuppressWarnings("unchecked")
+        ChainCrfChunker crfChunker
+            = (ChainCrfChunker)
+            AbstractExternalizable.readObject(modelFile);
+...
+</pre>
+
+<p>As with the POS tagger, we iterate over the remaining
+arguments (the first is the model file), analyzing each one.</p>
+
+<pre class="code">
+...
+        for (int i = 1; i &lt; args.length; ++i) {
+            String arg = args[i];
+            char[] cs = arg.toCharArray();
+...
+</pre>
+
+<p>Here, we'll need the array of characters to deal with
+the chunking interfaces.</p>
+
+<p>For first-best output, we just apply the chunking method
+and print the result:
+</p>
+
+<pre class="code">
+...
+            Chunking chunking = crfChunker.chunk(arg);
+            System.out.println(chunking);
+...
+</pre>
+
+<p>This is the same interface method that is implemented by
+the non-CRF chunkers, such as the HMM chunker, rescoring
+chunker, and token-shape chunker.</p>
+
+<p>For n-best output, we need to iterate over scored
+chunkings, represented using LingPipe's utility class
+<code>util.ScoredObject</code>, which wraps an object and
+provides a score.</p>
+
+<pre class="code">
+...
+            int maxNBest = 10;
+            Iterator&lt;ScoredObject&lt;Chunking&gt;&gt; it
+                = crfChunker.nBestConditional(cs,0,cs.length,maxNBest);
+            for (int rank = 0; rank &lt; maxNBest &amp;&amp; it.hasNext(); ++rank) {
+                ScoredObject&lt;Chunking&gt; scoredChunking = it.next();
+                System.out.println(rank
+                                   + "    " + scoredChunking.score()
+                                   + " " + scoredChunking.getObject());
+            }
+...
+</pre>
+
+<p>Note the use of the scored object methods <code>score()</code> and
+<code>getObject()</code> to return the score for the chunking
+and the chunking itself.</p>
+
+<p>As with the POS example, using the <code>nBestConditional()</code>
+method of the CRF chunker normalizes the scores to (natural) log conditional
+probabilities of chunking given the input.  In principle, if all
+possibilities are enumerated, the sum of their (naturally exponentiated)
+scores would be 1.0.  In practice, the combinatorics usually prevent such
+an enumeration; instead, the forward-backward algorithm is used to
+compute the sum for normalization.  As with the tagging CRFs, it's slightly
+more computationally expensive to compute the conditional probabilities
+because the normalizing factor needs to be computed.</p>
+
+<p>The generation of chunks is a bit different than with POS tagging.
+Rather than accessing the tag lattice and computing individual tag
+marginal probabilities, we get an iterator of chunks, the scores
+of which are the marginal probabilities of the chunk given the input.</p>
+
+<pre class="code">
+...
+            int maxNBestChunks = 10;
+            Iterator&lt;Chunk&gt; nBestChunkIt
+                = crfChunker.nBestChunks(cs,0,cs.length,maxNBestChunks);
+            for (int n = 0; n &lt; maxNBestChunks &amp;&amp; nBestChunkIt.hasNext(); ++n) {
+                Chunk chunk = nBestChunkIt.next();
+                System.out.println(n
+                                   + " " + chunk
+                                   + " " + arg.substring(chunk.start(),chunk.end()));
+            }
+        }
+    }
+}
+</pre>
+
+<p>Note that we use the start and end of the chunk to pull the
+phrase corresponding to the chunk out of the original input.</p>
+
+
+<h2>Richer Feature Extractor</h2>
+
+<p>In this section, we'll show how to create a realistic, though not
+quite state of the art, set of features for CRFs.  In the next
+section, we provide evaluation on the CoNLL 2003 English named
+entity mention detection task.</p>
+
+<p>The features will include normalized tokens, part-of-speech
+tags, word-shape features, position features, and token prefixes
+and suffixes, all in a window of 1 token around the current token.
+More sophisticated feature extractors might include a larger
+window, more normalization, dictionary-based features, and
+cluster-based features.
+</p>
+
+<h3>The Code</h3>
+
+<p>The code for the feature extractor may be found in <a
+href="src/ChunkerFeatureExtractor.java"><code>src/ChunkerFeatureExtractor.java</code></a>.
+In the rest of this section, we'll walk through it.</p>
+
+<p>The code begins with the requisite feature extractor definition:</p>
+
+<pre class="code">
+public class ChunkerFeatureExtractor
+    implements ChainCrfFeatureExtractor&lt;String&gt;,
+               Serializable {
+
+    static final long serialVersionUID = 123L;
+...
+</pre>
+
+<div class="sidebar">
+<h2>Eliminating Hard Coded Paths</h2>
+<p>In a more sophisticated implementation, a location could be read
+from a system property or constructor parameter, or the model may
+included on the classpath and retrieved as a resource.</p>
+</div>
+
+
+<p>Note that it is also declared to implement <code>java.io.Serializable</code>,
+and thus has a static serial version ID declared to stop the compiler from
+griping (the identity of this doesn't really matter for a first version with no
+backward compatibility requirements).</p>
+
+<h3>HMM for Part-of-Speech Tagging</h3>
+
+<p>We've also hard-coded a path to an HMM implementing part-of-speech
+tagging:</p>
+
+<pre class="code">
+...
+    static final File POS_HMM_FILE
+        = new File(&quot;../../models/pos-en-general-brown.HiddenMarkovModel&quot;);
+...
+</pre>
+
+<div class="sidebar">
+<h2>CRFs for POS Tagging</h2>
+<p>Of course, we could've trained a CRF for part-of-speech
+tagging.  But HMMs are competitive for part-of-speech tagging,
+slightly more efficient, and we already distribute one we
+could use.</p>
+</div>
+
+<p>This HMM is included in the <code>$LINGPIPE/demos/models</code>
+directory, and details on how it was built and other ways in which it
+can be used may be found in the <a
+href="../posTags/read-me.html">part-of-speech tagging tutorial</a>.
+</p>
+
+<p>There is a local variable to hold the tagger, and a constructor
+which reads in the model and constructs an HMM part-of-speech tagger
+with a cache.</p>
+
+<pre class="code">
+...
+    private final Tagger&lt;String&gt; mPosTagger;
+
+    public Muc6FeatureExtractor()
+        throws ClassNotFoundException, IOException {
+
+        @SuppressWarnings(&quot;unchecked&quot;) 
+        HiddenMarkovModel posHmm
+            = (HiddenMarkovModel)
+            AbstractExternalizable
+            .readObject(POS_HMM_FILE);
+
+        FastCache&lt;String,double[]&gt; emissionCache
+            = new FastCache&lt;String,double[]&gt;(100000);
+        mPosTagger = new HmmDecoder(posHmm,null,emissionCache);
+    }
+...
+</pre>
+
+<p>We are able to declare the tagger as final because we have built a
+custom externalizer for our feature extractor, which we'll discuss
+later.  Reconstituting the HMM from file requires an unchecked cast;
+that's just part of serialization.  We then build a cache and use it
+to build a decoder that caches log emission likelihoods, which is all
+we need for first-best decoding; hence the linear cache is null.  Also
+see the <a href="../posTags/read-me.html">part-of-speech Tagging
+tutorial</a> for detailed information on how to configure HMMs for
+runtime use, including caching.
+</p>
+
+<p>The exceptions may be thrown by the read object utility method in
+<code>util.AbstractExternalizable</code>.  </p>
+
+<h3>Feature Extraction Method</h3>
+
+<p>The extraction method itself just returns a new features
+object created from the tags and tokens.
+</p>
+
+<pre class="code">
+    public ChainCrfFeatures&lt;String&gt; extract(List&lt;String&gt; tokens,
+                                            List&lt;String&gt; tags) {
+        return new ChunkerFeatures(tokens,tags);
+    }
+</pre>
+
+
+<h3>Chain CRF Features Object Declaration</h3>
+
+<p>The <code>ChunkerFeatures</code> class is defined to
+extend a string-based CRF features object:
+</p>
+
+<pre class="code">
+    class ChunkerFeatures extends ChainCrfFeatures&lt;String&gt; {
+    ...
+</pre>
+
+<p>It is defined as a (non-static) inner class so that it can
+maintain access to things like the part-of-speech tagger found
+in the containing class, <code>ChunkerFeatureExtractor</code>.</p>
+
+<h3>Computing Part-of-Speech Tags</h3>
+
+<p>The part-of-speech tags are computed in the construct and
+saved ina  private final tagging object:</p>
+
+<pre class="code">
+...
+        private final Tagging&lt;String&gt; mPosTagging;
+
+        public ChunkerFeatures(List&lt;String&gt; tokens,
+                               List&lt;String&gt; tags) {
+            super(tokens,tags);
+            mPosTagging = mPosTagger.tag(tokens);
+        }
+....
+</pre>
+
+<p>The call to <code>super(tokens,tags)</code> is required because
+it's the only constructor for the superclass,
+<code>ChainCrfFeatures&lt;String&gt;</code>.  The superclass saves
+the tokens and tags objects and makes them available to the
+subclass through public methods.
+</p>
+
+<p>The tokens are the actual tokens for this input.  The
+tags, on the other hand, are the full set of tags used by
+the CRF, in symbol table order.</p>
+
+<p>The constructor then creates the part-of-speech tagging for
+the tokens using the tagger <code>mPosTagger</code> from its
+containing class.  The computation is put in the constructor
+so that the results may be reused for the set of nodes and
+edges for which feature maps are generated.</p>
+
+<h3>Edge Features</h3>
+
+<p>We'll start with the edge feature extraction method,
+because it's simpler:</p>
+
+<pre class="code">
+        public Map&lt;String,? extends Number&gt; edgeFeatures(int n, int k) {
+            ObjectToDoubleMap&lt;String&gt; feats
+                = new ObjectToDoubleMap&lt;String&gt;();
+            feats.set("PREV_TAG_" + tag(k),
+                      1.0);
+            feats.set("PREV_TAG_TOKEN_CAT_"  + tag(k)
+                      + "_" + tokenCat(n-1),
+                      1.0);
+            return feats;
+        }
+</pre>
+
+<p>This is the method that's called to generate edge features for
+token position <code>n</code> in the situation where the previous tag
+has identifier <code>k</code>.  The features are put into an instance
+of LingPipe's <code>util.ObjectToDoubleMap</code>, which saves
+a type declaration for the result.</p>
+
+<p>There are two features that we return here.  The first
+is the previous tag, which we provide with suffix <code>PREV_TAG_</code>.
+The name of the previous tag is returned by <code>tag(k)</code>; the method
+is implemented by the superclass, which has access to the set of
+stored tags.  We set the value of this, and all other features, to 1.0.
+This is <i>not</i> a requirement of our CRF implementation, though it's
+common to find systems that support only binary (0 or 1) feature values.
+</p>
+
+<p>The second feature is a "shape" feature for the token corresponding
+to the previous tag (which has position <code>n-1</code>, because the
+current tag has position <code>n</code>).  The shape feature is computed
+with an instance of <code>tokenizer.IndoEuropeanTokenCategorizer</code>.
+The <code>tokenCat()</code> method that retrieves it is implemented
+as:
+</p>
+
+<pre class="code">
+...
+        public String tokenCat(int n) {
+            return IndoEuropeanTokenCategorizer
+                   .CATEGORIZER
+                   .categorize(token(n));
+        }
+...
+</pre>
+
+<h3>Normalized Token Features</h3>
+
+<p>As is usual with CRFs built for chunking, the node features,
+based only on the input tokens, are much richer than the 
+edge features.  They're based on the same convenience object-to-double
+mapping:
+</p>
+
+<pre class="code">
+...
+        public Map&lt;String,? extends Number&gt; nodeFeatures(int n) {
+            ObjectToDoubleMap&lt;String&gt; feats
+                = new ObjectToDoubleMap&lt;String&gt;();
+..
+</pre>
+
+<p>The first thing the method does is compute a bunch of
+values it will reuse, starting with flags indicating whether
+the current token is the beginning of a sentence or an end
+of sentence:</p>
+
+<pre class="code">
+...
+            boolean bos = n == 0;
+            boolean eos = (n + 1) >= numTokens();
+...
+</pre>
+
+<p>Next, we compute the token categories, tokens, and
+part-of-speech tags for the current position, previous
+position, and next position of the input:</p>
+
+<pre class="code">
+...
+            String tokenCat = tokenCat(n);
+            String prevTokenCat = bos ? null : tokenCat(n-1);
+            String nextTokenCat = eos ? null : tokenCat(n+1);
+
+            String token = normedToken(n);
+            String prevToken = bos ? null : normedToken(n-1);
+            String nextToken = eos ? null : normedToken(n+1);
+
+            String posTag = mPosTagging.tag(n);
+            String prevPosTag = bos ? null : mPosTagging.tag(n-1);
+            String nextPosTag = eos ? null : mPosTagging.tag(n+1);
+...
+</pre>
+
+<p>The previous and next methods check if we're at the begin
+or end of the sentence and return <code>null</code> accordingly.
+The part-of-speech tagging is taken from the saved part-of-speech
+taggings computed in the constructor.</p>
+
+<p>The token methods provide
+some light normalization of tokens to compress all numbers to
+the same kind of value.  That method is:
+</p>
+
+<pre class="code">
+        public String normedToken(int n) {
+            return token(n).replaceAll("\\d+","*$0*").replaceAll("\\d","D");
+        }
+</pre>
+
+<p>This just takes every sequence of numbers and replaces it with
+<code>*D...D*</code>.  For instance, <code>12/3/08</code> is
+converted to <code>*DD*/*D*/*DD*</code>.</p>
+
+<p>We then set feature values for preceding, current and following
+tokens.  First, a flag indicating whether it's begin or end
+of speech or an internal node:</p>
+
+<pre class="code">
+...
+            if (bos)
+                feats.set("BOS",1.0);
+            if (eos)
+                feats.set("EOS",1.0);
+            if (!bos &amp;&amp; !eos)
+                feats.set("!BOS!EOS",1.0);
+...
+</pre>
+
+<p>Next, we include the tokens, token categories,
+and their parts of speech:</p>
+
+<pre class="code">
+...
+            feats.set("TOK_" + token, 1.0);
+            if (!bos)
+                feats.set("TOK_PREV_" + prevToken,1.0);
+            if (!eos)
+                feats.set("TOK_NEXT_" + nextToken,1.0);
+
+            feats.set("TOK_CAT_" + tokenCat, 1.0);
+            if (!bos)
+                feats.set("TOK_CAT_PREV_" + prevTokenCat, 1.0);
+            if (!eos)
+                feats.set("TOK_CAT_NEXT_" + nextToken, 1.0);
+
+            feats.set("POS_" + posTag,1.0);
+            if (!bos)
+                feats.set("POS_PREV_" + prevPosTag,1.0);
+            if (!eos)
+                feats.set("POS_NEXT_" + nextPosTag,1.0);
+...
+</pre>
+
+<p>Finally, we add prefix and suffix features, which add
+features for each suffix and prefix (up to a pre-specified
+length):</p>
+
+<pre class="code">
+...
+            for (String suffix : suffixes(token))
+                feats.set("SUFF_" + suffix,1.0);
+            if (!bos)
+                for (String suffix : suffixes(prevToken))
+                    feats.set("SUFF_PREV_" + suffix,1.0);
+            if (!eos)
+                for (String suffix : suffixes(nextToken))
+                    feats.set("SUFF_NEXT_" + suffix,1.0);
+
+            for (String prefix : prefixes(token))
+                feats.set("PREF_" + prefix,1.0);
+            if (!bos)
+                for (String prefix : prefixes(prevToken))
+                    feats.set("PREF_PREV_" + prefix,1.0);
+            if (!eos)
+                for (String prefix : prefixes(nextToken))
+                    feats.set("PREF_NEXT_" + prefix,1.0);
+...
+</pre>
+
+<p>After this, we just return the feature mapping generated.</p>
+
+<p>The prefix function is simply implemented with a list:</p>
+
+<pre class="code">
+    static int MAX_PREFIX_LENGTH = 4;
+    static List&lt;String&gt; prefixes(String s) {
+        int numPrefixes = Math.min(MAX_PREFIX_LENGTH,s.length());
+        if (numPrefixes == 0)
+            return Collections.emptyList();
+        if (numPrefixes == 1)
+            return Collections.singletonList(s);
+        List&lt;String&gt; result = new ArrayList&lt;String&gt;(numPrefixes);
+        for (int i = 1; i &lt;= Math.min(MAX_PREFIX_LENGTH,s.length()); ++i)
+            result.add(s.substring(0,i));
+        return result;
+    }
+</pre>
+
+<p>It'd be faster to unfold all this code to avoid the object
+creation, but profiling doesn't show it to be a particular
+bottleneck in the overall estimation process (it may be different
+at runtime, where you might want a faster version for increased
+throughput).  Suffixes are generated similarly.</p>
+
+<h3>Custom Serialization</h3>
+
+<p>Feature extractors need to be serializable if they are part
+of a CRF that is going to get serialized.  Which means they better
+be serializable for all practical purposes.</p>
+
+<p>In order to avoid having the part-of-speech tagger serialized along
+with the feature extractor (which won't work, because the compiled
+extractor isn't itself serializable [perhaps it should be!]).  The
+serialization code involves LingPipe's
+<code>util.AbstractExternalizable</code> abstract base class for
+serialization proxies: </p>
+
+<pre class="code">
+    static class Externalizer extends AbstractExternalizable {
+        static final long serialVersionUID = 4321L;
+        private final ChunkerFeatureExtractor mExtractor;
+        public Externalizer() {
+            this(null);
+        }
+        public Externalizer(ChunkerFeatureExtractor extractor) {
+            mExtractor = extractor;
+        }
+        public Object read(ObjectInput in)
+            throws IOException, ClassNotFoundException {
+            return new ChunkerFeatureExtractor();
+        }
+        public void writeExternal(ObjectOutput out)
+            throws IOException {
+            /* no op */
+        }
+    }
+</pre>
+
+<p>This is the standard way to serialize an immutable
+object.  Note that nothing is written as part of the
+serializer (other than the default version UID and
+fully qualified path name, which are always written
+out as part of serialization).  The read method just
+creates a new feature extractor from scratch.</p>
+
+<p>With more elaborate feature extractors, more may need
+to be serialized.</p>
+
+
+<h2>Running CoNLL 2003 English Named Entities</h2>
+
+<p>In this section, we consider data drawn from the 2003 shared task
+of the Conference on Natural Language Learning (CoNLL).  The task
+and data are available from:
+</p>
+
+<ul>
+<li>
+CoNLL 2003 <a href="http://www.cnts.ua.ac.be/conll2003/ner/">Language-Independent Named Entity Recognition</a>
+</li>
+</ul>
+
+<p>Unfortunately, you only get the annotations from that site,
+and need the big Reuters data collection, sometimes called RCV1.
+Then you need to run a unix script to combine the RCV1 data
+with the tag file in order to generate a (semi-)standard
+CoNLL representation.</p>
+
+<h3>The Data Format</h3>
+
+<p>Once everything's put together, the data looks like this:
+</p>
+
+<pre class="code">
+-DOCSTART- -X- O O
+
+EU NNP I-NP I-ORG
+rejects VBZ I-VP O
+German JJ I-NP I-MISC
+call NN I-NP O
+to TO I-VP O
+boycott VB I-VP O
+British JJ I-NP I-MISC
+lamb NN I-NP O
+. . O O
+
+Peter NNP I-NP I-PER
+Blackburn NNP I-NP I-PER
+
+BRUSSELS NNP I-NP I-LOC
+1996-08-22 CD I-NP O
+
+The DT I-NP O
+European NNP I-NP I-ORG
+</pre>
+
+<p>The data contains four columns, consisting of a token,
+a part-of-speech tag, a phrase-chunking tag, and an entity
+tag.  Unlike previous CoNLL data sets, there is no
+begin tag (e.g. <code>B-LOC</code>, only in tags (e.g. <code>I-LOC</code>).
+</p>
+
+<h3>Corpus Implementation</h3>
+
+<p>The corpus implementation may be found in <a href="src/Conll2003EnglishNeCorpus.java"><code>src/Conll2003EnglishNeCorpus.java</code></a>.</p>
+
+<p>It's defined to directly extend corpus and hang onto its
+data directory.</p>
+
+<pre class="code">
+public class Conll2003EnglishNeCorpus
+    extends Corpus&lt;ObjectHandler&lt;Chunking&gt;&gt; {
+
+    private final File mConllDataDir;
+
+    public Conll2003EnglishNeCorpus(File conllMungedDataDir)
+        throws IOException {
+
+        mConllDataDir = conllMungedDataDir;
+    }
+</pre>
+
+<p>The data is distributed as three files in the munged data directory
+with the following file names, defined as constants:</p>
+
+<pre class="code">
+    static final String TRAIN_FILE_NAME = "eng.train";
+    static final String DEV_FILE_NAME = "eng.testa";
+    static final String TEST_FILE_NAME = "eng.testb";
+</pre>
+
+<p>The train and test visitor methods are implemented by
+calling a helper method with the file name:</p>
+
+<pre class="code">
+    public void visitTrain(ObjectHandler&lt;Chunking&gt; handler)
+        throws IOException {
+
+        visit(TRAIN_FILE_NAME,handler);
+        visit(DEV_FILE_NAME,handler);
+    }
+
+    public void visitTest(ObjectHandler&lt;Chunking&gt; handler)
+        throws IOException {
+
+        visit(TEST_FILE_NAME,handler);
+    }
+</pre>
+
+<p>The helper method is:</p>
+
+<pre class="code">
+    private void visit(String fileName, 
+                       final ObjectHandler&lt;Chunking&gt; handler)
+        throws IOException {
+
+        TagChunkCodec codec
+            = new IoTagChunkCodec(); 
+
+        ObjectHandler&lt;Tagging&lt;String&gt;&gt; tagHandler
+            = TagChunkCodecAdapters
+            .chunkingToTagging(codec,handler);
+
+        Parser&lt;ObjectHandler&lt;Tagging&lt;String&gt;&gt;&gt; parser
+            = new LineTaggingParser(TOKEN_TAG_LINE_REGEX,
+                                    TOKEN_GROUP, TAG_GROUP,
+                                    IGNORE_LINE_REGEX,
+                                    EOS_REGEX);
+        parser.setHandler(tagHandler);
+        File file = new File(mConllDataDir,fileName);
+        parser.parse(file);
+    }
+</pre>
+
+
+<div class="sidebar">
+<h2>Online Corpora for Scalability</h2>
+<p>Note that each time this corpus is visited, it will open the files
+and read the data from it.  This online design allows potentially 
+very large data sets to be used.
+</p>
+</div>
+
+<p>The method first constructs an IO-encoding codec using the nullary
+constructor of <code>chunk.IoTagChunkCodec</code>.  Because no tokenizer
+factry is specified, this codec may only be used to covnert string
+taggings to chunkings, not the other way around.  But that is all we
+need to convert a chunk handler to a tag handler.  This is done ith
+the static helper method
+<code>TagChunkCodecAdapters.chunkingToTagging</code>, which takes
+a tag handler and returns a chunk handler.  Internally, the codec
+is used t decode the string taggings into chunkings.</p>
+
+<p>The parser itself is defined in terms of three constants that
+define a regular expression to match a training line with an
+indication of which matching group is the token and which is the tag.
+The other two arguments are regular expressions for lines that are to
+be ignored and lines that constitute end-of-sentence markers.  The
+constants used for the parser are:</p>
+
+<pre class="code">
+    // token posTag chunkTag entityTag
+    static final String TOKEN_TAG_LINE_REGEX
+        = "(\\S+)\\s\\S+\\s\\S+\\s(O|[B|I]-\\S+)"; 
+
+    static final int TOKEN_GROUP = 1; 
+    static final int TAG_GROUP = 2;   
+
+    // lines that start with "-DOCSTART"
+    static final String IGNORE_LINE_REGEX
+        = "-DOCSTART(.*)";  
+
+    // blank lines end sentences
+    static final String EOS_REGEX
+        = "\\A\\Z"; 
+</pre>
+
+<p>The regex matches a line with four entries, with the
+first pair of parentheses picking out group 1 for the token
+and the second pair of parentheses picking out the
+tag.</p>
+
+<h3>Estimating the Model</h3>
+
+<p>The model coefficients are estimated just like the simpler models.
+The code is in the main method of <a
+href="src/Conll2003EnglishNeEval.java"><code>src/Conll2003EnglishNeEval.java</code></a>.
+</p>
+
+<p>The main difference is that we take a bunch of arguments
+that are converted to training parameters.  These are:
+</p>
+
+<pre class="code">
+public class Conll2003EnglishNeEval {
+
+    public static void main(String[] args) 
+        throws IOException, ClassNotFoundException {
+
+        File conllMungedDataDir = new File(args[0]);
+        int minFeatureCount = Integer.parseInt(args[1]);
+        boolean addIntercept = Boolean.parseBoolean(args[2]);
+        boolean cacheFeatures = Boolean.parseBoolean(args[3]);
+        double priorVariance = Double.parseDouble(args[4]);
+        int priorBlockSize = Integer.parseInt(args[5]);
+        double initialLearningRate = Double.parseDouble(args[6]);
+        double learningRateDecay = Double.parseDouble(args[7]);
+        double minImprovement = Double.parseDouble(args[8]);
+        int maxEpochs = Integer.parseInt(args[9]);
+...
+</pre>
+
+<p>The rest of the code proceeds exactly as for the toy
+examples, only now using the CoNLL corpus we just defined,
+by setting up all the necessary resources and calling
+the static <code>ChainCrfChunker.estimate()</code> method.
+</p>
+
+<pre class="code">
+        Conll2003EnglishNeCorpus corpus
+            = new Conll2003EnglishNeCorpus(conllMungedDataDir);
+
+        TokenizerFactory tokenizerFactory
+            = IndoEuropeanTokenizerFactory.INSTANCE;
+
+        boolean enforceConsistency = true;
+        TagChunkCodec tagChunkCodec
+            = new BioTagChunkCodec(tokenizerFactory,
+                                   enforceConsistency);
+
+        ChainCrfFeatureExtractor&lt;String&gt; featureExtractor
+            = new ChunkerFeatureExtractor();
+
+        boolean uninformativeIntercept = addIntercept;
+        RegressionPrior prior
+            = RegressionPrior.laplace(priorVariance,
+                                      uninformativeIntercept);
+
+        AnnealingSchedule annealingSchedule
+            = AnnealingSchedule.exponential(initialLearningRate,
+                                            learningRateDecay);
+
+        Reporter reporter
+            = Reporters.stdOut().setLevel(LogLevel.DEBUG);
+
+        int minEpochs = 1;
+        
+        ChainCrfChunker crfChunker
+            = ChainCrfChunker.estimate(corpus,
+                                       tagChunkCodec,
+                                       tokenizerFactory,
+                                       featureExtractor,
+                                       addIntercept,
+                                       minFeatureCount,
+                                       cacheFeatures,
+                                       prior,
+                                       priorBlockSize,
+                                       annealingSchedule,
+                                       minImprovement,
+                                       minEpochs,
+                                       maxEpochs,
+                                       reporter);
+...
+</pre>
+
+<h3>Evaluation</h3>
+
+<p>The rest of the main method performs evaluation:</p>
+
+<pre class="code">
+...
+        System.out.println("compiling");
+        @SuppressWarnings("unchecked") // required for serialized compile
+            ChainCrfChunker compiledCrfChunker
+            = (ChainCrfChunker)
+            AbstractExternalizable.serializeDeserialize(crfChunker);
+        System.out.println("     compiled");
+
+        System.out.println("\nEvaluating");
+        ChunkerEvaluator evaluator
+            = new ChunkerEvaluator(compiledCrfChunker);
+
+        corpus.visitTest(evaluator);
+        System.out.println("\nEvaluation");
+        System.out.println(evaluator);
+        
+    }
+    
+}
+</pre>
+
+<div class="sidebar">
+<h2>More on Chunker Evaluation</h2>
+<p>
+There is a general description of the evaluation framework for
+chunking in the:
+</p>
+<ul>
+<li>LingPipe <a href="../ne/read-me.html">named entity
+tutorial</a>.
+</li>
+</ul>
+</div>
+
+<p>First it compiles the model.  Then it creates an evaluator out of
+the compiled model.  Then the corpus is used to walk the evaluator
+over the test cases.  Finally, the default evaluation is just printed
+out.</p>
+
+<h3>Running the Evaluation</h3>
+
+<p>There is an ant task from which evaluation may be run.
+Each of the parameters is defined as variable in the ant
+<a href="build.xml"><code>build.xml</code></a> file.  Particular
+parameters may be overridden as usual for ant by defining
+them on the command line as system properties, as in this
+invocation:</p>
+
+<pre class="code">
+lingpipe\trunk\demos\tutorial\crf&gt; ant -Dconll2003.ev.initialLearningRate=0.05 conll-ev
+</pre>
+
+<p>Here we've defined the initial learning rate, defined
+in the build file using parameter <code>conll2003.ev.initialLearningRate</code>
+to be <code>0.05</code>.  Typically, several values will be considered
+and the one with the best performance kept.  Also, we typically use
+annealing, but here just use a constant learning rate.
+</p>
+
+<h4>Report on the Parameters</h4>
+
+<p>The result of the run are printed because
+the standard-out reporter was set to the debug level.
+First, we have a report of the training parameters.
+</p>
+
+<pre class="code">
+      :00 Training chain CRF chunker
+      :00 Converting chunk corpus to tag corpus using codec.
+      :00 ChainCrf.estimate Parameters
+      :00 featureExtractor=ChunkerFeatureExtractor@43256ea2
+      :00 addInterceptFeature=true
+      :00 minFeatureCount=2
+      :00 cacheFeatureVectors=true
+      :00 allowUnseenTransitions=false
+      :00 prior=LaplaceRegressionPrior(Variance=10000.0, noninformativeIntercept=true)
+      :00 annealingSchedule=Exponential(initialLearningRate=0.05, base=1.0)
+      :00 minImprovement=1.0E-4
+      :00 minEpochs=1
+      :00 maxEpochs=50
+      :00 priorBlockSize=100
+...
+</pre>
+
+<p>As usual with reporters, the time since creation is
+listed first, in HH:MM::SS format, that is, down to the second level.
+</p>
+
+<h4>Report on the Corpus</h4>
+
+<p>Next, a report of the corpus statistics, including the number of
+dimensions after pruning (note that we required every feature to
+appear at least twice).</p>
+
+<pre class="code">
+...
+       :00 Computing corpus tokens and features
+       :24 Corpus Statistics
+       :24 Num Training Instances=18453
+       :24 Num Training Tokens=278100
+       :24 Num Dimensions After Pruning=108196
+       :24 Tags={0=B_ORG, 1=O, 2=B_MISC, 3=B_PER, 4=I_PER, 5=B_LOC, 6=I_ORG, 7=I_MISC, 8=I_LOC}
+...
+</pre>
+
+<p>Because chose to cache feature vectors, we also see:
+</p>
+
+<pre class="code">
+...
+      :24 Caching Feature Vectors
+...
+</pre>
+
+<p>This drives memory use close to 2GB for training with this feature
+extractor (with 64-bit Java).  This can be reduced to around 350MB at
+the expense of a large speed hit per epoch, because the features get
+extracted twice, once for updates, and once for computing the log
+likelihoods for convergence.</p>
+
+<p>There are 18,453 sentences in the training set, and 278,100 tokens.
+There are 108,196 dimensions in the coefficient vectors, one for
+each feature.  Finally, the set of 9 tags is listed, which includes
+types for persons, organizations, locations, and other (miscellaneous)
+entities.</p>
+
+<h4>Epoch-by-Epoch Estimation</h4>
+
+<p>Next, we get the epoch-by-epoch report on log likelihood, log prior,
+their sum, and the maximum of their sum:</p>
+
+<pre class="code">
+...
+     1:00 epoch=    0 lr=0.050000000 ll=-22947.2446 lp=-6956506.0166 llp=-6979453.2612 llp*=-6979453.2612
+     1:12 epoch=    1 lr=0.050000000 ll=-14985.2173 lp=-6956565.0275 llp=-6971550.2448 llp*=-6971550.2448
+     1:24 epoch=    2 lr=0.050000000 ll=-11354.4609 lp=-6956604.4636 llp=-6967958.9246 llp*=-6967958.9246
+     1:35 epoch=    3 lr=0.050000000 ll= -9744.2856 lp=-6956633.7058 llp=-6966377.9914 llp*=-6966377.9914
+     1:47 epoch=    4 lr=0.050000000 ll= -9404.9320 lp=-6956656.7684 llp=-6966061.7004 llp*=-6966061.7004
+     1:58 epoch=    5 lr=0.050000000 ll= -7370.6916 lp=-6956675.6223 llp=-6964046.3139 llp*=-6964046.3139
+...
+    10:05 epoch=   47 lr=0.050000000 ll= -1231.0988 lp=-6956855.6274 llp=-6958086.7262 llp*=-6958086.7262
+    10:17 epoch=   48 lr=0.050000000 ll= -1214.1489 lp=-6956856.8518 llp=-6958071.0007 llp*=-6958071.0007
+    10:28 epoch=   49 lr=0.050000000 ll= -1197.9094 lp=-6956858.0347 llp=-6958055.9441 llp*=-6958055.9441
+...
+</pre>
+
+<div class="sidebar">
+<h2>Early Stopping</h2>
+<p>
+Often the objective we care about, such as precision and
+recall on held out data, converges much more quickly than
+overall log likelihood and prior.  Thus practitioners often
+apply so-called "early stopping", which means setting a low
+upper bound on the number of epochs, so that training terminates
+before convergence.
+</p>
+<p>In practice, this can greatly speed things up.  In theory,
+it acts as another kind of regularization or shrinkage (like a prior),
+which keeps features from getting as large as they might. 
+Early stopping is thus often combined with a non-informative
+prior, to allow the early stopping to handle shrinkage
+implicitly.
+</p>
+</div>
+
+
+<p>We can see from the log likelihood progression (here denoted <code>ll</code>), that we
+haven't converged on the likelihood front to even two digits of accuracy.  The overall
+objective, the sum of the log likelihood and log prior, here indicated <code>llp</code>,
+has converged to at least a few digits of accuracy.
+</p>
+
+<h4>Timing Report</h4>
+
+<p>After the last epoch, we get statistics on how the time was spent during estimation:
+</p>
+
+<pre class="code">
+...
+    10:28 Feat Extraction Time=:00
+    10:28 Forward Backward Time=2:25
+    10:28 Update Time=3:40
+    10:28 Prior Update Time=1:08
+    10:28 Loss Time=2:27
+...
+</pre>
+
+<p>The first report is time spent on feature extraction.  Here
+that's no time at all, because we cached the features.  If
+caching is turned off for features, the feature extraction time
+will dominate with a complex feature extractor like the one considered
+here for CoNLL.</p>
+
+<p>Next, we see the time spent by the decoder computing the
+full forward-backward lattice for each training example in
+each epoch.  That's 280K tokens times 50 epochs, or
+the equivalent of decoding 10M tokens.  Or about 70K
+tokens/second.  First-best decoding is considerably faster.
+But, keep in mind that this is only the decoding time;
+the feature extraction time is greater.  Including
+feature extraction time, overall throughput is closer to 5K
+tokens/second for new sentences.</p>
+
+<p>The prior update time is little over a minute.  The time
+is inversely proportional to the prior block size.  If an
+uninformative prior is used to produce a maximum likelihood
+estimate, this time will be zero.</p>
+
+<p>The last value is the loss computation time.  This is
+essentially doing the same work as forward backward with
+some summations.  It walks over the entire corpus and
+tags each instance and computes its log likelihood.  This
+requires the full forward-backward algorithm for the
+normalizing path.</p>
+
+<h4>First-Best Results</h4>
+
+<p>After compilation, we see the first-best evaluation
+results, which are the results of only looking at the
+first-best whole sequence predicted by the trained CRF
+on the test data.  The report starts with the raw
+contingency table counts:</p>
+
+<pre class="code">
+...
+compiling
+     compiled
+
+Evaluating
+
+Evaluation
+FIRST-BEST EVAL
+  Total=6406
+  True Positive=4409
+  False Negative=994
+  False Positive=1003
+  True Negative=0
+  Positive Reference=5403
+  Positive Response=5412
+  Negative Reference=1003
+  Negative Response=994
+...
+</pre>
+
+
+<p>As usual, true positives are chunks produced by the CRF that match
+the reference chunking.  Specifically, the system we found 4409 corect
+named entity mentions in the test data.</p>
+
+<div class="sidebar">
+<h2>Tuning</h2>
+<p>These values will move around with the value of the
+hyperparameters: type of prior, prior variance, prior block size, 
+learning rate, and annealing rate.  Typically a range of
+values are considered, and the one that performs best is chosen.
+</p>
+</div>
+
+<p>False negatives are chunks in the reference chunking missed by the
+CRF; there were 994 chunks in the reference chunking that were missed
+by the CRF.</p>  
+
+<p>False positives are chunks returned by the CRF that are
+not in the reference chunking; there were 1003 of these.  True
+negatives are not evaluated by chunkers.</p>
+
+<p>We also report the number of positive and negative reference
+and response items, which are the sums typically displayed at the
+side of contingency tables.
+</p>
+
+<p>Next, we see the basic results calculated from these contingency
+tables, including accuracy (not a very reliable number), precision
+(TP/[TP+FP]), recall (TP/[TP+FN]), rejection recall and rejection precision
+(both of which involve true negative counts).  And finally, F(1),
+which is the balanced harmonic mean of precision and recall.</p>
+
+<pre class="code">
+...
+  Accuracy=0.6882610053075242
+  Recall=0.816028132518971
+  Precision=0.8146711012564671
+  Rejection Recall=0.0
+  Rejection Precision=0.0
+  F(1)=0.8153490522422563
+...
+</pre>
+
+<p>Next are a number of less common statistics calculated from the
+contingency table, not all of which make sense without true negative
+counts. See the chunker evaluation doc for more detail.</p>
+
+<pre class="code">
+...
+  Fowlkes-Mallows=5407.49812760023
+  Jaccard Coefficient=0.6882610053075242
+  Yule's Q=-1.0
+  Yule's Y=-1.0
+  Reference Likelihood=0.8434280362160474
+  Response Likelihood=0.8448329690914768
+  Random Accuracy=0.7368506187952697
+  Random Accuracy Unbiased=0.736851605713462
+  kappa=-0.18464650483043604
+  kappa Unbiased=-0.18465094775774404
+  kappa No Prevalence=0.3765220106150484
+  chi Squared=218.41451486192213
+  phi Squared=0.03409530360005029
+  Accuracy Deviation=0.005787335774511212
+...
+</pre>
+
+<p>After the first-best eval, we have the n-best eval, which
+evaluates the n-best chunker.  The results are presented
+as the count of test sequences that had a given n-best
+rank.</p>
+
+<pre class="code">
+...
+N-BEST EVAL (rank=count)
+0=2732
+1=281
+2=165
+-1=97
+3=74
+4=47
+5=37
+7=22
+10=21
+6=20
+9=20
+8=15
+12=13
+11=9
+16=8
+13=7
+19=7
+15=6
+17=5
+18=5
+22=5
+26=5
+27=5
+20=4
+21=4
+29=4
+42=4
+49=4
+51=4
+55=4
+25=3
+30=3
+34=3
+39=3
+14=2
+23=2
+28=2
+31=2
+33=2
+35=2
+38=2
+40=2
+43=2
+45=2
+50=2
+61=2
+32=1
+36=1
+37=1
+41=1
+44=1
+47=1
+48=1
+53=1
+54=1
+56=1
+57=1
+59=1
+62=1
+63=1
+...
+</pre>
+
+<p>For example, <code>0=2732</code> indicates that 2732 of the
+test sequences had a correct first-best analysis by the chunker;
+<code>17=5</code> indicates that the 17th best result from the
+CRF chunker was correct for 5 sequences.  Finally, <code>-1=97</code>
+indicates that for 97 test sequences, the correct result was
+not produced by the n-best chunker.  The default is to only evaluate
+the 64 best chunkings; this could be set higher at the cost of more
+time to enumerate the n-best outcomes.
+</p>
+
+<p>Finally, we have a per-chunk confidence evaluation, reported
+with the usual information retrieval metrics for precision-recall
+curves.  This is a ranked evaluation where all the mentions returned
+by the CRF are placed in rank order by score to allow precision,
+recall and other values to be calculated per returned answer.</p>
+
+<pre class="code">
+...
+CONFIDENCE EVALUATION  Area Under PR Curve (interpolated)=0.8618478546835892
+  Area Under PR Curve (uninterpolated)=0.8615241699138296
+  Area Under ROC Curve (interpolated)=0.9710497025169711
+  Area Under ROC Curve (uninterpolated)=0.9710497025169751
+  Average Precision=0.8826484588010134
+  Maximum F(1) Measure=0.8116515837104072
+  BEP (Precision-Recall break even point)=0.8030330062444246
+  Reciprocal Rank=1.0
+...
+</pre>
+
+<p>The full (interpolated or noninterpolated) precision recall or
+ROC curves may also be retrieved from the evaluation object,
+but they are not printed as part of the default <code>toString()</code>
+output.</p>
+
+<p>Finally, we see overall time reported by Ant.</p>
+
+<pre class="code">
+...
+BUILD SUCCESSFUL
+Total time: 10 minutes 56 seconds
+</pre>
+
+<p>Overall, the evaluation took about 11 minutes on my quad core Xeon
+(2.33GHz E5410) workstation running Java 1.7 64 bit (only has server
+mode) under Windows Vista 64.</p>
+
+
+<h2>References</h2>
+
+<ul>
+
+<li>Wikipedia: <a
+href="http://en.wikipedia.org/wiki/Conditional_random_field">Conditional
+Random Field</a>
+<br /><small>Good set of links to papers and other software.</small>
+</li>
+
+<li>Lafferty, John, Andrew McCallum, and Fernando Pereira (2001) <a
+href="http://www.cis.upenn.edu/~pereira/papers/crf.pdf">Conditional
+random fields: Probabilistic models for segmenting and labeling
+sequence data</a>. In <i>ICML</i>.
+<br /><small><em>The</em> CRF paper.  Presented in terms of
+maximum entropy, which is confusing.</small>
+</li>
+
+<li>Sutton, Charles and Andrew McCallum (2006) <a href="http://www.cs.umass.edu/~mccallum/papers/crf-tutorial.pdf">An
+Introduction to Conditional Random Fields for Relational
+Learning</a>. In <i>Introduction to Statistical Relational
+Learning</i> Lise Getoor and Ben Taskar (eds.). MIT Press.
+<br /><small>Nice introduction with useful comments on
+implementation; especially feature extraction with or
+without target labels.</small>
+</li>
+
+<li>Bishop, Christopher M. (2006) <i>Pattern Recognition and Machine
+Learning</i>.  Springer.
+<br /><small>Good general discussion of undirected graphical
+models, including the generalizations of Viterbi and forward-backward.</small>
+</li>
+
+<li>Culotta, Aron and Andrew McCallum (2004) <a
+href="http://aclweb.org/anthology-new/N/N04/N04-4028.pdf">Confidence
+Estimation for Information Extraction</a>.  In <i>HLT</i>.  <br
+/><small>An approach to extracting n-best entities.  LingPipe does
+it more efficiently using the forward-backward lattice directly.</small>
+</li>
+
+</ul>
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+

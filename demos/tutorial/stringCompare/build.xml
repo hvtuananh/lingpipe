@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+
+<project name="LingPipe Tutorial - String Comparison"
+         default="compile" basedir=".">
+
+  <path id="classpath.standard">
+    <pathelement location="build/classes"/>
+    <pathelement location="../../../lingpipe-4.1.0.jar"/>
+  </path>
+
+  <target name="clean">
+    <delete dir="build"/>
+    <delete file="stringCompare.jar"/>
+  </target>
+
+  <target name="compile">
+    <mkdir dir="build/classes"/>
+    <javac includeAntRuntime="false"   optimize="on"
+           debug="yes"
+           debuglevel="source,lines,vars"
+           destdir="build/classes">
+      <compilerarg value="-Xlint:all"/>
+      <classpath refid="classpath.standard"/>
+      <src path="src/"/>
+    </javac>
+  </target>
+
+  <target name="jar"
+          depends="compile">
+    <jar destfile="stringCompare.jar">
+      <fileset dir="build/classes"
+               includes="**/*.class"/>
+    </jar>
+  </target>
+
+
+  <target name="edit-distance"
+          depends="compile">
+    <java classname="EditDistanceDemo"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+      <arg value="hte"/>
+      <arg value="htne"/>
+      <arg value="thhe"/>
+      <arg value="the"/>
+      <arg value="then"/>
+      <arg value="The"/>
+      <arg value="THE"/>
+    </java>
+  </target>
+
+  <target name="fixed-edit-distance"
+          depends="compile">
+    <java classname="FixedEditDistanceDemo"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+      <arg value="0"/>  <!-- match -->
+      <arg value="-10"/>  <!-- delete -->
+      <arg value="-8"/>  <!-- insert -->
+      <arg value="-9"/>  <!-- subst -->
+      <arg value="-9"/>  <!-- transpose -->
+      <arg value="hte"/>
+      <arg value="htne"/>
+      <arg value="thhe"/>
+      <arg value="the"/>
+      <arg value="then"/>
+      <arg value="The"/>
+      <arg value="THE"/>
+    </java>
+  </target>
+
+  <target name="weighted-edit-distance"
+          depends="compile">
+    <java classname="WeightedEditDistanceDemo"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+      <arg value="the"/>
+      <arg value="The"/>
+      <arg value="THE"/>
+      <arg value="T H E"/>
+      <arg value="hte"/>
+      <arg value="then"/>
+    </java>
+  </target>
+
+
+  <target name="jaro-winkler"
+          depends="compile">
+    <java classname="JaroWinklerDemo"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+      <arg value="MARTHA|MARHTA"/>
+      <arg value="JONES|JOHNSON"/>
+      <arg value="DUNNINGHAM|CUNNINGHAM"/>
+      <arg value="MICHELLE|MICHAEL"/>
+      <arg value="NICHLESON|NICHULSON"/>
+      <arg value="MASSEY|MASSIE"/>
+      <arg value="ABROMS|ABRAMS"/>
+      <arg value="HARDIN|MARTINEZ"/>
+      <arg value="ITMAN|SMITH"/>
+      <arg value="JERALDINE|GERALDINE"/>
+      <arg value="JULIES|JULIUS"/>
+      <arg value="TANYA|TONYA"/>
+      <arg value="DWAYNE|DUANE"/>
+      <arg value="SEAN|SUSAN"/>
+      <arg value="JON|JOHN"/>
+      <arg value="JON|JAN"/>
+      <arg value="MARTHA|MARHTA"/>
+      <arg value="ABCDFGHe|WeXYZMNOPQRSTU"/>
+      <arg value="ABCDFGHe|WeXYZMNOPQRS"/>
+      <arg value="ABCDFGHIe|WeXYZMNOPQRS"/>
+      <arg value="ijABCDE|jiUVWXYZ"/>
+      <arg value="iABCDEF|TiUVWXYZ"/>
+      <arg value="iABCDE|iUVWXYZ"/>
+    </java>
+  </target>
+
+
+
+
+  <target name="jaccard"
+          depends="compile">
+    <java classname="JaccardDistanceDemo"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+      <arg value="p53, also known as protein 53 (TP53), is a transcription factor that regulates the cell cycle and hence functions as a tumor suppressor."/>
+      <arg value="It is important in multicellular organisms as it helps to suppress cancer."/>
+      <arg value="The name p53 is in reference to its apparent molecular mass: it runs as a 53-kilodalton (kDa) protein on SDS-PAGE."/>
+      <arg value="The human gene that encodes for p53 is TP53."/>
+      <arg value="The gene is named TP53 after the protein it codes for (TP53 is another name for p53)."/>
+      <arg value="The gene is located on the human chromosome 17 (17p13.1)."/>
+      <arg value="Mutations that deactivate p53 in cancer usually occur in the DBD."/>
+    </java>
+  </target>
+
+  <target name="tfIdf"
+          depends="compile">
+    <java classname="TfIdfDistanceDemo"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+      <arg value="p53, also known as protein 53 (TP53), is a transcription factor that regulates the cell cycle and hence functions as a tumor suppressor."/>
+      <arg value="It is important in multicellular organisms as it helps to suppress cancer."/>
+      <arg value="The name p53 is in reference to its apparent molecular mass: it runs as a 53-kilodalton (kDa) protein on SDS-PAGE."/>
+      <arg value="The human gene that encodes for p53 is TP53."/>
+      <arg value="The gene is named TP53 after the protein it codes for (TP53 is another name for p53)."/>
+      <arg value="The gene is located on the human chromosome 17 (17p13.1)."/>
+      <arg value="Mutations that deactivate p53 in cancer usually occur in the DBD."/>
+    </java>
+  </target>
+
+</project>

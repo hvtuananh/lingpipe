@@ -1,0 +1,2224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Named Entity Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">Named Entity Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a class="current" href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+
+<h2>What is Named Entity Recognition?</h2>
+
+<p>
+Named entity recognition (NER) is the process of finding mentions of
+specified things in running text.
+</p>
+
+<h3>News Entities: People, Locations and Organizations</h3>
+
+<p>For instance, a simple news
+named-entity recognizer for English might find the person mention
+<i>John J. Smith</i> and the location mention <i>Seattle</i> in the
+text <i>John J. Smith lives in Seattle</i>.
+</p>
+
+<h3>Biomedical Entities: Genes, Organisms, Malignancies, Chemicals, ...</h3>
+<p>
+There are a range of biomedical corpora available to find mentions of various entities.  For instance, <i>human fibrinogen</i> and <i>thrombin</i> are mentions of genes in the sentence
+<i>Native human fibrinogen was brought to coagulation by adding thrombin.</i>
+</p>
+
+<h2>How does LingPipe Recognize Entities?</h2>
+
+<p> Like many of the other modules in LingPipe, named entity
+recognition involves the supervised training of a statistical model or
+more direct methods like dictionary matching or regular expression
+matching.  All these methods are designed to work together smoothly by
+using the same class for annotating the text
+<code>com.aliasi.chunk</code>. 
+</p>
+
+<p>In the statistical models, the training
+data must be labeled with all of the entities of interest and their
+types.  Furthermore, the training data should match the data on which
+the system will be run.  If a system is trained on well-edited
+newswire data and is then run on blogs, performance will degrade, as
+it will be tuned to the clues provided by newswire text (e.g. the use
+of honorifics such as <i>Mr.</i>) and will miss the clues provided
+in blogs (e.g. e-mail links).
+</p>
+
+
+<h2>Rule-Based Named Entity Detection</h2>
+
+<p>
+Named entity recognition is particularly easy if it's possible to
+write a regular expression that captures the intended pattern of
+entities.
+</p>
+<p>
+We'll write an entity detector that finds
+well-formed email addresses.  The format of emails is explained, with
+references to the standards, in:
+</p>
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/E-mail_address">Wikipedia E-mail
+address entry</a>
+</li>
+</ul>
+<p>
+Briefly, an e-mail address of the form
+<code>lingpipe@alias-i.com</code> consists of two parts, the local
+part, <code>lingpipe</code> and the domain name,
+<code>alias-i.com</code>.  These are separated by the at-sign
+(<code>@</code>).
+</p>
+<p>
+The first step is writing a regular expression that matches all and
+only e-mail addresses.  Rather than writing a fully specification-compliant
+email recognizer, we'll borrown one from:
+</p>
+<ul>
+<li><a href="http://regexlib.com/DisplayPatterns.aspx">Email Matching RegExes at</a> (from  <code>regexlib.com)</code>
+</li>
+</ul>
+<p>
+The following example, contributed by <a href="http://regexlib.com/UserPatterns.aspx?authorId=877482cc-dd7d-4797-a824-7fafada2ab62">Bilou McGyver</a>, will work for example purposes:
+</p>
+<pre class="code">
+[A-Za-z0-9](([_\.\-]?[a-zA-Z0-9]+)*)@([A-Za-z0-9]+)(([\.\-]?[a-zA-Z0-9]+)*)\.([A-Za-z]{2,})
+</pre>
+<p>
+Basically, the regular expression is the only substantial part of the
+implementation.  The complete chunker is in
+the file <a href="src/EmailRegExChunker.java"><code>src/EmailRegExChunker.java</code></a>, which we repeat here:
+</p>
+<pre class="code">
+public class EmailRegexChunker extends RegExChunker {
+
+    public EmailRegexChunker() {
+        super(EMAIL_REGEX,CHUNK_TYPE,CHUNK_SCORE);
+    }
+
+    private final static String EMAIL_REGEX
+        = "[A-Za-z0-9](([_\\.\\-]?[a-zA-Z0-9]+)*)@([A-Za-z0-9]+)(([\\.\\-]?[a-zA-Z0-9]+)*)\\.([A-Za-z]{2,})";
+
+    private final static String CHUNK_TYPE = "email";
+
+    private final static double CHUNK_SCORE = 0.0;
+
+}
+</pre>
+
+<p>
+There is also a <code>main</code> method in that class for testing, which
+simply applies the chunker to the command-line arguments.
+</p>
+<pre class="code">
+public static void main(String[] args) {
+    Chunker chunker = new EmailRegExChunker();
+    for (int i = 0; i &lt; args.length; ++i) {
+        Chunking chunking = chunker.chunk(args[i]);
+        System.out.println("input=" + args[0]);
+        System.out.println("chunking=" + chunking);
+        Set&lt;Chunk&gt; chunkSet = chunking.chunkSet();
+        Iterator&lt;Chunk&gt; it = chunkSet.iterator();
+        while (it.hasNext()) {
+            Chunk chunk = it.next();
+            int start = chunk.start();
+            int end = chunk.end();
+            String text = args[0].substring(start,end);
+            System.out.println("     chunk=" + chunk + "  text=" + text);
+        }
+    }
+}
+</pre>
+<p>
+This code first creates the chunker, then analyzes each
+of the arguments using the chunker.  It does this by pulling
+out the chunking, then pulling the set of chunks out of the
+chunking, then printing each of these chunks.
+</p>
+<p>
+The sample we'll use is the following (with positional information displayed below the actual input text):
+</p>
+<pre class="code">
+John's email is john@his.company.com and his friend's is foo.bar@123.foo.ca.
+0123456789012345678901234567890123456789012345678901234567890123456789012345
+0         1         2         3         4         5         6         7
+</pre>
+<p>
+There is an ant task for running it, the arguments to which are the
+text that will be analyzed.
+</p>
+<pre class="code">
+% ant email-chunker
+...
+input=John's email is john@his.company.com and his friend's is foo.bar@123.foo.ca.
+chunking=John's email is john@his.company.com and his friend's is foo.bar@123.foo.ca. : [16-36:email@0.0, 57-75:email@0.0]
+    chunk=16-36:email@0.0  text=john@his.company.com
+    chunk=57-75:email@0.0  text=foo.bar@123.foo.ca
+</pre>
+<p>
+The output reproduces the input string, then lists the chunks
+that were extracted.  The first chunk is <code>16-36:email@0.0</code>,
+which indicates there is an email starting at position 16
+and ending at position 35 (we use the standard half-open
+notation of first character to one plus the last character),
+yielding the entity <code>john@his.company.com</code>.  The
+second entity is <code>foo.bar@123.foo.ca</code> (note the
+final period is not part of the email).
+</p>
+
+
+<h2>Exact Dictionary-Based Chunking</h2>
+
+<div class="sidebar">
+<h2><i>New York Times</i> &quot;Topics&quot;</h2>
+<p>As of June 2007, the 
+<a href="http://www.nytimes.com"><i>New York Times</i></a> uses
+dictionary-based matching to implement their
+ <a href="http://topics.nytimes.com/top/reference/timestopics/index.html">&quot;Times Topics&quot;</a> page.  These &quot;topics&quot;, are actually
+individuals with distinctive enough names to be matched
+in text, such as
+&quot;Steven P. Jobs&quot; or &quot;George W. Bush&quot;.
+</p>
+<p>
+The <i>Times</i>'s strategy appears to be to link the first mention of
+a matching name in a text article.  This works surprisingly
+well in most cases for the scale of dictionary they have,
+namely quite small.  Even with the <i>Times</i>'s small dictionary, there are 
+problems with false positives and false negatives.
+</p>
+<p>
+<b>False negatives</b> arise when
+an article only mentions &quot;George Bush&quot;, the current
+president of the United States, which by
+itself without a middle initial does not get linked.  
+</p>
+<p>
+<b>False positives</b> arise when the <i>Times</i> goofs by linking a
+mention of Joel Klein the Shea Stadium hot dog seller to the topic for Joel
+Z. Klein, chancellor of the NY City public schools.  Similar confusion
+arises for places.  For instance, an
+<a href="http://select.nytimes.com/gst/abstract.html?res=F10617FE3F5D0C7A8EDDAD0894D8404482&amp;n=Top%2fNews%2fWorld%2fCountries%20and%20Territories%2fLebanon">article about Mt. Lebanon, Pennsylvania</a>,
+a suburb of Pittsburgh, is linked to the topic for Lebanon,
+the middle-eastern country.
+</p>
+</div>
+
+<p>In many applications, it is relatively straightforward to
+compile a list of names (and aliases) for entities and their
+types.  For instance, <a href="http://www.westlaw.com">westlaw.com</a>
+has lists of all the registered lawyers in the United States.  Such
+lists are extremely helpful for finding mentions of lawyers in
+legal documents such as case law or court transcripts.  A baseball
+site such as <a href="http://www.mlb.com/">mlb.com</a> has a list
+of all current and retired baseball players to work from.
+</p>
+
+<h3>Finding Names in a Dictionary</h3>
+
+<p>Sometimes, it is enough to simply find all the mentions of
+phrases in a dictionary in a text.  (See the sidebar for an
+example.) 
+</p>
+
+<p> A name like &quot;50 Cent&quot; or product name like &quot;xyx120
+dvd player&quot; can prove to be very difficult to find in text with
+statistical recognizers or generic rule-based ones.  Sometimes a dictionary
+may be used in conjunction with a statistical recognizer in order
+to improve recall for &quot;difficult&quot; names.  Names tend to be
+difficult if they're easily confusible as to type, or if they are
+confusible with common words.  
+</p>
+
+<p>Another strategy that may be used
+is to run statistical named entity recognition on a corpus and then
+use the output to build a dictionary that may be used to reannotate
+the corpus for chunks that may have been missed in the first pass.
+</p>
+
+<p>
+The naive approach of doing a disjunctive regular expression
+or a substring search quickly falls over in the face of even modestly
+sized dictionaries.  LingPipe provides an implementation of the
+<a href="http://en.wikipedia.org/wiki/Aho-Corasick_algorithm">Aho-Corasick algorithm</a>. 
+The beauty of the
+Aho-Corasick algorithm is that it finds all matches against
+a dictionary in linear time independent of the number of
+matches or size of the dictionary.
+</p>
+
+
+
+<h3>Demo Code</h3>
+<p>
+The code for the demo is at <a href="src/DictionaryChunker.java"><code>src/DictionaryChunker.java</code></a>.  The first step of the code simply creates a dictionary from some
+hard-coded entries:
+</p>
+<pre class="code">
+static final double CHUNK_SCORE = 1.0;
+
+public static void main(String[] args) {
+
+    MapDictionary&lt;String&gt; dictionary = new MapDictionary&lt;String&gt;();
+    dictionary.addEntry(new DictionaryEntry&lt;String&gt;("50 Cent","PERSON",CHUNK_SCORE));
+    dictionary.addEntry(new DictionaryEntry&lt;String&gt;("XYZ120 DVD Player","DB_ID_1232",CHUNK_SCORE));
+    dictionary.addEntry(new DictionaryEntry&lt;String&gt;("cent","MONETARY_UNIT",CHUNK_SCORE));
+    dictionary.addEntry(new DictionaryEntry&lt;String&gt;("dvd player","PRODUCT",CHUNK_SCORE));
+</pre>
+
+<div class="sidebar">
+<h2>Aho-Corasick Algorithm</h2>
+<p>LingPipe's scalable dictionary-based chunker is 
+a straightforward token-based implementation of the
+
+this approach is that it remains linear time in the
+input string, not the number of matches or size of
+the dictionary.
+</p>
+<p>
+A generalized form of Aho-Corasick is used for
+LingPipe's approximate dictionary chunker,
+<a href="../../../docs/api/com/aliasi/dict/ApproxDictionaryChunker.html"><code>dict.ApproxDictionaryChunker</code></a>.
+</p>
+</div>
+
+<p> Note that in the <code>DictionaryEntry</code> constructor, the
+first argument is the phrase, the second string argument is the type,
+and the final double-precision floating point argument is the score
+for the chunk.  Dictionary entries are themselves always case
+sensitive.  </p> <p> We set &quot;DB_ID_1232&quot; as the type for the
+phrase &quot;XYZ120 DVD Player&quot;. This is a simple way to link
+database IDs to text mentions, but beware of ambiguity. Not all
+&quot;John Smith&quot;s are the same (see the sidebar on <i>Times
+Topics</i>).  There is no limit to the number of different entity
+types in a dictionary.  The scores will simply be passed along as
+chunk scores in the dictionary-based chunker.  </p>
+
+<p>
+The next step in the code builds the dictionary-based chunker:
+</p>
+<pre class="code">
+    ExactDictionaryChunker dictionaryChunkerTT
+        = new ExactDictionaryChunker(dictionary,
+                                     IndoEuropeanTokenizerFactory.INSTANCE,
+                                     true,true);
+</pre>
+<p>
+Note that the dictionary chunker is constructed from a dictionary,
+a tokenizer factory, and two flags.  The tokenizer factory we pass
+in is an instance of the IndoEuropean tokenizer factory.
+Because our matching treats
+tokens as symbols, the chunker needs a tokenizer for matching.  Whitespace will
+be ignored in the matching process.  The first flag indicates whether
+or not all matches are found, even in cases where they overlap.  
+The second flag indicates whether or not the chunker is case
+sensitive.  Thus the dictionary chunker constructed above will find
+all chunks and will be case sensitive.  Three other chunkers covering
+all the flag settings are constructed next:
+</p>
+<pre class="code">
+    ExactDictionaryChunker dictionaryChunkerTF
+        = new ExactDictionaryChunker(dictionary,
+                                     IndoEuropeanTokenizerFactory.INSTANCE,
+                                     true,false);
+
+     ExactDictionaryChunker dictionaryChunkerFT
+        = new ExactDictionaryChunker(dictionary,
+                                     IndoEuropeanTokenizerFactory.INSTANCE,
+                                     false,true);
+
+    ExactDictionaryChunker dictionaryChunkerFF
+        = new ExactDictionaryChunker(dictionary,
+                                     IndoEuropeanTokenizerFactory.INSTANCE,
+                                     false,false);
+</pre>
+
+<p>
+After the chunkers are created, the rest of the code simply
+runs through the command-line arguments and calls each
+chunker on the resulting text in turn.
+</p>
+<pre class="code">
+    for (int i = 0; i &lt; args.length; ++i) {
+        String text = args[i];
+        chunk(dictionaryChunkerTT,text);
+        chunk(dictionaryChunkerTF,text);
+        chunk(dictionaryChunkerFT,text);
+        chunk(dictionaryChunkerFF,text);
+    }
+</pre>
+<p>
+The <code>chunk()</code> method simply applies the chunker
+to the text and prints out the result.
+</p>
+<pre class="code">
+static void chunk(ExactDictionaryChunker chunker, String text) {
+    Chunking chunking = chunker.chunk(text);
+    for (Chunk chunk : chunking.chunkSet()) {
+        int start = chunk.start();
+        int end = chunk.end();
+        String type = chunk.type();
+        double score = chunk.score();
+        String phrase = text.substring(start,end);
+        System.out.println("     phrase=|" + phrase + "|"
+                           + " start=" + start
+                           + " end=" + end
+                           + " type=" + type
+                           + " score=" + score);
+    }
+}
+</pre>
+
+<p>
+The example may be run using a pre-package <code>Ant</code> target,
+which we indicate below along with the results:
+</p>
+<pre class="code">
+% cd $LINGPIPE/demos/tutorial/ne
+% ant dictionary-chunker
+DICTIONARY
+[cent:MONETARY_UNIT 1.0, 50 Cent:PERSON 1.0, XYZ120 DVD Player:DB_ID_1232 1.0, dvd player:PRODUCT 1
+
+
+TEXT=50 Cent is hard to distinguish from 50 cent and just plain cent without case
+
+Chunker. All matches=true Case sensitive=true
+     phrase=|50 Cent| start=0 end=7 type=PERSON score=1.0
+     phrase=|cent| start=39 end=43 type=MONETARY_UNIT score=1.0
+     phrase=|cent| start=59 end=63 type=MONETARY_UNIT score=1.0
+
+Chunker. All matches=true Case sensitive=false
+     phrase=|50 Cent| start=0 end=7 type=PERSON score=1.0
+     phrase=|Cent| start=3 end=7 type=MONETARY_UNIT score=1.0
+     phrase=|50 cent| start=36 end=43 type=PERSON score=1.0
+     phrase=|cent| start=39 end=43 type=MONETARY_UNIT score=1.0
+     phrase=|cent| start=59 end=63 type=MONETARY_UNIT score=1.0
+
+Chunker. All matches=false Case sensitive=true
+     phrase=|50 Cent| start=0 end=7 type=PERSON score=1.0
+     phrase=|cent| start=39 end=43 type=MONETARY_UNIT score=1.0
+     phrase=|cent| start=59 end=63 type=MONETARY_UNIT score=1.0
+
+Chunker. All matches=false Case sensitive=false
+     phrase=|50 Cent| start=0 end=7 type=PERSON score=1.0
+     phrase=|50 cent| start=36 end=43 type=PERSON score=1.0
+     phrase=|cent| start=59 end=63 type=MONETARY_UNIT score=1.0
+
+
+TEXT=The product xyz120 DVD player won't match unless it's exact like XYZ120 DVD Player.
+
+Chunker. All matches=true Case sensitive=true
+     phrase=|XYZ120 DVD Player| start=65 end=82 type=DB_ID_1232 score=1.0
+
+Chunker. All matches=true Case sensitive=false
+     phrase=|xyz120 DVD player| start=12 end=29 type=DB_ID_1232 score=1.0
+     phrase=|DVD player| start=19 end=29 type=PRODUCT score=1.0
+     phrase=|XYZ120 DVD Player| start=65 end=82 type=DB_ID_1232 score=1.0
+     phrase=|DVD Player| start=72 end=82 type=PRODUCT score=1.0
+
+Chunker. All matches=false Case sensitive=true
+     phrase=|XYZ120 DVD Player| start=65 end=82 type=DB_ID_1232 score=1.0
+
+Chunker. All matches=false Case sensitive=false
+     phrase=|xyz120 DVD player| start=12 end=29 type=DB_ID_1232 score=1.0
+     phrase=|XYZ120 DVD Player| start=65 end=82 type=DB_ID_1232 score=1.0
+</pre>
+
+<p>Take a moment to compare the different outputs based on the
+constructor flags.  When case sensitivity is enabled, the dictionary
+entry &quot;50 Cent&quot; does not match the text &quot;50 cent&quot;,
+When all matches are enabled without case sensitivity (the second
+example), the dictionary entry &quot;cent&quot; matches the second token in
+&quot;50 Cent&quot;.  Note that in this case, &quot;50 Cent&quot; and
+&quot;Cent&quot; are pulled out of the same text, with character spans
+(0,7) and (3,7) respectively.
+</p>
+
+<h2>Approximate Dictionary-Based Chunking</h2>
+
+<p> The class <a
+href="../../../docs/api/com/aliasi/dict/ApproxDictionaryChunker.html"><code>dict.ApproxDictionaryChunker</code></a>
+implements a dictionary-based chunker that performs approximate
+matching.  An approximate dictionary chunker is populated with
+a dictionary, the same way as an exact dictionary chunker.  But
+when it is run, it doesn't just look for exact matches, but for
+all matches within a fixed weighted edit distance threshold.
+</p>
+
+
+<h3>Running the Demo</h3>
+
+<p>The approximate dictionary matching demo may be invoked
+from ant using the target <code>approx-chunker</code>:
+</p>
+
+<pre class="code">
+% ant approx-chunker
+
+Dictionary=[Mdm:Mdm 1.0, P53:P53 1.0, protein 53:P53 1.0]
+
+
+ A protein called Mdm2 binds to p53 and transports it from the nucleus to the cytosol.
+
+ Matched Phrase       Dict Entry   Distance
+            p53              P53        1.0
+           Mdm2              Mdm        1.0
+
+
+ p53, also known as protein 53 (TP53), functions as a tumor supressor.
+
+ Matched Phrase       Dict Entry   Distance
+             53              P53        1.0
+           p53,              P53        2.0
+            p53              P53        1.0
+          (TP53              P53        2.0
+     protein 53              P53        0.0
+           TP53              P53        1.0
+          TP53)              P53        2.0
+   protein 53 (              P53        2.0
+</pre>
+
+<p>The output first prints out the dictionary, in this case
+consisting of three phrasal entries, 
+<code>&quot;Mdm&quot;</code>,
+<code>&quot;P53&quot;</code>, and
+<code>&quot;protein 53&quot;</code>,
+with lexical entries consisting of the strings <code>Mdm</code>,
+<code>P53</code> and <code>P53</code> respecitvely.
+The numerical values are defaults, as dictionary entries
+are weighted in the interface.
+</p>
+
+<p>Next comes the analysis of two sample sentences.  Each
+is first printed, then all of the approximately matching substrings,
+along with their distances.  Closer (lower distance) values are
+better matches.  For instance, the dictionary phrase
+<code>&quot;p53&quot;</code> matched the substrings
+<code>&quot;53&quot;</code>,
+<code>&quot;p53,&quot;</code>, and
+<code>&quot;p53&quot;</code> in the first four characters of the
+input, with distances 1.0, 2.0, and 1.0 respectively.</p>
+
+<h3>Code Walk Through</h3>
+
+<p> The code for the demo is in in a single <code>main()</code> method
+defined in <a
+href="src/ApproximateChunkerDemo.java"><code>src/ApproximateChunkerDemo.java</code></a>.
+It starts by setting up a trie-based dictionary:
+</p>
+
+<pre class="code">
+public static void main(String[] args) {
+    DictionaryEntry entry1
+        = new DictionaryEntry&lt;String&gt;(&quot;P53&quot;, &quot;P53&quot;);
+    DictionaryEntry entry2
+        = new DictionaryEntry&lt;String&gt;(&quot;protein 53&quot;, &quot;P53&quot;);
+    DictionaryEntry entry3
+        = new DictionaryEntry&lt;String&gt;(&quot;Mdm&quot;,&quot;Mdm&quot;);
+    TrieDictionary&lt;String&gt; dict = new TrieDictionary&lt;String&gt;();
+    dict.addEntry(entry1);
+    dict.addEntry(entry2);
+    dict.addEntry(entry3);
+    ...
+</pre>
+
+<p>Next, the chunker is created from a tokenizer factory and
+a weighted edit distance:
+</p>
+
+<pre class="code">
+    TokenizerFactory tokenizerFactory
+        = IndoEuropeanTokenizerFactory.INSTANCE;
+
+    WeightedEditDistance editDistance
+        = new FixedWeightEditDistance(0,-1,-1,-1,Double.NaN);
+
+    double maxDistance = 2.0;
+
+    ApproxDictionaryChunker chunker
+        = new ApproxDictionaryChunker(dict,tokenizerFactory,
+                                      editDistance,maxDistance);
+</pre>
+
+<div class="sidebar">
+<h2>Weighted Edit Distance Tutorial</h2>
+<p>
+Tutorial examples of weighted edit distances are
+available as part of the:
+</p>
+
+<ul>
+<li>
+<a href="../stringCompare/read-me.html">String Comparison Tutorial</a>
+</li>
+</ul>
+</div>
+
+<p>
+The edit distance assigns a cost of 0 to matches, a cost
+of -1 to insertions, deletions and substitutions, and
+does not specify a transposition cost.  Transpositions are
+not available as part of the approximate dictionary chunker.
+These values may be changed in the fixed weight edit distance
+implementation, or a custom edit distance may be implemented.
+</p>
+
+<p>The chunker itself is constructed with the dictionary,
+which must be a trie-backed dictionary, a tokenizer factory,
+a weighted edit distance, and critically, a maximum distance
+at which results are returned.</p>
+
+<p>The tokenizer factory only controls possible chunk boundaries.  All
+chunks must start at the first character of a token and must end at
+the last character of a token (offset by one, of course).  By using an
+instance of <a
+href="../../../docs/api/com/aliasi/tokenizer/CharacterTokenizerFactory.html"><code>tokenizer.CharacterTokenizerFactory</code></a>,
+the token-sensitivity will be turned off.  Note that even with
+the character tokenizer factory, chunks will still not start
+and end on whitespace.
+</p>
+
+<p>Finallly, the maximum distance parameter controls the maximum
+edit distance a returned chunk can be from a dictionary entry.
+In the case here, we set this at 2, meaning we get all 
+matches within edit distance 2 of entries in the dictionary.
+</p>
+
+<p>The rest of the code simply applies chunking and
+prints out the results:</p>
+
+<pre class="code">
+    for (String text : args) {
+        Chunking chunking = chunker.chunk(text);
+        CharSequence cs = chunking.charSequence();
+        Set&lt;Chunk&gt; chunkSet = chunking.chunkSet();
+        for (Chunk chunk : chunkSet) {
+            int start = chunk.start();
+            int end = chunk.end();
+            CharSequence str = cs.subSequence(start,end);
+            double distance = chunk.score();
+            String match = chunk.type();
+            System.out.printf(&quot;%15s  %15s   %8.1f\n&quot;,
+                              str, match, distance);
+        }
+    }
+</pre>
+
+<p>As with the other chunkers, we simply chunk the text,
+extract the underlying character sequence and set of
+chunks, then iterate over them extracting their start
+and end points, distances (which are scores in the
+chunk interface), and the matched dictionary entry,
+which is encoded on the chunk type.</p>
+
+<p>In some applications, a non-overlapping set of results
+is required.  This can be done by eliminating every chunk
+which overlaps a chunk of higher score, working left
+to right.</p>
+
+
+<h2>Running a Statistical Named Entity Recognizer</h2>
+
+<p>
+Named entity recognition is particularly simple if a trained model
+already exists.  Like our idol <a
+href="http://en.wikipedia.org/wiki/Julia_Child">Julia Child</a>, we
+have an already-baked cake waiting to show you.  And like Julia,
+after we let you see the finished product, we'll show you how to bake it
+step by step.
+</p>
+
+<h3>First-Best Named Entity Chunking</h3>
+<p>
+The following program, <a href="src/RunChunker.java"><code>src/RunChunker.java</code></a>, provides a
+command that loads a named-entity recognizer as an instance of the
+<code>Chunker</code> interface and then applies it to the remaining
+command-line arguments, printing out the results.
+</p>
+<pre class="code">
+public static void main(String[] args) throws Exception {
+    File modelFile = new File(args[0]);
+
+    System.out.println("Reading chunker from file=" + modelFile);
+    Chunker chunker
+        = (Chunker) AbstractExternalizable.readObject(modelFile);
+
+    for (int i = 1; i &lt; args.length; ++i) {
+        Chunking chunking = chunker.chunk(args[i]);
+        System.out.println("Chunking=" + chunking);
+    }
+}
+</pre>
+<p>
+The code may be run from an Ant task, using:
+</p>
+<pre class="code">
+% ant run-genetag
+</pre>
+<p>
+or it may be run directly from Java, using:
+</p>
+<pre class="code">
+% java -cp neDemo.java:../../../lingpipe-4.1.0.jar RunChunker \
+../../models/ne-en-bio-genetag.HmmChunker \
+&quot;p53 regulates human insulin-like growth factor II gene expression through active P4 promoter in rhabdomyosarcoma cells.&quot;
+</pre>
+<p>
+<i>Windows note:</i> Replace the colon (<code>:</code>) in the classpath with a semicolon (<code>;</code>) and put everything on one line without any backslashes.
+</p>
+<p>The output is the following:</p>
+<pre class="code">
+run-genetag:
+     [java] Reading chunker from file=..\..\models\ne-en-bio-genetag.HmmChunker
+     [java] Chunking=p53 regulates human insulin-like growth factor II gene expression through active P4 promoter in rha
+bdomyosarcoma cells. : [0-3:GENE@-Infinity, 20-54:GENE@-Infinity, 81-92:GENE@-Infinity]
+</pre>
+<p>
+This output repeats the input sentence and then, following the colon,
+the list of chunks found.  Here we found a chunk running from
+character position 0 (inclusive) to character position 3 (exclusive),
+with type <code>GENE</code>; this is right, because <i>p53</i> is a
+gene.  It also find a gene from psoition 20 to 54, for the expression
+<i>insulin-like growth factor II gene</i>, and a final one from 81 to
+92 for <i>P4 promoter</i>.
+</p>
+
+<p>
+The model used by this chunker is
+<a href="../../models/ne-en-bio-genetag.HmmChunker">
+<code>../../models/ne-en-bio-genetag.HmmChunker</code></a>.
+Like our other models, this one is labeled by task (<code>ne</code>
+for named-entity recognition), language (<code>en</code> for English),
+genre (<code>bio</code> for biology) and corpus (<code>genetag</code> for
+the 
+<a href="http://www.biomedcentral.com/1471-2105/6/S1/S3">GENETAG</a>
+corpus), and suffixed with the name of the class of the
+serialized object (<code>HmmChunker</code> for
+<code>com.aliasi.chunk.HmmChunker</code>).
+</p>
+
+<h3>N-Best Named Entity Chunking</h3>
+<p>
+Our next example runs <i>n</i>-best chunking.  This means it returns
+not only its first answer, but also alternative hypotheses, in order of
+their estimated likelihoods, which are also returned.
+</p>
+
+<pre class="code">
+NBestChunker chunker
+    = (NBestChunker) AbstractExternalizable.readObject(modelFile);
+<span class="greycode">for (int i = 1; i &lt; args.length; ++i) {
+    char[] cs = args[i].toCharArray();</span>
+    Iterator&lt;ScoredObject&lt;Chunking&gt;&gt; it = chunker.nBest(cs,0,cs.length,MAX_N_BEST);
+    <span class="greycode">System.out.println(args[i]);
+    for (int n = 0; it.hasNext(); ++n) {</span>
+        ScoredObject so = it.next();
+        double jointProb = so.score();
+        Chunking chunking = so.getObject();
+        System.out.println(n + " " + jointProb
+                           +  " " + chunking.chunkSet());
+    }
+</pre>
+
+<p>
+The n-best chunker is reconstituted in the same manner as the
+regular chunker.  We then iterate over arguments, and for each
+argument, apply the method <code>nBest()</code>, which takes as
+arguments the command-line argument converted to a character slice
+and a maximum for the number of results to return.  Then there's
+an iterator over the results.  The results returned by
+an n-best chunker are instances of
+<code>ScoredObject</code>, as shown by the cast.  The score is
+the log (base 2) joint probability of the input character sequence
+and the chunking.  The object is the chunking itself.
+</p>
+
+<p>
+N-best chunking can be run with the following Ant task:
+</p>
+<pre class="code">
+% ant run-genetag-nbest
+</pre>
+
+<p>
+The results are provided below.
+</p>
+<pre class="code">
+Reading chunker from file=..\..\models\ne-en-bio-genetag.HmmChunker
+p53 regulates human insulin-like growth factor II gene expression through active P4 promoter in rhabdomyosarcoma cells.
+
+0 -182.7325747972808 [0-3:GENE@-Infinity, 20-54:GENE@-Infinity, 81-92:GENE@-Infinity]
+1 -183.39842051103167 [0-3:GENE@-Infinity, 14-54:GENE@-Infinity, 81-92:GENE@-Infinity]
+2 -185.1133085819252 [0-3:GENE@-Infinity, 20-54:GENE@-Infinity, 74-92:GENE@-Infinity]
+3 -185.73246504074297 [0-3:GENE@-Infinity, 20-54:GENE@-Infinity, 81-83:GENE@-Infinity]
+4 -185.77915429567608 [0-3:GENE@-Infinity, 14-54:GENE@-Infinity, 74-92:GENE@-Infinity]
+5 -186.39831075449385 [0-3:GENE@-Infinity, 14-54:GENE@-Infinity, 81-83:GENE@-Infinity]
+6 -187.47968583511886 [0-3:GENE@-Infinity, 20-54:GENE@-Infinity]
+7 -188.14553154886974 [0-3:GENE@-Infinity, 14-54:GENE@-Infinity]
+</pre>
+<p>
+The chunkings are ordered in descending (log base 2) joint probability.
+For instance, the first result has a joint estimate of -182.7,
+whereas the second has one of -183.4.  By some simple math, we can
+see how much more likely the first analysis is than the second:
+</p>
+<pre class="code">
+p1/p2 = 2 ** (log (p1/p2))
+      = 2 ** (log p1 - log p2)
+      = 2 ** -182.7-183.4
+      = 2 ** .7
+      ~ 1.62
+</pre>
+<p>
+That is, the first analysis is only 1.62 times as likely as the
+second, analysis.  The first analysis is more than five times as
+likely as the third analysis, with a log probability of -185.1.
+</p>
+<p>
+N-best analyses are particularly useful for long-distance rescoring
+systems.  The class <code>com.aliasi.chunk.RescoringChunker</code> provides an abstract implementation of rescoring and <code>com.aliasi.chunk.CharLmRescoringChunker</code> provides a concrete implementation.
+</p>
+
+
+<h3>Confidence Named Entity Chunking</h3>
+<p>
+The final example runs chunking in such a way as to return chunks
+in order of confidence, which we take to be the probability of
+the chunk given the input text, <code>P(chunk|text)</code>.  The
+program is straightforward:
+</p>
+<pre class="code">
+ConfidenceChunker chunker
+    = (ConfidenceChunker) AbstractExternalizable.readObject(modelFile);
+<span class="greycode">for (int i = 1; i &lt; args.length; ++i) {'
+    char[] cs = args[i].toCharArray();</span>
+    Iterator&lt;Chunk&gt; it
+      = chunker.nBestChunks(cs,0,cs.length,MAX_N_BEST_CHUNKS);
+    <span class="greycode">System.out.println(args[i]);
+    System.out.println("Rank          Conf      Span    Type     Phrase");
+    for (int n = 0; it.hasNext(); ++n) {</span>
+        Chunk chunk = it.next();
+        double conf = Math.pow(2.0,chunk.score());
+        int start = chunk.start();
+        int end = chunk.end();
+        String phrase = args[i].substring(start,end);
+        System.out.println(n + " "
+                           + Strings.decimalFormat(conf,"0.0000",12)
+                           + "       (" + start
+                           + ", " + end
+                           + ")       " + chunk.type()
+                           + "         " + phrase);
+<span class="greycode">     }
+}</span>
+</pre>
+<p>The program is mostly like the previous one, and begins by
+reconstituting a chunker, this time a <code>ConfidenceChunker</code>.
+Then we walk over the arguments, extracting a character array as
+before, and then providing it to the chunker, this time calling the
+<code>nBestChunks</code> method.  With a confidence chunker, the
+result iterator is over chunks, so the cast is to <code>(Chunk)</code>
+in the body of the iteration.  We then compute the confidence by
+exponentiating the log (base 2) value so that it is easier to read.
+We then print the confidence out formatted, and then the spans, the
+type and phrase, which we extract as a substring of the arguments
+</p>
+
+<p>
+Confidence chunking can be run with the following Ant task:
+</p>
+<pre class="code">
+% ant run-genetag-conf
+</pre>
+
+<p>Running this program on the same input provides the
+following results</p>
+<pre class="code">
+Reading chunker from file=..\..\models\ne-en-bio-genetag.HmmChunker
+p53 regulates human insulin-like growth factor II gene expression through active P4 promoter in rhabdomyosarcoma cells.
+
+Rank      Conf      Span    Type    Phrase
+0       0.9999   (0, 3)   GENE     p53
+1       0.7328   (81, 92)   GENE     P4 promoter
+2       0.6055   (20, 54)   GENE     insulin-like growth factor II gene
+3       0.3817   (14, 54)   GENE     human insulin-like growth factor II gene
+4       0.1395   (74, 92)   GENE     active P4 promoter
+5       0.0916   (81, 83)   GENE     P4
+6       0.0088   (74, 83)   GENE     active P4
+7       0.0070   (20, 49)   GENE     insulin-like growth factor II
+8       0.0044   (14, 49)   GENE     human insulin-like growth factor II
+</pre>
+<p>
+The entity recognizer is 99.99% confident that <i>p53</i> is a mention
+of a gene.  It's only 73.28% confident about <i>P4 promoter</i> being
+a gene, and even less confident about <i>insulin-line growth factor II
+gene</i>.  The list gets interesting when we see names that overlap,
+such as the fourth (index 3) result, which prefixes <i>human</i> to
+the third result, or the fifth result, which prefixes <i>active</i> to
+the second result.  These confidences reflect the uncertainty of the
+recognizers.
+</p>
+<p>We believe confidence-ranked results will be very useful for
+information extraction applications where recall and/or confidence
+in results is important.  Rather than just counting instances of
+first-best results, a system may push the uncertainty of the gene
+annotator through later processes in a Bayesian fashion.  In practice,
+the results are available for iteration.
+</p>
+
+<h2>Training a Named Entity Recognizer</h2>
+
+<h3>Download Training Data</h3>
+
+<p>
+The first requirement for training a named entity recognizer is
+gathering the data.  For this demo, we use the GeneTag named entity
+data, provided by the Unites States <a href="http://ncbi.nlm.nih.gov/">National Center for Biotechnology Information</a> (NCBI), a part of the U.S. Library of Medicine, and
+described in this paper:
+</p>
+<ul>
+<li>
+Tanabe, L., N. Xie L. H. Thom, W. Matten, And W. J. Wilbur.
+2004.
+<a href="http://www.biomedcentral.com/1471-2105/6/S1/S3">GENETAG: a tagged corpus for gene/protein named entity recognition</a>.
+<i>BMC Bioinformatics 2005</i>, <b>6</b>(Suppl 1):S3.
+</li>
+</ul>
+<p>
+The data itself may be downloaded from the
+following anonymous FTP server:
+</p>
+<ul>
+<li>
+<a href="ftp://ftp.ncbi.nlm.nih.gov/pub/lsmith/MedTag/medtag.tar.gz">ftp://ftp.ncbi.nlm.nih.gov/pub/lsmith/MedTag/medtag.tar.gz</a>
+</li>
+</ul>
+<p>
+The data will then need to be untarred (and gunzipped).  Assuming it
+has been downloaded to directory <code>dataDir</code>:
+</p>
+<pre class="code">
+% cd dataDir
+% tar -xzf medtag.tar.gz
+</pre>
+<p>
+The file necessary for training will then be at the path
+<code>dataDir/medtag/genetag/genetag.tag</code>; this is
+what we'll call <code><i>GeneTagFilePath</i></code> in the next section.
+</p>
+
+<h3>Running the Training Code</h3>
+
+<div class="sidebar">
+<h2>Parser Implementations</h2>
+<p>
+In LingPipe 4.0, several parser implementations
+were moved from the LingPipe jar to this demo.
+The package paths were left as is, but they should
+not be confused with LingPipe classes.
+</p>
+</div>
+
+<p>
+The following code, drawn from <a
+href="src/TrainGeneTag.java"><code>src/TrainGeneTag.java</code></a> provides
+all you need to train a named entity recognizer based on the
+GeneTag corpus:
+</p>
+
+<pre class="code">
+static final int MAX_N_GRAM = 8;
+static final int NUM_CHARS = 256;
+static final double LM_INTERPOLATION = MAX_N_GRAM; // default behavior
+
+public static void main(String[] args) throws IOException {
+    File corpusFile = new File(args[0]);
+    File modelFile = new File(args[1]);
+
+    System.out.println("Setting up Chunker Estimator");
+    TokenizerFactory factory
+      = IndoEuropeanTokenizerFactory.INSTANCE;
+    HmmCharLmEstimator hmmEstimator
+      = new HmmCharLmEstimator(MAX_N_GRAM,NUM_CHARS,LM_INTERPOLATION);
+    CharLmHmmChunker chunkerEstimator
+      = new CharLmHmmChunker(factory,hmmEstimator);
+
+    System.out.println("Setting up Data Parser");
+    GeneTagParser parser = new GeneTagParser();
+    parser.setHandler(chunkerEstimator);
+
+    System.out.println("Training with Data from File=" + corpusFile);
+    parser.parse(corpusFile);
+
+    System.out.println("Compiling and Writing Model to File=" + modelFile);
+    AbstractExternalizable.compileTo(chunkerEstimator,modelFile);
+}
+</pre>
+
+<p>
+The GeneTag corpus is provided in a single file, given as the first
+command-line argument.  The second argument is just the name of the
+target file into which to write the model.
+</p>
+<p>
+The first block of code initializes an estimator for a chunker.  In
+particular, it initializes an instance of
+<code>CharLmHmmChunker</code>, which provides chunking based on a
+hidden Markov model (HMM).
+language models.  This particular chunker requires a tokenizer factory
+for breaking the input into tokens and a trainable HMM on which to
+base the model.  For the first, we use our standard Indo-European
+tokenizer factory.  For the HMM, we use a <code>HmmCharLmEstimator</code>,
+which estimates state emissions with sequence character language models.
+In this case, we set the maximum n-gram to a constant (8), set the
+number of characters (we'll assume 256), and the interpolation parameter
+for the language models (8.0).
+</p>
+<p>
+The second block of code just defines the parser, in this case an
+instance of <code>com.aliasi.corpus.parsers.GeneTagParser</code>,
+which is the parser for the GeneTag corpus.  The second line sets the
+handler for the parser to the chunker estimator.  This means that
+chunkings extracted by the parser will be handed off to the chunker
+estimator for training.  This pattern is just like that used for XML
+SAX parsing, with our parser playing the role of an
+<code>org.xml.sax.XMLReader</code> and our handler playing the role of
+an <code>org.xml.sax.ContentHandler</code>.
+</p>
+<p>
+The next block of code just parses the corpus file specified in the
+command-line argument.  The parsed chunkings are handed to the estimator for
+training.  The final block of code just compiles the model to a file,
+using a utility method in <code>com.aliasi.util.AbstractExternalizable</code>.
+</p>
+<p>
+This code can be compiled to <code>neDemo.jar</code> from Ant using
+the following target:
+</p>
+<pre class="code">
+% ant jar
+</pre>
+<p>
+It may then be run with the Ant target:
+</p>
+<pre class="code">
+% ant -Ddir.genetag=<i>GeneTagDir</i> train-genetag
+</pre>
+<p>
+where <code><i>GeneTagDir</i></code> is the path to the directory
+the <code>genetag.tag</code> after unpacking, which will be
+at the relative path <code>medtag/medtag/genetag</code> from
+where the medtag data is unpacked.
+</p>
+<p>
+This command may be run directly in Java from the directory
+<code>$LINGPIPE/demos/tutorial/ne</code> with:
+</p>
+<pre class="code">
+% java -cp ../../../lingpipe-4.1.0.jar;neDemo.jar TrainGeneTag <i>GeneTagDirPath</i> ../../models/ne-en-bio-genetag.HmmChunker
+</pre>
+<p>
+Note that the resulting model is written into the standard location
+<code>$LINGPIPE/demos/models</code>.
+</p>
+
+<p> To evaluate with the model we just built, use:</p>
+
+<pre class="code">
+% ant -Ddir.genetag=<i>GeneTagParentDir</i> eval-genetag
+</pre>
+
+<p>This performs a cross-validation on the data.  We discuss cross-validation
+in the section on Arabic NER below.</p>
+
+<h2>Evaluating a Named Entity Recognizer</h2>
+
+<p>
+The standard evaluation setup for a named-entity recognizer (and any
+other statistical component) involves partitioning the labeled data
+into training and test segments.  If you're playing by old-fashioned
+hypothesis-testing statistical rules, or if you're competing in a
+bakeoff that only allows a single submission, you only get <b>one</b>
+shot at the test data.  In the machine-learning community, it's not
+uncommon to see things like what we're about to do, which is
+<b>cheat</b>.  In slightly more technical terms, we'll be reporting
+post-hoc results on a so-called development set.  Luckily for our
+systems, the parameters are very <b>stable</b>, meaning that slight
+perturbations of the parameters only lead to slight changes in
+performance.
+</p>
+
+<h3>CoNLL Spanish Task</h3>
+
+<div class="sidebar">
+<h2>Data: Ant and CVS</h2>
+<p>
+We keep our data in the same form as it was distributed in CVS.  We
+then write an Ant build script to unpack the data into whatever format
+we require.  Sometimes, as with MUC data in SGML format, we have to
+write (Java or Perl) programs to munge the data.  We check those into
+the same CVS module as the data.
+</p>
+<p>
+<b>CoNLL 2002 in CVS:</b> As an example, for the CoNLL 2002 data, we have the following files
+checked into a cvs module <code>conll2002</code>:
+<code>build.xml</code>, <code>read-me.txt</code>,
+<code>dist/ner.tgz</code>.  The read-me files contain information on
+the source and licensing of the data, as well as some notes on what it
+contains.  We put all of the distributed files directly under a directory
+named <code>dist</code> for distribution.
+</p>
+<p>
+<b>CoNLL 2002 Unpacked:</b> Our build files always simply unpack the
+data into a subdirectory called <code>unpacked</code>.  If any further
+processing is required, the results are writtin into a directory
+called <code>munged</code>.  For CoNLL 2002, the <code>munged</code>
+directory contains two subdirectories, <code>dutch</code> and
+<code>spanish</code>; the directory <code>munged/dutch</code> contains
+<code>ned.train</code>, <code>ned.testa</code> and <code>ned.testb</code>.
+</p>
+</div>
+
+<p>
+We'll use data for this tutorial that's available from the web.  The
+Conference on Computational Natural Language Learning (ConNLL), is an
+annual meeting that sponsors a bakeoff.  In 2002, the bakeoff involved
+Spanish and Dutch named-entity recognition.  Here's a directory of the
+relevant CoNLL web pages:
+</p>
+<ul>
+<li><a href="http://www.cnts.ua.ac.be/conll2002/">CoNLL 2002 Main Site</a></li>
+<li><a href="http://www.cnts.ua.ac.be/conll2002/ner/">CoNLL 2002 Shared Task: Language-Independent Named Entity Recognition (I)</a></li>
+<li><a href="http://www.cnts.ua.ac.be/conll2002/ner.tgz">Download Data: ner.tgz</a></li>
+<li><a href="http://acl.ldc.upenn.edu/W/W02/W02-2024.pdf">Workshop Paper on Results</a></li>
+</ul>
+
+<p>
+An illustration of the encoding from the first few lines of the Spanish
+training data is:
+</p>
+
+<pre class="code">
+El O
+Abogado B-PER
+General I-PER
+del I-PER
+Estado I-PER
+, O
+Daryl B-PER
+Williams I-PER
+, O
+</pre>
+
+<p>With this encoding scheme, the phrases <code>El Abogado General del
+Estado</code> and <code>Daryl Williams</code> are coded as
+persons, with their beginnnig and continuing tokens picked out with
+tags <code>B-PER</code> and <code>I-PER</code> respectively.</p>
+
+<p>Unfortunately, there are several formatting errors in the data
+that must be fixed before our parsers can handle them. 
+</p>
+
+<ul>
+<li> <code>esp.train</code>, line 221619, change <code>I-LOC</code> to <code>B-LOC</code></li>
+<li> <code>esp.testa</code>, line 30882,  change <code>I-LOC</code> to <code>B-LOC</code></li>
+<li> <code>esp.testb</code>, line 9291,  change <code>I-LOC</code> to <code>B-LOC</code></li>
+</ul>
+
+<p>
+After downloading the data, simply unarchive it.  Assuming the
+compressed tarball <a
+href="http://www.cnts.ua.ac.be/conll2002/ner.tgz"><code>ner.tgz</code></a>
+has been downloaded to a directory <code>conll2002</code>.
+</p>
+<pre class="code">
+% cd conll2002
+% tar -xzf ner.tgz
+</pre>
+<p>
+You should then see the following files under <code>conll2002</code>:
+</p>
+<ul>
+<li><code>ner/data/esp.train.gz</code></li>
+<li><code>ner/data/esp.testa.gz</code></li>
+<li><code>ner/data/esp.testb.gz</code></li>
+</ul>
+<p>
+You can further gunzip each of these, to produce:
+</p>
+<ul>
+<li><code>ner/data/esp.train</code></li>
+<li><code>ner/data/esp.testa</code></li>
+<li><code>ner/data/esp.testb</code></li>
+</ul>
+<p>
+These are the files we use in the evaluation.
+</p>
+
+<h3>Training the Recognizer</h3>
+
+<p>
+First, we need to train a recognizer using the Spanish data.  For
+that, we have another program in <a
+href="src/TrainConll2002.java"><code>src/TrainConll2002.java</code></a>.
+The relevant details are shown below.
+</p>
+<pre class="code">
+static final int NUM_CHUNKINGS_RESCORED = 64;
+<span class="greycode">static final int MAX_N_GRAM = 12;
+static final int NUM_CHARS = 256;
+static final double LM_INTERPOLATION = MAX_N_GRAM; // default behavior
+
+public static void main(String[] args) throws IOException {</span>
+    File modelFile = new File(args[0]);
+    File trainFile = new File(args[1]);
+    File devFile = new File(args[2]);
+
+    <span class="greycode">TokenizerFactory factory
+        = IndoEuropeanTokenizerFactory.INSTANCE;</span>
+    CharLmRescoringChunker chunkerEstimator
+        = new CharLmRescoringChunker(factory,NUM_CHUNKINGS_RESCORED,
+                                     MAX_N_GRAM,NUM_CHARS,
+                                     LM_INTERPOLATION);
+
+    Conll2002ChunkTagParser parser
+        = new Conll2002ChunkTagParser();
+    <span class="greycode">parser.setHandler(chunkerEstimator);
+
+    parser.parse(trainFile);</span>
+    parser.parse(devFile);
+
+    <span class="greycode">AbstractExternalizable.compileTo(chunkerEstimator,modelFile);</span>
+}
+</pre>
+<p>
+The most significant difference is that we use a different chunker estimator,
+this time a <code>com.aliasi.chunk.CharLmRescoringChunker</code>.  This chunker
+provides a higher-level model that rescores the output of an underlying chunker.
+This is why the first static declares how many such underlying n-best chunkings
+are rescored.  The second notable difference is that it uses a tag parser
+designed for the CoNLL data format, the implementation of which can be
+found in <a href="src/Conll2002ChunkTagParser.java"><code>src/Conll2002ChunkTagParser.java</code></a>.  The only other difference between this new training scheme is that
+we train on two files, both the training data and the development data (which were
+both available to participants in the bakeoff before the final evaluation).
+</p>
+<p>
+Assuming that the CoNLL data was installed in the directory <i>conll2002</i> as described above, the recognizer can be trained with the Ant target:
+</p>
+<pre class="code">
+% ant -Ddata.conll2002.spanish=conll2002/ner/data train-conll2002-spanish
+</pre>
+
+<h3>Test Program</h3>
+
+<p>The testing program is almost as simple as the run program, and can
+be found in <a
+href="src/TestConll2002Chunker.java"><code>src/TestConll2002Chunker.java</code></a>,
+the contents of which minus the imports and print statements are reproduced here.
+</p>
+<pre class="code">
+public static void main(String[] args) throws Exception {
+    File chunkerFile = new File(args[0]);
+    File testFile = new File(args[1]);
+
+
+    AbstractCharLmRescoringChunker chunker
+        = (AbstractCharLmRescoringChunker)
+        AbstractExternalizable.readObject(chunkerFile);
+
+    ChunkerEvaluator evaluator = new ChunkerEvaluator(chunker);
+    evaluator.setVerbose(true);
+
+    Conll2002ChunkTagParser parser
+        = new Conll2002ChunkTagParser();
+    parser.setHandler(evaluator);
+
+    parser.parse(testFile);
+
+    System.out.println(evaluator.toString());
+}
+</pre>
+<p>We've simply set up an evaluator wrapping our chunker, and set
+it to provide verbose output (case-by-case results to standard output).
+We've provided an Ant task to run the evaluation:
+</p>
+<pre class="code">
+% ant -Ddata.conll2002.spanish=conll2002/ner/data test-conll2002-spanish
+</pre>
+
+<h3>Incremental Per-Sentence Results</h3>
+<p>
+Because we have set the evaluator to be verbose, it prints a report for each
+sentence it processes.  Here's an example:
+</p>
+<pre class="code">
+     CHUNKS=(65,77):MISC   (118,136):ORG
+     Dicha concentración se hace para preparar el partido final de la Copa del Rey que disputará el próximo sábado ante el Atlético de Madrid .
+     012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+               1         2         3         4         5         6         7         8         9         0         1         2         3
+                                                                                                         1         1         1         1
+
+ REF                                                                  M...........                                         O.................
+RESP                                                                  M...........                                         O.................
+
+
+             CHUNKS=(65,77):MISC   (118,136):ORG
+             Dicha concentración se hace para preparar el partido final de la Copa del Rey que disputará el próximo sábado ante el Atlético de Madrid .
+             012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+                       1         2         3         4         5         6         7         8         9         0         1         2         3
+                                                                                                                 1         1         1         1
+ REF                                                                          M...........                                         O.................
+    0   -143                                                                  M...........                                         O.................
+  -----------
+    1   -156                                                                  M...........                                         O.......    L.....
+    2   -158 O....                                                            M...........                                         O.................
+    3   -159                                                               M..............                                         O.................
+    4   -163                                                                  M...........                                         O.......    O.....
+    5   -164                                                      M.......................                                         O.................
+    6   -165                                                                  M...     M..                                         O.................
+    7   -166                                                                  M........... P..                                     O.................
+Correct Rank=0
+
+
+     CHUNKS=(65,77):MISC   (118,136):ORG
+     Dicha concentración se hace para preparar el partido final de la Copa del Rey que disputará el próximo sábado ante el Atlético de Madrid .
+     012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+               1         2         3         4         5         6         7         8         9         0         1         2         3
+                                                                                                         1         1         1         1
+TRUE  (65, 77): MISC  0.9999877514430212
+TRUE  (118, 136): ORG  0.9998255148751076
+false (118, 126): ORG  1.7448512066560313E-4
+false (130, 136): LOC  1.7339828700790064E-4
+false (0, 5): ORG  2.679282465485203E-5
+false (62, 77): MISC  1.1394528562976028E-5
+false (130, 136): ORG  1.062746657431117E-6
+false (53, 77): MISC  4.978971914365618E-7
+</pre>
+<p>
+The report begins by printing the sentence and underlying chunk boundaries
+in the reference (truth).  Below the reference, the system result is
+printed as the response.
+</p>
+<p>Next, the n-best results are printed.  These
+again begin with a printout of the input string and the reference tagging.
+Then, the n-best list is printed up to the size specified on the evaluator (8,
+in our case).  A line is printed below the correct answer, if any, and
+the rank of the correct answer is printed at the bottom.  In this case, our
+first-best answer (rank 0) was correct.  Next to the rank, the score is
+provided.  This is a joint probability estimate presented in log (base 2) form.
+Thus we see that our first answer at -143 is 2<sup><sup>13</sup></sup> times
+more likely than the second analysis at -156.
+
+</p>
+<p>Finally, the confidence-based results are printed, again after the
+input is displayed.  The chunks returned by the system are printed
+with their character offsets (begin inclusive, end exclusive), their
+type, and then their score.  The score is the conditional probability
+estimate of the chunk given the input.  Thus the system is 99.98% sure
+that the characters from 118 to 136 refer to an organization.  This is
+not a good estimate.  The variety of chunker we're using for this demo
+tends to attenuate the results far too much in the direction of the
+top scorers.  This is because it estimates confidence from the top
+results on the n-best list, which is itself very attenuated in this
+example.  The simpler chunker,
+<code>com.aliasi.chunk.CharLmHmmChunker</code> provides more reliable
+confidence estimates than this chunker, the
+<code>com.aliasi.chunk.CharLmRescoringChunker</code>.
+</p>
+
+<h3>First-best Results</h3>
+
+<p>
+The run takes a little under a minute on my machine and produces the following
+first-best results:
+</p>
+<pre class="code">
+FIRST-BEST EVAL
+ Total=4307
+ True Positive=2674
+ False Negative=742
+ False Positive=891
+ True Negative=0
+ Positive Reference=3416
+ Positive Response=3565
+ Negative Reference=891
+ Negative Response=742
+ Accuracy=0.6208497794288368
+ Recall=0.7827868852459017
+ Precision=0.7500701262272089
+ Rejection Recall=0.0
+ Rejection Precision=0.0
+ F(1)=0.7660793582581292
+ Fowlkes-Mallows=3489.70485858045
+ Jaccard Coefficient=0.6208497794288368
+ Yule's Q=-1.0
+ Yule's Y=-1.0
+ Reference Likelihood=0.7931274669143256
+ Response Likelihood=0.8277223125145112
+ Random Accuracy=0.6921288226373674
+ Random Accuracy Unbiased=0.6927272243084177
+ kappa=-0.23152230039570446
+ kappa Unbiased=-0.23392064174187105
+ kappa No Prevalence=0.24169955885767358
+ chi Squared=233.8186156392983
+ phi Squared=0.054288046352286574
+ Accuracy Deviation=0.0073928430493272
+</pre>
+<p>
+The F(1) score of 76.61% would've tied LingPipe at fourth place
+overall (out of what would be 14 contestants if you include us).  We'd
+have been in third place for recall and fifth place for precision.
+You can check out the <a
+href="http://www.cnts.ua.ac.be/conll2002/ner/">CoNLL 2002 NER Task
+Home</a> for the result (they're near the bottom).  The best scoring
+system was by the organizers, Xavier Carreras, Luís Màrquez and Luís
+Padró, which scored 81.39% f-measure using dictionaries; without
+dictionaries, their system scored 79.28%, only slightly better than
+the second place system of Radu Florian at 79.05%, which didn't train
+on any external data.  Links to papers describing all of the systems
+submitted to the bakeoff are available from <a
+href="http://www.cnts.ua.ac.be/conll2002/ner/">CoNLL 2002 NER Task
+Home</a>.
+</p>
+<p>
+The organizers computed per-system 95% confidence intervals (using
+bootstrap resampling) at roughly 1.5%, making systems two and three at
+79.1+/-1.5% not significantly different than ours at 76.6+/-1.5%.
+</p>
+<p>
+Now is the time to recall what we said about cheating.  The bakeoff
+contestants submitted their system runs once and got a score back.  We
+took the default LingPipe settings for Western languages -- 12-grams
+with a 12.0 interpolation ratio and no pruning.  We also took the
+default of rescoring 128 sentences.  We did some post-hoc tests and
+found if we rescore 64 results instead of 128, F-measure drops a
+fairly substantial 0.3%, whereas if we rescore 256 results instead of
+128, F-measure drops a fairly trivial 0.03%.  Rescoring more results doesn't
+seem to matter much in terms of scores.
+</p>
+
+<h3>N-best Results</h3>
+<p>
+Our chunking evaluator also returns a report on evaluating n-best results.
+It returns these results as a histogram mapping rank to number of test cases
+where the reference result was that rank, with <code>-1</code> being assigned
+to cases whose reference result was not in the n-best list.  For the settings
+above, the n-best results are (reformatted into three columns):
+</p>
+<pre class="code">
+N-BEST EVAL
+0=969
+-1=173        15=4          27=1
+1=140         14=3          29=1
+2=53          20=3          30=1
+3=25          21=3          31=1
+4=20          26=3          34=1
+5=15          32=3          38=1
+6=14          12=2          39=1
+7=11          16=2          41=1
+8=10          19=2          44=1
+11=8          23=2          48=1
+18=7          24=2          49=1
+9=6           28=2          50=1
+10=5          36=2          57=1
+17=5          45=2          67=1
+13=4          22=1          76=1
+                            83=1
+
+
+</pre>
+<p>
+This report indicates there are 969 cases for which the system's
+first-best answer (rank 0) was correct.  There were 140 cases when the
+second-best answer (rank 1) was correct, and so on.  Note that the
+count for -1, namely 173, is the count for the number of cases for
+which the reference chunking was beyond the 128th-best response
+chunking.
+</p>
+
+<h3>Confidence Results</h3>
+<p>
+The final piece of the report is the confidence report.  This
+provides a view of the results that would be obtained by returning
+chunks according to their global confidence, without concern about
+overlap, and with a given threshold in place.
+</p>
+<pre class="code">
+CONFIDENCE EVALUATION  
+  Area Under PR Curve (interpolated)=0.7344955594638413
+  Area Under PR Curve (uninterpolated)=0.7316142729153922
+  Area Under ROC Curve (interpolated)=0.8111854024938068
+  Area Under ROC Curve (uninterpolated)=0.8111854024938073
+  Average Precision=0.8628569727835927
+  Maximum F(1) Measure=0.756586983074507
+  BEP (Precision-Recall break even point)=0.7508207485226527
+  Reciprocal Rank=1.0
+
+</pre>
+<p>
+The average precision and area under the PR/ROC curves are the standard
+reports from ranked systems, as used in TREC.  See the class
+documentation for <a href="../../../docs/api/com/aliasi/classify/ScoredPrecisionRecallEvaluation.html">ScoredPrecisionRecallEvaluation</a> for more details and
+examples of how these are computed and what they mean.  The most significant
+one is perhaps the maximum F(1) measure, as that indicates the maximum score
+possible by setting a threshold on confidence results and returning all
+chunks above that confidence.  Here, as in many other cases we've evaluated,
+it's very close to the first-best F(1) measure.
+</p>
+
+<h2>Named Entities in Arabic</h2>
+
+<p> LingPipe's basic approach is portable across languages.  All that
+needs to change is sentence detection and tokenization.  We've
+successfully built named-entity recognizers for English, Spanish,
+Dutch, German, French, Hindi, Chinese, and Arabic.</p>
+
+<h3>The ANER Corpus</h3>
+
+<p>In this section, we use <a
+href="http://users.dsic.upv.es/~ybenajiba/">Yassine Benajiba</a>'s
+ANER corpus for Arabic, which consists of roughly 150K tokens tagged
+in CoNLL column format for person, location, organization and
+miscellaneous entity mention types (types<code>MISC, PERS, ORG,
+LOC</code>).</p>
+
+<p>The corpus is available from:</p>
+
+<ul>
+<li>
+<a href="http://www1.ccls.columbia.edu/~ybenajiba/downloads.html">ANER Corpus (Arabic Named Entity Recognition)</a>
+</li>
+</ul>
+
+<p>Benajiba provides more details on the corpus and an evaluation of
+his logistic regression plus part-of-speech based system in the following
+two papers (the earlier one gives more details about the corpus):</p>
+
+<ul>
+<li>
+Benajiba,  Y. and P. Rosso 2007. <a href="http://users.dsic.upv.es/~ybenajiba/resources/ANERsys2IICAI.pdf">ANERsys 2.0 : Conquering the NER task for the Arabic language by combining the Maximum Entropy with POS-tag information</a>. In <i>IICAI-2007</i>.
+</li>
+<li>
+Benajiba, Y., P. Rosso, and Benedí J. M. 2007. <a href="http://users.dsic.upv.es/~ybenajiba/resources/CICLingANERsys.pdf">ANERsys: An Arabic Named Entity Recognition system based on Maximum Entropy</a>. In <i>CICLing-2007</i>.
+</li>
+</ul>
+
+<p>Download the data into a directory $ANER and unpack the top-level
+zip files, and if you are going to use the dictionaries, unpack
+the dictionary level gzip files.  You should wind up with a directory
+structure with the following structure, where <code>ANERCorp</code> is
+the CoNLL-formatted entity corpus and the other files are gazetteers
+with one entry per line:</p>
+
+<pre class="code">
+$ANER/ANERCorp
+$ANER/ANERGazet/AlignedLocGazetteer
+$ANER/ANERGazet/AlignedOrgGazetteer
+$ANER/ANERGazet/AlignedPersGazetteer
+</pre>
+
+<p>The data was collected from a variety of sources:</p>
+
+<table>
+<tr><th>Source</th><th>Ratio</th></tr>
+<tr><td>http://www.aljazeera.net/</td><td>34.8%</td></tr>
+<tr><td>Other newspapers and magazines</td><td>17.8%</td></tr>
+<tr><td>http://www.raya.com/</td><td>15.5%</td></tr>
+<tr><td>http://ar.wikipedia.org/</td><td>6.6%</td></tr>
+<tr><td>http://www.alalam.ma/</td><td>5.4%</td></tr>
+<tr><td>http://www.ahram.eg.org/</td><td>5.4%</td></tr>
+<tr><td>http://www.alittihad.ae/</td><td>3.5%</td></tr>
+<tr><td>http://www.bbc.co.uk/arabic/</td><td>3.5%</td></tr>
+<tr><td>http://arabic.cnn.com/</td><td>2.8%</td></tr>
+<tr><td>http://www.addustour.com/</td><td>2.8%</td></tr>
+<tr><td>http://kassioun.org/</td><td>1.9%</td></tr>
+</table>
+
+<p>The contents of the labeled training file looks like:
+</p>
+
+<pre class="code" style="direction:ltr">
+&#x641;&#x631;&#x627;&#x646;&#x643;&#x641;&#x648;&#x631;&#x62a;&#x20;&#x42;&#x2d;&#x4c;&#x4f;&#x43;
+&#x28;&#x62f;&#x20;&#x4f;
+&#x628;&#x20;&#x4f;
+&#x623;&#x29;&#x20;&#x4f;
+&#x623;&#x639;&#x644;&#x646;&#x20;&#x4f;
+&#x627;&#x62a;&#x62d;&#x627;&#x62f;&#x20;&#x42;&#x2d;&#x4f;&#x52;&#x47;
+&#x635;&#x646;&#x627;&#x639;&#x629;&#x20;&#x49;&#x2d;&#x4f;&#x52;&#x47;
+&#x627;&#x644;&#x633;&#x64a;&#x627;&#x631;&#x627;&#x62a;&#x20;&#x49;&#x2d;&#x4f;&#x52;&#x47;
+&#x641;&#x64a;&#x20;&#x4f;
+&#x623;&#x644;&#x645;&#x627;&#x646;&#x64a;&#x627;&#x20;&#x42;&#x2d;&#x4c;&#x4f;&#x43;
+...
+</pre>
+
+<p>Arabic words are typically printed right-to-left, and
+HTML lets you specifiy direction with the cascading style
+sheets (CSS) style attribute <code>style=&quot;direction:rtl&quot;</code>
+on the <code>pre</code> specification.  The result looks better if you
+read Arabic:</p>
+
+<pre class="code" style="direction:rtl">
+&#x641;&#x631;&#x627;&#x646;&#x643;&#x641;&#x648;&#x631;&#x62a;&#x20;&#x42;&#x2d;&#x4c;&#x4f;&#x43;
+&#x28;&#x62f;&#x20;&#x4f;
+&#x628;&#x20;&#x4f;
+&#x623;&#x29;&#x20;&#x4f;
+&#x623;&#x639;&#x644;&#x646;&#x20;&#x4f;
+&#x627;&#x62a;&#x62d;&#x627;&#x62f;&#x20;&#x42;&#x2d;&#x4f;&#x52;&#x47;
+&#x635;&#x646;&#x627;&#x639;&#x629;&#x20;&#x49;&#x2d;&#x4f;&#x52;&#x47;
+&#x627;&#x644;&#x633;&#x64a;&#x627;&#x631;&#x627;&#x62a;&#x20;&#x49;&#x2d;&#x4f;&#x52;&#x47;
+&#x641;&#x64a;&#x20;&#x4f;
+&#x623;&#x644;&#x645;&#x627;&#x646;&#x64a;&#x627;&#x20;&#x42;&#x2d;&#x4c;&#x4f;&#x43;
+...
+</pre>
+
+<p>The dictionaries (also known as gazetteers when involving
+locations) are just lists.  For instance, the first few lines of the
+location dictionary are:</p>
+
+<pre class="code" style="direction:rtl">
+&#x3d;&#x3d;&#x3d;&#x3d;
+&#x627;&#x633;&#x64a;&#x627;
+&#x3d;&#x3d;&#x3d;&#x3d;
+&#x627;&#x631;&#x62f;&#x646;
+&#x627;&#x644;&#x627;&#x631;&#x62f;&#x646;
+&#x2a;&#x2a;&#x2a;&#x2a;
+&#x639;&#x62c;&#x644;&#x648;&#x646;
+&#x639;&#x645;&#x627;&#x646;
+&#x627;&#x631;&#x628;&#x62f;
+&#x627;&#x644;&#x631;&#x645;&#x62b;&#x627;
+&#x627;&#x644;&#x634;&#x648;&#x628;&#x643;
+&#x62c;&#x631;&#x634;
+&#x632;&#x631;&#x642;&#x627;&#x621;
+...
+</pre>
+
+<p>We just trained each line as an entry, including all the punctuation-only
+lines, which we probably should've stripped out, because the dictionary
+didn't help accuracy.
+</p>
+
+
+<h3>Data Munging</h3>
+
+<h4>Automatic Sentence Chunking</h4>
+
+<p>We chunked the corpus into sentences, using periods,
+exclamation points and question marks as sentence breaks.
+We made sure not to munge out entities this way.  
+</p>
+
+<h4>Tokenization</h4>
+
+<p>Because the CoNLL data format removes whitespace
+information, we reinsered single whitespaces between all
+tokens, which let us use a simple whitespace-based tokenizer.
+</p>
+
+<p>Clearly for a real application, a realistic tokenizer
+and sentence detector would be required.  Breaking on spaces
+and punctuation might work OK.</p>
+
+
+<h3>Cross-Validating Arabic</h3>
+
+<p>To run cross-validation on the corpus, set the system
+property <code>aner.dir</code> to the top level directory
+<code>$ANER</code>:
+</p>
+
+<pre class="code">
+&gt; ant -Daner.dir=e:\data\ANERCorp\unpacked -Daner.dict=false -Daner.misc=true -Daner.ngram=8 -Daner.rescored=512 aner
+</pre>
+
+<p>the first output of which is a dump of the parameters:</p>
+
+<pre class="code">
+Input Files
+    NE Corpus: E:\data\ANERCorp\unpacked\ANERCorp
+    Location Gazetteer: E:\data\ANERCorp\unpacked\ANERGazet\AlignedLocGazetteer
+    Organization Gazetteer: E:\data\ANERCorp\unpacked\ANERGazet\AlignedOrgGazetteer
+    Person Gazetteer: E:\data\ANERCorp\unpacked\ANERGazet\AlignedPersGazetteer
+
+Parameters
+   N-Gram=8
+   Num chars=1024
+   Interpolation Ratio=8.0
+   Including MISC entity type=true
+   Use dictionary=false
+
+
+Corpus Statistics
+    Location Dict Entries=2183
+    Organization Dict Entries=403
+    Person Dict Entries=2309
+    # sentences=4900
+    # tokens=150286
+
+...
+</pre>
+
+<p> The other system properties determine whether to use a dictionary,
+whether to include the miscellaneous category in training and
+evaluation, and the n-gram length.  There are a few more parameters to
+tweak finer-grained parameters; see the <code>aner</code> target in
+the <a href="build.xml"><code>build.xml</code></a> and the source file
+for details.  </p>
+
+<p>LingPipe's results are very similar to what Yassine achieved with a
+logistic-regression classifier on top of part-of-speech tagged and
+morphologically analyzed input.</p>
+
+<p>Finally, note that these results are <i>without</i> a dictionary.
+Adding a dictionary improved recall, but hurt precision, with a net
+result of a lower F measure.  Many of the dictionary entries look similar,
+so I'm thinking this is an issue with not understanding the dictionary's
+structured format (there are no hints in the paper).</p>
+
+
+<h3>The Code</h3>
+
+<p>The source code for parsing the corpus, training, and cross-validating
+is in <a href="src/ANERXVal.java"><code>src/ANERXVal.java</code></a>.  The only point at
+which this code departs from previous examples is in allowing dictionary-based
+training.  With either an HMM chunker or HMM rescoring chunnker, dictionaries
+may be used to train the categories.  Here's the relevant code snippet:
+</p>
+
+<pre class="code">
+static final String LOC_TAG = "LOC";
+...
+String[] locDict
+    = FileLineReader.readLineArray(locGazFile,Strings.UTF8);
+...
+CharLmRescoringChunker chunker = ...;
+...
+for (String locName : locDict)
+    if (locName.length() > 0)
+        chunker.trainDictionary(locName,LOC_TAG);
+</pre>
+
+<p>All that is required is that the locations be fed into the
+<code>trainDictionary()</code> method.  This method is not abstracted
+into an interface, but is available for both the plain HMM chunker
+<code>chunk.CharLmHmmChunker</code> and the longer-distance rescoring
+version <code>chunk.CharLmRescoringChunker</code>.  
+</p>
+
+<h3>The Results</h3>
+
+<p>Here's the rest of the output:</p>
+
+<pre class="code">
+Input Files
+    NE Corpus: C:\carp\data\aner\ANERCorp
+    Location Gazetteer: C:\carp\data\aner\ANERGazet\AlignedLocGazetteer
+    Organization Gazetteer: C:\carp\data\aner\ANERGazet\AlignedOrgGazetteer
+    Person Gazetteer: C:\carp\data\aner\ANERGazet\AlignedPersGazetteer
+
+Parameters
+   N-Gram=8
+   Num chars=1024
+   Interpolation Ratio=8.0
+   Number of Analyses Rescored=512
+   Including MISC entity type=true
+   Use dictionary=false
+
+
+Corpus Statistics
+    Location Dict Entries=2183
+    Organization Dict Entries=403
+    Person Dict Entries=2309
+    # sentences=4888
+    # tokens=150285
+
+NE Types Found=[MISC, PERS, ORG, LOC]
+
+-----------------------------------------------
+FOLD= 5  start sent= 4073  end sent= 4888
+training labeled data
+compiling
+evaluating
+    FOLD=5       LOC P=0.754 R=0.877 F=0.811
+    FOLD=5      PERS P=0.670 R=0.624 F=0.646
+    FOLD=5       ORG P=0.625 R=0.504 F=0.558
+    FOLD=5      MISC P=0.656 R=0.417 F=0.510
+
+    FOLD=5  COMBINED P=0.690 R=0.648 F=0.668
+-----------------------------------------------
+FOLD= 4  start sent= 3258  end sent= 4073
+training labeled data
+compiling
+evaluating
+    FOLD=4       LOC P=0.769 R=0.835 F=0.801
+    FOLD=4      PERS P=0.644 R=0.711 F=0.676
+    FOLD=4       ORG P=0.717 R=0.507 F=0.594
+    FOLD=4      MISC P=0.610 R=0.413 F=0.493
+
+    FOLD=4  COMBINED P=0.705 R=0.666 F=0.685
+-----------------------------------------------
+FOLD= 3  start sent= 2444  end sent= 3258
+training labeled data
+compiling
+evaluating
+    FOLD=3       LOC P=0.853 R=0.834 F=0.843
+    FOLD=3      PERS P=0.714 R=0.690 F=0.702
+    FOLD=3       ORG P=0.694 R=0.611 F=0.650
+    FOLD=3      MISC P=0.686 R=0.484 F=0.568
+
+    FOLD=3  COMBINED P=0.765 R=0.710 F=0.736
+-----------------------------------------------
+FOLD= 2  start sent= 1629  end sent= 2444
+training labeled data
+compiling
+evaluating
+    FOLD=2       LOC P=0.724 R=0.674 F=0.698
+    FOLD=2      PERS P=0.478 R=0.594 F=0.530
+    FOLD=2       ORG P=0.507 R=0.565 F=0.535
+    FOLD=2      MISC P=0.398 R=0.385 F=0.391
+
+    FOLD=2  COMBINED P=0.585 R=0.608 F=0.596
+-----------------------------------------------
+FOLD= 1  start sent=  814  end sent= 1629
+training labeled data
+compiling
+evaluating
+    FOLD=1       LOC P=0.818 R=0.829 F=0.823
+    FOLD=1      PERS P=0.657 R=0.660 F=0.658
+    FOLD=1       ORG P=0.512 R=0.502 F=0.507
+    FOLD=1      MISC P=0.481 R=0.388 F=0.430
+
+    FOLD=1  COMBINED P=0.690 R=0.680 F=0.685
+-----------------------------------------------
+FOLD= 0  start sent=    0  end sent=  814
+training labeled data
+compiling
+evaluating
+    FOLD=0       LOC P=0.811 R=0.750 F=0.779
+    FOLD=0      PERS P=0.638 R=0.663 F=0.650
+    FOLD=0       ORG P=0.534 R=0.482 F=0.507
+    FOLD=0      MISC P=0.529 R=0.451 F=0.487
+
+    FOLD=0  COMBINED P=0.698 R=0.662 F=0.679
+
+===============================================
+COMBINED CROSS-VALIDATION RESULTS
+     X-Val       LOC P=0.788 R=0.789 F=0.789
+     X-Val      PERS P=0.638 R=0.658 F=0.648
+     X-Val       ORG P=0.612 R=0.527 F=0.566
+     X-Val      MISC P=0.557 R=0.426 F=0.483
+
+     X-Val  COMBINED P=0.689 R=0.663 F=0.676
+</pre>
+
+<p>The results reported by Benajiba for his ANER 2.0 system in the
+paper above (p. 1821) are:
+</p>
+
+<pre class="code">
+LOC    P=0.917  R=0.822 F=0.867
+MISC   P=0.723  R=0.557 F=0.630
+ORG    P=0.480  R=0.450 F=0.464
+PERS   P=0.563  R=0.486 F=0.521
+
+TOTAL  P=0.702  R=0.621 F=0.659
+</pre>
+
+<p>He only evaluated on one fold, but I'm not sure which one, or
+even if it corresponded to one of our folds.  Fold 5 (printed first),
+is the last 25K tokens of the file.</p>
+
+<p>As with the other applications of character LMs to chunking, the
+Arabic named-entity recognizer is not particularly sensitive to the
+parameters used for training.</p>
+
+
+
+
+
+<h2>Which Named Entity Recognizer?</h2>
+
+<p>
+LingPipe actually provides three generic, trainable chunkers which may
+be used for named-entity recognizers, all in the package
+<code>com.aliasi.chunk</code>.  These are:
+</p>
+<ul>
+<li><a href="../../../docs/api/com/aliasi/chunk/CharLmHmmChunker.html"><code>CharLmHmmChunker</code></a>: This chunker is based on an encoding
+of chunking as a tagging problem (slightly richer and more context sensitive
+than the standard BIO encoding internally).  A character language model
+HMM then handles the tagging, using character language models for each
+tag (state) in the HMM, and a maximum likelihood bigram transition model.
+This chunker runs first-best, n-best and confidence output. This is the
+simplest, but also the least accurate chunker.  It's very fast with caching
+turned on.  It also has good recall for its confidence output and fairly
+reliable confidence estimates.
+</li>
+
+<li><a href="../../../docs/api/com/aliasi/chunk/CharLmRescoringChunker.html"><code>CharLmRescoringChunker</code></a>:
+This is the most accurate, but also the slowest chunker.  It uses
+a <code>CharLmHmmChunker</code> to generate hypotheses which it then
+rescores using longer-distance character language models.  This chunker is
+fairly slow, especially when rescoring large n-best lists.  It also approximates
+a confidence-based chunker by estimating confidence through the n-best list, but
+the confidence estimates tend to be highly attenuated by the model.
+</li>
+
+<li><a
+href="../../../docs/api/com/aliasi/chunk/TokenShapeChunker.html"><code>TokenShapeChunker</code></a>:
+This is the LingPipe 1.0 chunker rewrapped in LingPipe 2.0 interfaces.
+It runs with a generative model jointly predicting the next token and
+tag based on the previous two tokens and previous tag.  Unknown words
+are replaced with shape features, based on an instance of <a
+href="../../../docs/api/com/aliasi/tokenizer/TokenCategorizer.html"><code>TokenCategorizer</code></a>.
+This chunker must be trained using the class
+<a href="../../../src/com/aliasi/chunk/TrainTokenShapeChunker.java"><code>TrainTokenShapeChunker</code></a>.  It's very fast, but only
+provides first-best output.  It's performance is usually halfway
+between the other two approaches.
+</li>
+</ul>
+
+
+<h2>Scoring Files versus Files</h2>
+
+<p>
+In this section, we show how to use LingPipe's chunking evaluation
+framework and chunking parser framework to score a chunking in
+one file against another.  It's easy to extend to multiple parallel
+files.
+</p>
+
+<h3>Sample File Scoring Data</h3>
+<p>
+We've provided MUC-6 formatted reference and response files in the
+demo data directory supplied with the distribution:
+</p>
+<ul>
+<li><a
+href="../../data/neFileScore/reference.muc6"><code>../../data/neFileScore/reference.muc6</code></a></li>
+<li><a
+href="../../data/neFileScore/response.muc6"><code>../../data/neFileScore/response.muc6</code></a></li>
+</ul>
+
+<h3>Running File Scoring</h3>
+<p>
+We've also provided an ant task through which file scoring
+may be run:
+</p>
+<pre class="code">
+% cd $LINGPIPE/demos/tutorial/ne
+% ant eval-files-muc6
+</pre>
+<p>
+This produces the following output:
+</p>
+<pre class="code">
+EVALUATION RESULT
+  Total=7
+  True Positive=2
+  False Negative=2
+  False Positive=3
+  True Negative=0
+  Positive Reference=4
+  Positive Response=5
+  Negative Reference=3
+  Negative Response=2
+  Accuracy=0.2857142857142857
+  Recall=0.5
+  Precision=0.4
+  Rejection Recall=0.0
+  Rejection Precision=0.0
+  F(1)=0.4444444444444445
+  Fowlkes-Mallows=4.47213595499958
+  Jaccard Coefficient=0.2857142857142857
+  Yule's Q=-1.0
+  Yule's Y=-1.0
+  Reference Likelihood=0.5714285714285714
+  Response Likelihood=0.7142857142857143
+  Random Accuracy=0.5306122448979592
+  Random Accuracy Unbiased=0.5408163265306122
+  kappa=-0.5217391304347827
+  kappa Unbiased=-0.5555555555555554
+  kappa No Prevalence=-0.4285714285714286
+  chi Squared=2.1
+  phi Squared=0.3
+  Accuracy Deviation=0.17074694419062766
+</pre>
+
+<h3>The File Scoring Code</h3>
+<p>
+The file scorer code is found in <a
+href="src/FileScorer.java"><code>src/FileScorer.java</code></a>.
+Tracing from the top-level main method, which is called with
+the reference and response file paths as arguments:
+</p>
+<pre class="code">
+public static void main(String[] args) throws IOException {
+    File refFile = new File(args[0]);
+    File responseFile = new File(args[1]);
+
+    Parser parser = new Muc6ChunkParser();
+    FileScorer scorer = new FileScorer(parser);
+    scorer.score(refFile,responseFile);
+
+    System.out.println(scorer.evaluation().toString());
+}
+</pre>
+<p>
+First, the files are created from the command-line arguments.
+Then, we create a parser for the data and use it to construct
+the file scorer.  The scorer is used to score the reference
+file against the response file and the result is printed out.
+To generalize this code to handle multiple files, the arguments
+would be directories which would be walked in parallel, with
+each pair of reference and response files being given to the
+scorer via its <code>score</code> method.
+</p>
+
+<p>
+The file scorer's constructor simply sets the parser and
+a chunking evaluation is created and assigned to a member variable.
+</p>
+<pre class="code">
+private final Parser mParser;
+
+private final ChunkingEvaluation mEvaluation
+    = new ChunkingEvaluation();
+
+public FileScorer(Parser parser) {
+    mParser = parser;
+}
+</pre>
+
+<p>
+The remaining method does all the work of parsing and adding
+the cases to the evaluation.
+</p>
+<pre class="code">
+public void score(File refFile, File responseFile) throws IOException {
+    ChunkingCollector refCollector = new ChunkingCollector();
+    mParser.setHandler(refCollector);
+    mParser.parse(refFile);
+    List&lt;Chunking&gt; refChunkings = refCollector.mChunkingList;
+
+    ChunkingCollector responseCollector = new ChunkingCollector();
+    mParser.setHandler(responseCollector);
+    mParser.parse(responseFile);
+    List&lt;Chunking&gt; responseChunkings = responseCollector.mChunkingList;
+
+    if (refChunkings.size() != responseChunkings.size())
+        throw new IllegalArgumentException("chunkings not same size");
+
+    for (int i = 0; i &lt; refChunkings.size(); ++i)
+        mEvaluation.addCase((Chunking) refChunkings.get(i),
+                            (Chunking) responseChunkings.get(i));
+}
+</pre>
+<p>
+It relies on the following static class to collect the chunks
+and store them in order in a list.
+</p>
+<pre class="code">
+private static class ChunkingCollector 
+    implements ObjectHandler&lt;Chunking&gt; {
+
+    private final List&lt;Chunking&gt; mChunkingList 
+        = new ArrayList&lt;Chunking&gt;();
+    public void handle(Chunking chunking) {
+        mChunkingList.add(chunking);
+    }
+}
+</pre>
+<p>
+The appropriate collector is set as the handler for the parser before
+the file is parsed.  The collector receives all of the chunkings found
+by the parser through its <code>handle(Chunking)</code> method.
+</p>
+<p>
+Next, the chunkings are retrieved as lists; if they are not
+the same length, an exception is thrown.  To avoid this exception,
+the files must be formatted to match in terms of number of chunkings.
+For instance, the MUC-6 parser used in the demo breaks on sentence
+elements, with each sentence corresponding to a chunk.
+The <code>addCase</code> method further checks that the chunkings
+are over the same strings.  Try adding space or changing the spelling
+in just the response file and check out the exception that's thrown.
+</p>
+<p>
+The final step is to simply loop over the chunkings and add each as
+a case to the evaluation.
+</p>
+
+<h2>Chinese and Beyond</h2>
+
+<h3>New Data Formats</h3>
+
+<p>
+All that's needed to handle a new data format is a new parser for it.
+Alternatively, the data can be transcoded into a format that LingPipe
+already recognizes.  An example of a parser can be found in <a
+href="src/Conll2002ChunkTagParser.java"><code>src/Conll2002ChunkTagParser.java</code></a>.
+Everything else stays the same, and slight variants of the programs in this demo
+may be used to build models and evaluate them.
+</p>
+
+
+<h3>Chinese Named Entities in the Sandbox</h3>
+
+<p>
+We entered LingPipe into the 2006 SIGHAN Chinese named-entity (and
+word segmentation) bakeoff.  Our entry had an F-measure of around 82%,
+leaving it 3.5% behind the best named-entity recognition entry in
+F-measure.  Full details, including all of the code used to bake our
+entry, can be found in:
+</p>
+<ul>
+<li><a href="../../../web/sandbox.html">LingPipe Development Sandbox</a></li>
+</ul>
+<p>
+In addition to a parser for the data format (which is basically just like
+CoNLL's), we also used a different tokenizer, in this case, one that treats
+every character as a token.
+</p>
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003-2009 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+
+
+
+
+
+
+
+

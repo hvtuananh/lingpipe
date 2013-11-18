@@ -1,0 +1,27 @@
+D:2178  Canad dian 2006-03-01 20:37:39
+O:Canad dian
+C:Canadian
+
+D:2178  CanadianHockey  2006-03-01 20:38:46
+O:CanadianHockey
+C:Canadian Hockey
+
+D:2178  hokey   2006-03-01 20:38:46
+O:hokey
+C:hockey
+
+D:2334  wayne gretski   2006-03-05 18:41:50
+O:wayne gretski
+C:Wayne Gretzky
+
+D:2334  Calgary 2006-03-05 18:41:50
+O:Calgary
+C:Calgary
+
+D:2334  hky      2006-03-05 18:41:50
+O:hky
+C:hockey
+
+D:2334  exuberation      2006-03-05 18:41:50
+O:exuberation
+C:exuberation

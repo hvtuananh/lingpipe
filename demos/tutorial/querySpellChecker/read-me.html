@@ -1,0 +1,2006 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Spelling Correction Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">Spelling Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a class="current" href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<h2>What is Spelling Correction?</h2>
+
+<div class="sidebar">
+<h2>Bonus Demo</h2>
+<p>
+This demo interfaces with the <a
+href="http://lucene.apache.org">Lucene search engine</a>
+and includes basic information on
+setting up a search engine, inspecting
+the results, and querying.
+</p>
+</div>
+
+<p>Spelling correction takes a user input text and provides a
+&quot;corrected&quot; form.  Typically, this is a search engine
+request, and we address that case first in this tutorial.  
+</p>
+
+<p>LingPipe's spelling corrector is also general enough to carry out
+correction tasks such as restoring case to single-case text, restoring
+spaces to texts without space, removing automatically inserted
+hyphenation, replacing ligatures messed up through PDF conversion,
+etc.  We turn to the more general cases in the second half of this tutorial.
+</p>
+
+<h3>Automatic Phrase Completion</h3>
+
+<p>Auto-completion is an alternative kind of spell checking that
+tries to find the best completion for a user-entered prefix,
+allowing spell checking to happen in matching the completion.
+See the section <a href="#auto-complete">Auto-Completion</a> for a demo.
+</p>
+
+
+<h3>How's it Done?</h3>
+
+<p>
+LingPipe's spelling correction
+is based on a noisy-channel model, which models user mistakes (typos
+and brainos) and expected user input (based on the data).  Mistakes
+are modeled by weighted edit distances and expected input by
+a character language model.
+</p>
+
+<h3>Who Thought of Doing it this Way?</h3>
+
+<p>
+The noisy-channel model was invented by
+<a href="http://en.wikipedia.org/wiki/Claude_Shannon">Claude
+Shannon</a> of Bell Laboratories in the 1940s.  The original motivation
+was transmitting signals over noisy telephone
+lines.  The original reference is cited below.
+Spelling correction is a widely used application of
+the noisy channel model.
+</p>
+
+<h2>Popular Web Implementations</h2>
+
+<h3>Google's &quot;Did You Mean&quot;</h3>
+
+<p>
+Google provides spelling correction for user queries.  For
+example, consider the following query (you may click to try
+it on Google):
+</p>
+
+<ul>
+<li>
+Google Query:
+<a
+href="http://www.google.com/search?hl=en&amp;ie=UTF-8&amp;oe=UTF-8&amp;q=brec+baldwin&amp;btnG=Google">brec baldwin</a>
+</li>
+</ul>
+
+<div class="sidebar">
+<h2>What's this &quot;about&quot;?</h2>
+<p>
+The search engines return approximate numbers
+of hits.  They won't let you retrieve that
+many results.  For hits with small &quot;about&quot;
+numbers, the actual number of results may be much
+lower or higher than approximated.
+</p>
+</div>
+
+
+
+<p>
+This query has &quot;about&quot; 503 results.
+Google displays results in the usual way, preceded by the
+following question:
+</p>
+
+<blockquote>
+<p>
+<span style="color:red" >Did you mean:</span>
+<a href="http://www.google.com/search?hl=en&amp;q=breck+baldwin&amp;spell=1">
+<i>
+<span style="border-bottom:1px solid blue;">breck</span>
+baldwin</i></a>
+</p>
+</blockquote>
+
+<p>
+The corrected query has &quot;about&quot; 385,000 hits.
+</p>
+
+<p>
+Their interface subtly highlights the token that changed
+by underlining; in this case, the token
+&quot;brec&quot; is corrected to &quot;breck&quot;.
+Styled as a link (blue and underlined), the user may
+directly click on the correction to perform a search.
+</p>
+
+<h3>Yahoo's &quot;Did You Mean&quot;</h3>
+
+<p>
+Yahoo uses exactly the same mechanism.  For
+the search:
+</p>
+
+<ul>
+<li>
+Yahoo Query:
+<a href="http://search.yahoo.com/search?p=brec+baldwin"
+>brec baldwin</a>
+</li>
+</ul>
+
+<p>there are &quot;about&quot; 425 hits.
+Yahoo returns a slightly different correction:
+</p>
+
+<blockquote>
+<p>
+<span style="color:red" >Did you mean:</span>
+<a href="http://search.yahoo.com/search?p=bruce+baldwin&amp;sp=1&amp;fr2=sp-top"
+><i>bruce baldwin</i></a>
+</p>
+</blockquote>
+
+<p>
+The corrected search has &quot;about&quot; 4,080,000 hits.
+LingPipe may actually be tuned to simulate either of these
+first-best suggestions.
+</p>
+
+<p>
+It's interesting to note that Yahoo doesn't provide the additional GUI
+focus of double-underlining on the corrected element.  It's also
+interesting to note that they serve ads based on the corrected query.
+</p>
+
+<div class="sidebar">
+<h2>Your Mileage may Vary</h2>
+<p>
+The web is a moving target and search providers
+are constantly tuning their system's behaviors.
+The responses provided here were from tests performed
+on 27 January 2006.
+</p>
+</div>
+
+
+
+<h3>MSN's &quot;Were you looking for&quot;</h3>
+
+<p>
+Now this one looks different:
+</p>
+<ul>
+<li>
+MSN Query: <a href="http://search.msn.com/results.aspx?q=brec+baldwin"
+>brec baldwin</a>
+</li>
+</ul>
+
+<p>
+MSN asks us if we were looking for a location:
+</p>
+
+<blockquote><p>
+<span style="color:red">* Were you looking for</span>
+&nbsp;
+<a href="http://search.msn.com/local/results.aspx?q=brec&amp;near=near&amp;lat=40.658099&amp;lon=-73.608599&amp;display=Baldwin%2c+NY&amp;FORM=SSRE">'brec' near Baldwin, NY</a>
+</p></blockquote>
+
+<p>
+Clicking on that link takes you to an MSN local
+page.  Many other queries produced the same
+spelling correction as Google, Yahoo and Amazon.
+</p>
+
+<h3>Amazon's A9's &quot;Did you mean&quot;</h3>
+
+<p>
+The same query submitted to Amazon's search engine:
+</p>
+
+<ul>
+<li>
+A9 Query: <a href="http://a9.com/brec%20baldwin">brec baldwin</a>
+</li>
+</ul>
+
+<p>
+produces the same output as Google's, only with the
+same single underlining as Yahoo.
+the additional underlining of the corrected term.
+</p>
+
+
+<h3>Amazon's &quot;Did you mean&quot;</h3>
+<p>
+Searches on Amazon's product pages are handled
+differently.  Their current interface for
+a query such as:
+</p>
+
+<ul>
+<li>Amazon query: <a href="http://www.amazon.com/exec/obidos/search-handle-url/ref=br_ss_hs/104-1036386-7288716?platform=gurupa&amp;url=index%3Dblended&amp;field-keywords=301gb+drive">301gb drive</a></li>
+</ul>
+
+<p>
+indicates there are no matches for the query and
+asks if we meant &quot;300gb drive&quot;, while
+also somewhat confusingly showing results
+matching the corrected query.
+</p>
+
+<p>
+With that same query, Google wants to insert a space, asking if we
+meant &quot; 301 gb drive&quot;.  MSN, like Amazon, also suggests
+&quot;300gb drive&quot;.  Yahoo just returns results, apparently
+treating &quot;301gb&quot; as a single term; more interestingly:
+</p>
+
+<ul>
+<li>Yahoo Query: <a href="http://search.yahoo.com/search?p=%22301gb+drive%22&amp;sm=Yahoo%21+Search&amp;fr=FP-tab-web-t&amp;toggle=1&amp;cop=&amp;ei=UTF-8">&quot;301gb drive&quot;</a>
+</li>
+</ul>
+
+<p>
+suggests a dozen alternatives, none of which appear helpful
+for finding that 300gb drive.  Even a closely related query
+like <code>401gb drive</code> yields very different corrections
+from all of the major search engines.  So do other configurations,
+because all of these terms are distributed differently in
+the data.
+</p>
+
+
+
+
+<h2>How does it Work?</h2>
+
+<h3>The Basic Model</h3>
+
+<p>
+The basic technology works as follows: The documents that the search
+engine is providing access to are added both to the search index and a
+language model. The language model stores seen phrases and maintains
+statistics about them. When a query is submitted, the <a
+href="src/QuerySpellCheck.java">src/QuerySpellCheck.java</a> class
+looks for possible character edits, namely substitutions, insertions,
+replacements, transpositions, and deletions, that make the query a
+better fit for the lanaguage model. So if you type 'Gretski' as a
+query, and the underlying data is data from rec.sport.hockey, the
+language model will be much more familliar with the mildly edited
+'Gretzky' and suggests it as an alternative.
+</p>
+
+<h3>Domain Sensitivity</h3>
+
+<p>
+The big advantage of this approach over dictionary-based spell
+checking is that the corrections are motivated by data in the search
+index. So &quot;trt&quot; will be corrected to &quot;tort&quot; in a
+legal domain, &quot;tart&quot; in a cooking domain, and
+&quot;TRt&quot; in a bio-informatics domain.  On Google, there is no
+suggested correction, presumably because of web domains &quot;trt.com&quot;,
+Thessaly Radio Television as well as Turkiye Radyo Televizyon, both
+aka TRT, etc.
+</p>
+
+<h3>Context-Sensitive Correction</h3>
+
+<p>
+Both Yahoo and Google perform context-sensitive correction.  For
+instance, the query <code>frod</code> (an Old English term from the
+German meaning wise or experienced) has a suggested correction of
+<code>ford</code> (the automotive company, among others), whereas the
+query <code>frod baggins</code> has the corrected query <code>frodo
+baggins</code> (a 20th century English fictional character).  That's
+the Yahoo behavior.  Google doesn't correct <code>frod baggins</code>,
+even though there are about 785 hits for it versus 820,000 for Frodo
+Baggins.  On the other hand, Google does correct <code>frdo</code> and
+<code>frdo baggins</code>.  Amazon behaves similarly, but MSN
+corrects <code>frd baggins</code> to <code>ford baggins</code>
+rather than <code>frodo baggins</code>.
+</p>
+<p>
+LingPipe's model supports exactly this kind of context-sensitive
+correction.
+</p>
+
+
+<h2>Running an example</h2>
+
+<p>
+If you have not already, download and install LingPipe. That done,
+change directory to this one:
+</p>
+
+<pre class="code">
+&gt; cd LING_PIPE/demos/tutorial/querySpellCheck
+</pre>
+
+
+<div class="sidebar">
+<h2>Demo Data Unpacking</h2>
+<p>
+Depending on how you received your LingPipe distribution (web,
+tarball, CD), and whether or not you've done top-level LingPipe cleans,
+you may need to unpack some of the demo data.
+</p>
+<p>
+Demo data is all in the top-level <code>$LINGPIPE/demos/data</code>
+directory.  For this demo, the following file should be unpacked:
+</p>
+
+<ul>
+<li>
+<code>$LINGPIPE/demos/data/rec.sport.hockey.tar.gz</code>
+</li>
+</ul>
+
+<p>which will produce the directory:</p>
+
+<ul>
+<li>
+<code>$LINGPIPE/demos/data/rec.sport.hockey/train</code>
+</li>
+</ul>
+
+<p>All demo data may be unpacked by the top-level LingPipe
+Ant target <code>jars</code>:
+</p>
+
+<pre class="code">
+&gt; cd $LINGPIPE
+&gt; ant jars
+</pre>
+
+</div>
+
+
+<p>
+Then you may use the ant task:
+</p>
+
+<pre class="code">
+ant querySpellCheck
+</pre>
+
+<p>
+though it is preferable to use a command line in this case because
+the program is interactive.  For a command-line invocation, use
+the following invocation (on a single line and substituting ':'
+for ';' if you are on Unix/Linux/Mac):
+</p>
+
+<pre class="code">
+java
+-cp "../../../lingpipe-4.1.0.jar;
+     ../../lib/lucene-core-2.3.0.jar;
+     querySpellCheck.jar"
+QuerySpellCheck
+</pre>
+
+<p>
+A session looks like the following, with user input in italics:
+</p>
+
+<pre class="code">
+PHASE I: TRAINING
+     CONFIGURATION:
+     Model File: SpellCheck.model
+     N-gram Length: 5
+     File=..\..\data\rec.sport.hockey\train/52550
+     File=..\..\data\rec.sport.hockey\train/52551
+...
+     File=..\..\data\rec.sport.hockey\train/55022
+Writing model to file=SpellCheck.model
+Writing lucene index to =lucene
+Reading model from file=SpellCheck.model
+
+PHASE II: CORRECTION
+     Constructing Spell Checker from File
+
+Enter query &lt;RETURN&gt;.
+     Use just &lt;RETURN&gt;b to exit.
+
+&gt;<span class="userinput">Wayn Gretsky</span>
+Found 0 document(s) that matched query 'Wayn Gretsky':
+Found 43 document(s) matching best alt='Wayne Gretzky':
+
+&gt;<span class="userinput">Wayne Gretzky</span>
+Found 43 document(s) that matched query 'Wayne Gretzky':
+ No spelling correction found.
+
+&gt;<span class="userinput">Stanley Cub Plaoofs</span>
+Found 90 document(s) that matched query 'Stanley Cub Plaoofs':
+Found 208 document(s) matching best alt='Stanley Cup Playoffs':
+
+&gt;<span class="userinput">StanleyCup</span>
+Found 0 document(s) that matched query 'StanleyCup':
+Found 143 document(s) matching best alt='Stanley Cup':
+
+&gt;<span class="userinput">Stan ley Cup</span>
+Found 132 document(s) that matched query 'Stan ley Cup':
+Found 143 document(s) matching best alt='Stanley Cup':
+
+&gt;
+     Detected empty line.
+     Ending test.
+</pre>
+
+<p>
+Pretty obviously the query spell checker is increasing the size of the
+returned results by fitting the queries better to the indexed
+data. This won't necessarily always do the right thing, but it allows
+for some fuzziness in getting spelling right which addresses a long
+standing problem with search engines.
+</p>
+
+<p>One difference between the spell checker in LingPipe and many other
+common spell checkers is that it is able to split tokens, as in the
+query <code>&quot;StanleyCup&quot;</code> as well as combine tokens,
+as seen for the query <code>&quot;Stan ley Cup&quot;</code>.
+</p>
+
+<p>Note that this is a pretty trivial amount of data and we're only
+training with character 5-grams.  To compensate, we have set the edit
+costs very low, but the result of this is overly eager correction.
+Typical spelling checking applications rely on orders of magnitude
+differences in occurrences, with edit distances set around the -8 to
+-10 level, requiring the correction to be 250 to 1000 times more
+likely than the edit in the training data. With Stanley Cup only
+occurring 143 times, we have to fudge the typical settings a bit for
+demo purposes.
+</p>
+
+<p>Also note that we have not been at all careful in catching the many
+types of errors thrown by Lucene's rather fastidious query parser.  So
+if you enter a query like <code>&quot;((]-&lt;&quot;</code>, you will
+receive a query parser exception for your troubles.
+</p>
+
+
+
+<h3>Getting Under the Hood</h3>
+
+<p>
+The <a href="src/QuerySpellCheck.java">QuerySpellCheck.java</a> class
+brings together quite a few components as well as the Lucene search
+engine.
+</p>
+
+<p>
+The basic flow is:
+</p>
+
+<ul>
+<li>set up the language model, spell checker, and
+Lucene classes,
+</li>
+<li>
+populate the language model and Lucene index, and
+</li>
+<li>
+process queries from the command line.
+</li>
+</ul>
+
+
+<h3>Setting up the Spell Checker</h3>
+
+<p>
+There are a fair number of steps required to set up the relevant
+classes. First we need a <a
+href="../../../docs/api/com/aliasi/spell/TrainSpellChecker.html">TrainSpellChecker</a>
+object which we will train up on the data which we are indexing with
+the search engine. The setup is:
+</p>
+
+<pre class="code">
+FixedWeightEditDistance fixedEdit =
+    new FixedWeightEditDistance(MATCH_WEIGHT,
+                                DELETE_WEIGHT,
+                                INSERT_WEIGHT,
+                                SUBSTITUTE_WEIGHT,
+                                TRANSPOSE_WEIGHT);
+
+NGramProcessLM lm = new NGramProcessLM(NGRAM_LENGTH);
+TokenizerFactory tokenizerFactory
+    = new IndoEuropeanTokenizerFactory();
+TrainSpellChecker sc
+    = new TrainSpellChecker(lm,fixedEdit,
+                            tokenizerFactory);
+</pre>
+
+<p>
+Working from top to bottom, we start by creating a <a
+href="../../../docs/api/com/aliasi/spell/FixedWeightEditDistance.html">FixedWeightEditDistance</a>
+object which sets the weights for operations like deletions,
+insertions etc. Reasonable values have been supplied in the demo but
+they can be played with to help with variations due to particular data
+sets. There is a lot of room for messing around with this class but
+that is beyond the scope of this tutorial.
+</p>
+
+<p>
+The next step is to create a <a
+href="../../../docs/api/com/aliasi/lm/NGramProcessLM.html">NGramProcessLM</a>
+which will be doing the language modeling at the character level for
+our demo. All it needs to know is the number of characters to sample
+in its modeling of the data. Smaller data sets will do better with
+lower number of characters. Once again, this is something you can play
+with to evaluate the quality of your queries and the suggested
+corrections.
+</p>
+
+<p>
+In addition we need a <a
+href="../../../docs/api/com/aliasi/tokenizer/TokenizerFactory.html">TokenizerFactory</a>
+to help with the editing of queries--this tokenizer should ideally
+match the tokenizer being used by the Lucene, which must be an
+implementation of <a
+href="http://lucene.apache.org/java/docs/api/org/apache/lucene/analysis/Analyzer.html">org.apache.lucene.analysis.Analyzer</a>--see
+below.
+</p>
+
+<p>
+It all comes together with the <a
+href="../../../docs/api/com/aliasi/spell/TrainSpellChecker.html">TrainSpellChecker</a>
+class which will do the training sensitive to tokenization.
+</p>
+
+
+<h3>Setting up the Lucene search engine</h3>
+
+<p>
+Lucene builds the search index with the <a
+href="http://lucene.apache.org/java/docs/api/org/apache/lucene/index/IndexWriter.html">IndexWriter</a>
+class which takes a directory to write the index to, an analyzer to
+tokenize the data and a boolean flag controlling whether a new index
+is created or the index is to be added to.
+</p>
+
+
+<pre class="code">
+    static final File LUCENE_INDEX_DIR = new File(&quot;lucene&quot;);
+    static final StandardAnalyzer ANALYZER = new StandardAnalyzer(Version.LUCENE_30);
+    static final String TEXT_FIELD = "text";
+...
+        FSDirectory fsDir 
+            = new SimpleFSDirectory(LUCENE_INDEX_DIR,
+                                    new NativeFSLockFactory());
+        IndexWriter luceneIndexWriter 
+            = new IndexWriter(fsDir,
+                              ANALYZER,
+                              IndexWriter.MaxFieldLength.LIMITED);
+...
+</pre>
+
+<p>
+In this case we have chosen to set a static variable
+<code>ANALYZER</code> to an instance of Lucene's <a
+href="http://lucene.apache.org/java/docs/api/org/apache/lucene/analysis/standard/StandardAnalyzer.html">StandardAnalyzer</a>,
+which applies some standard filters to the data and converts it to
+lowercase.  The last argument limits the maximum size of a field,
+with a default well above the size of documents we're dealing with.
+</p>
+
+
+<h3>Indexing documents and training spelling correction</h3>
+
+<p>
+Adding the data is very simple, all we need do is iterate over the
+documents and send them off to the respective methods for language
+model training and index addition.
+</p>
+
+<pre class="code">
+String[] filesToIndex = DATA.list();
+for (int i = 0; i &lt; filesToIndex.length; ++i) {
+    System.out.println(&quot;     File=&quot;
+                       + DATA + &quot;/&quot;
+                       +filesToIndex[i]);
+    File file = new File(DATA,filesToIndex[i]);
+    String charSequence
+        = Files.readFromFile(file);
+    sc.handle(charSequence);
+    Document luceneDoc = new Document();
+    Field textField
+        = new Field(TEXT_FIELD,charSequence,
+                    Field.Store.YES,Field.Index.TOKENIZED);
+    luceneDoc.add(textField);
+    luceneIndexWriter.addDocument(luceneDoc);
+}
+
+System.out.println(&quot;Writing model to file=&quot;
+                   + MODEL_FILE);
+writeModel(sc,MODEL_FILE);
+
+System.out.println(&quot;Writing lucene index to =&quot;
+                   + LUCENE_INDEX_DIR);
+luceneIndexWriter.close();
+</pre>
+
+<div class="sidebar">
+<h2>Do as we Say</h2>
+<p>
+To keep the demo code simple, we have not followed our
+own recommendation in having Lucene's analyzer match LingPipe's
+tokenizer.  To do things &quot;right&quot;, you should
+</p>
+<ul>
+<li> do case
+conversions and stoplisting in a LingPipe
+<code>TokenizerFactory</code>, and
+</li>
+
+<li>adapt the LingPipe tokenizer
+factory to implement a Lucene <code>Analyzer</code>.
+</li>
+</ul>
+</div>
+
+<p>
+Once we have the string for the file, training the language model is a
+one liner <code>sc.handle(charSequence);</code>. Getting the data into
+Lucene is a bit more work because it is structuring the data in a more
+complex way in support of all those nice search engine features. We
+are creating a new Document object, adding the data under a field name
+(which we will need when querying) and finally adding the document to
+the index.
+</p>
+
+<p>
+Now we illustrate writing the spell checker and Lucene index to disk,
+where they can be read back in by an application.  Lucene wraps
+closing and writing the index to disk nicely and there is a single
+method call <code>luceneIndexWriter.close()</code> that does all the
+work. Writing out the spell checker is a bit more work and the steps
+are in the demo <code>writeModel</code> method.
+</p>
+
+<pre class="code">
+private static void writeModel(TrainSpellChecker sc,
+                               File modelFile)
+    throws IOException {
+
+    FileOutputStream fileOut
+        = new FileOutputStream(modelFile);
+    BufferedOutputStream bufOut
+        = new BufferedOutputStream(fileOut);
+    ObjectOutputStream objOut
+        = new ObjectOutputStream(bufOut);
+
+    // write the spell checker to the file
+    sc.compileTo(objOut);
+
+    Streams.closeOutputStream(objOut);
+    Streams.closeOutputStream(bufOut);
+    Streams.closeOutputStream(fileOut);
+}
+</pre>
+
+<p>
+This is a bunch of Java I/O with the <code>compileTo</code> method
+doing the LingPipe specific stuff.  (<i>Note:</i> For more robust Java
+coding, the closes would be in a <code>try/finally</code> block.)
+</p>
+
+<h3>Reading in from Disk</h3>
+
+<p>
+Once the model and index are written to disk, we can read them in and
+correct queries.  The <code>readModel</code> method (not shown) shows
+how to combine the relevant Java I/O to de-serialize the class. We
+have changed class though to a CompiledSpellChecker which is required
+for generating corrections; the main reason for this is that compiled
+language models are much faster in execution than their non-compiled
+versions.
+</p>
+
+<pre class="code">
+// read compiled model from model file
+System.out.println("Reading model from file="
+                   + MODEL_FILE);
+CompiledSpellChecker compiledSC
+    = readModel(MODEL_FILE);
+IndexSearcher luceneIndex
+    = new IndexSearcher(fsDir);
+
+System.out.print(TEST_INTRO);
+testModelLoop(compiledSC,luceneIndex);
+
+</pre>
+
+<p>
+Loading the Lucene similarly changes the core class to being
+IndexSearcher and we are ready to start correcting queries. The last
+line of the above code calls the interactive command line loop.
+</p>
+
+<h3>Query correction loop</h3>
+
+<p>
+An actual deployment of a search engine requires much more than what
+the demo presents--in particular some sort of access to documents. But
+hopefully the below shows enough to show how to get spell checking up
+and running within whatever fuller featured deployment you have in
+mind.
+</p>
+
+<p>
+The method below has an endless <code>while</code> loop reading from
+the command prompt. The flow is to get the query, run it against
+Lucene and report the counts. Then look for an alternate query and run
+that against the Lucene index and again report the results.
+</p>
+
+<pre class="code">
+static void testModelLoop(SpellChecker sc,
+                          IndexSearcher luceneIndex)
+        throws IOException, ParseException {
+
+    InputStreamReader isReader
+        = new InputStreamReader(System.in);
+    BufferedReader bufReader
+        = new BufferedReader(isReader);
+
+    QueryParser queryParser 
+        = new QueryParser(Version.LUCENE_30,
+                          TEXT_FIELD,
+                          ANALYZER);
+
+    while (true) {
+        // collect query or end if null
+        System.out.print(&quot;&gt;&quot;);
+        System.out.flush();
+        String queryString = bufReader.readLine();
+        if (queryString == null || queryString.length() == 0)
+            break;
+
+        Query query = queryParser.parse(queryString);
+        TopDocs results = searcher.search(query,MAX_HITS);
+        System.out.println(&quot;Found &quot;
+            + results.totalHits
+            + &quot; document(s) that matched query '&quot;
+            + query + &quot;':&quot;);
+
+        // compute alternative spelling
+        String bestAlternative = sc.didYouMean(queryString);
+
+        Query alternativeQuery
+            = queryParser.parse(bestAlternative);
+        TopDocs results2
+            = luceneIndex.search(alternativeQuery,MAX_HITS);
+
+        System.out.println(&quot;Found &quot; + results2.totalHits
+            + &quot; document(s) matched best alternate '&quot;
+            + bestAlternative + &quot;':&quot;);
+    }
+}
+</pre>
+
+<p>
+Looking more closely at the code, other than messing about with I/O
+and killing the loop when an empty line is entered, there are just a
+few key methods. First we use the Lucene <a
+href="http://lucene.apache.org/java/docs/api/org/apache/lucene/queryParser/QueryParser.html">QueryParser</a>
+class to produce a <a
+href="http://lucene.apache.org/java/docs/api/org/apache/lucene/search/Query.html">Query</a>. This
+takes parameters including the query string its self, then the field
+in in the Lucene index to be searched, here <code>TEXT_FIELD</code>
+again (we only have one, but you could imagine a much more complex
+setup with title, author etc.), and finally an analyzer which will be
+used to tokenize the query, here <code>LUCENE_TOKENIZER</code>
+again. It is generally wise to use the same analyzer for indexing and
+for parsing queries.
+</p>
+
+<div class="sidebar">
+<h2>Luke: Exploring Lucene Indices</h2>
+
+<p>Use <a href="http://www.getopt.org/luke/">Luke</a> to explore a
+Lucene index.  It'll help you see how documents are tokenized, how
+they were broken into fields, which fields are stored, and how queries
+are parsed.  It will even run a search.
+</p>
+<p>The jar is included in this
+distribution so you can just type on one line:
+</p>
+
+<pre class="code">
+java
+-cp $LINGPIPE/demos/lib/luke-0.9.9.jar; $LINGPIPE/demos/lib/lucene-core-2.3.0.jar; $LINGPIPE/lingpipe-4.1.0.jar
+org.getopt.luke.Luke
+</pre>
+
+<p>
+Then use the tabs to explore various aspects of the index.
+</p>
+</div>
+
+
+
+<p>
+Next we collect the documents that match the query with <code> Hits
+hits = luceneIndex.search(origQuery);</code>. That's all we need from
+Lucene to report the number of documents --- the <a
+href="http://lucene.apache.org/java/docs/api/org/apache/lucene/search/Hits.html">Hits</a>
+class also provides methods for iterating over the found documents in
+order of matching score.
+</p>
+
+<p>
+Finally we get to the whole reason for this tutorial with <code>
+String bestAlternative = sc.didYouMean(query);</code> which takes a
+look at the language model we built along with the text of the query
+at hand, and attempts to find a 'better match' with simple edits of
+the query against the language model. If it doesn't find any better
+scoring variations on the query, it returns the original back as the
+best choice. Then the demo runs the returned query and reports on the
+search results.
+</p>
+
+<h3>Tuning and Deployment</h3>
+<p>
+A deployed query spell checker will need to be quite a bit fancier
+than this demo but this should make it clear how to add the capabilty
+to whatever your vision is. Tuning these models can be a bit complex,
+and the size of the underlying data can be an issue as well. Ideally,
+you will have an evaluation set of queries, both good and bad randomly
+generated by actually users that you can use to select appropriate
+paramaters.
+</p>
+
+
+<h2>Sizing, Efficiency and Tuning</h2>
+<p>
+In this section, we'll explore the effects of various model components
+on sizing and run time.  Sizing will vary among the training component,
+the on-disk compiled model and the in-memory representation used
+by the compiled spell checker.  Training efficiency is simple, but
+run-time efficiency is a more complex issue.
+</p>
+
+<div class="sidebar">
+<h2>Dictionary-based Training</h2>
+
+<p>Although we do not include code for this case, a spell checker may
+be trained on a dictionary as well as on source data or query log
+data.  All that is required is to feed the dictionary entries into
+the trainer just like any other data.
+</p>
+<p>
+It may be worthwhile to boost the dictionary by training each word
+in the dictionary more than once.  Depending on the count of the
+dictionary, it may dominate or be dominated by the source training
+data.
+</p>
+</div>
+
+
+<h3>Prefixes and Branching Factor</h3>
+<p>
+Many of the efficiency issues are determined by the set of
+prefixes of tokens in the training set.  For instance,
+the word 
+<code>&quot;Corpus&quot;</code> has prefixes 
+<code>&quot;&quot;</code>, 
+<code>&quot;C&quot;</code>, 
+<code>&quot;Co&quot;</code>, 
+<code>&quot;Cor&quot;</code>, 
+<code>&quot;Corp&quot;</code>, 
+<code>&quot;Corpu&quot;</code>, 
+<code>&quot;Corpus&quot;</code>.    
+The word <code>&quot;Corn&quot;</code> has five prefixes,
+the first four of which are shared with <code>&quot;Corpus&quot;</code>.
+If we train using strings <code>&quot;Corn&quot;</code>
+and <code>&quot;Corpus&quot;</code>, the prefix
+<code>&quot;Cor&quot;</code> may be followed by either
+the character <code>'n'</code> or the character
+<code>'p'</code>.  The number of characters that may follow
+a prefix is called the <i>branching factor</i> of the prefix.
+</p>
+
+
+<h3>Character Language Model</h3>
+
+<p> The main component of a spelling model is a character language
+model which models the training text.  The size required for
+a character language model is proportional to the number of
+unique substrings found in the training set.  These are not
+token sensitive, but are bounded in length by the length of
+n-gram used in the language models.  
+</p>
+
+<h4>Training</h4>
+<p>
+During training, a dynamic character language model is
+trained with all of the data provided.  
+This is represented
+as a reasonably compact in-memory trie structure.  The only
+factor affecting speed and size is the length of the n-gram
+in the character language model.  Longer n-grams require more
+space and take more time to train. 
+</p>
+<p>
+The language model itself
+is available through the method <code>TrainSpellChecker.lm()</code>,
+though pruning may be carried out through the method
+<code>TrainSpellChecker.pruneLM(int)</code>.  This pruning will
+affect the in-memory representation and the compiled model.  It
+is an irreversible operation.  Pruning periodically to a low
+count threshold such as <code>2</code> may allow much more
+data to be trained than would be possible in an unpruned model.
+Because language data follows a power-law (Zipf) distribution,
+most of the sequences stored have counts of 1.  It is usually
+better to train a large model and prune it than train the largest
+possible unpruned model.  Pruning may or may not hurt accuracy
+with respect to an unpruned model; at a very low pruning threshold, 
+such as 2, there is relatively little impact on accuracy of
+probability estimates.
+</p>
+
+<h4>Compilation and Run Time</h4>
+<p>
+Additional memory is required for the compiler to
+perform a breadth-first walk over the langauge model's
+trie.  Usually, this isn't a very large overhead, but it'll
+be larger in languages with large branching factors.
+</p>
+<p>
+When a
+language model is compiled, the bytes output correspond
+to parallel arrays representing the trie that are the same
+size as in memory.  The compiled model will usually be
+a bit more compact than the in-memory model.  The size is
+determined by the number of internal nodes and number of
+terminal nodes in the trie.
+</p>
+
+
+
+
+<h3>Token Sensitivity</h3>
+
+<p>A spell checker only optionally contains a tokenizer.  If a tokenizer
+is provided, the set of tokens found in the training corpus is
+stored and used to control search.  This only slightly slows down training,
+but does require the space to store the tokens, which is usually small
+compared to the space required to store the language model.
+</p>
+
+<h4>Training</h4>
+
+<p> The other component stored during training is the set of tokens
+along with their counts.  The counts are stored as an instance of
+<code>util.ObjectToCounterMap</code>, which is available through the
+method <code>TrainSpellChecker.tokenCounter()</code>.  The set of
+tokens may be pruned back to only include ones with counts above
+a specified threshold through the method
+<code>TrainSpellChecker.pruneTokens(int)</code>.  
+</p>
+
+<h4>Compiled Model</h4>
+<p>
+The compiled model only stores the set of tokens as a simple
+array of strings.
+</p>
+
+<h4>Run Time</h4>
+<p>
+The set of tokens is converted into a character-level trie
+structure that is used to control search.  In LingPipe's encoding,
+a Java object is
+stored for every prefix in the set of tokens along with the
+character used to get there.  Thus <b>the runtime size of a model
+may be larger than on disk</b> if there is a non-empty token
+set.
+</p>
+<p>
+Search for corrections
+is carried out from left-to-right.  At each point, a partial
+hypothesis is expanded with every character which could follow
+the partial hypothesis and lead to one of the known tokens (the
+user input is always allowed as an output hypothesis).  Thus the
+branching factor controls the amount of time required to search
+for spelling corrections.
+</p>
+<p>The effect of pruning the set of tokens may help or
+hurt accuracy, but it usually has little effect with low pruning
+thresholds and an increasingly negative effect on recall (finding
+corrections for ill-formed input) as the number of known tokens
+decreases.
+</p>
+
+
+<h3>Unicode Normalization and Case Sensitivity</h3>
+
+<p> The spell checker is case sensitive.  If you need a
+non-case-sensitive spell checker, then the tokenizer factory is the
+right place to implement case normalization.  You will need to provide
+a compilable tokenizer factory that handles case normalization.  The
+alternative is to make sure all the training data is case normalized
+before being sent to the trainer and also before being sent to the
+spell checker.  If this happens in the tokenizer factory, there is no
+way for the two to get out of synch.  If you are training without
+tokenization, then normalization must be handled externally.  </p>
+
+<p> In addition to case sensitivity, the spell checker is sensitive to
+the particular unicode form of characters.  If there are a wide range
+of formats used for characters (e.g. Latin1 mixed with separate
+diacritics and characters or mixed with half-width CJK versions), a
+package like the <a href="http://www.icu-project.org/">International
+Components for Unicode</a> should be used for normalization.  ICU
+is also the best package available for generic case normalization,
+which they call &quot;case folding&quot;.</p>
+
+
+<h3>Compiled Spell Checker Parameters</h3>
+<p>
+The remaining parameters only apply to the compiled spell checker,
+and thus are all defined as methods
+in the class <code>spell.CompiledSpellChecker</code>.  
+</p>
+
+<h4>Edits Allowed</h4>
+<p>
+There are five methods which control which edit operations
+are allowed:
+<code>setAllowDelete(boolean)</code>,
+<code>setAllowInsert(boolean)</code>,
+<code>setAllowMatch(boolean)</code>,
+<code>setAllowSubstitute(boolean)</code>, and
+<code>setAllowTranspose(boolean)</code>.  For instance,
+calling <code>setAllowDelete(true)</code> allows characters
+to be deleted in edits.
+</p>
+
+<p> Allowing all edits almost always leads to more accurate decoders.
+Turning off edit types is always faster.  The most expensive
+edit by far are insert and substitute; delete, match and transpose are all
+bounded by the input string.
+</p>
+<p>
+In some special applications, such as using spelling correctors for Chinese
+tokenization or case correction, only certain edits will be allowed 
+in the model.  For instance, 
+only insert and match for Chinese tokenization and only 
+substitute and match for case correction.</p>
+
+<h4>Number of Consecutive Inserts</h4>
+<p>
+Insertion is the most expensive operation, because it may apply
+consecutively without bound as long as it is extending a known
+token (or any time at all if there are no tokens).  Thus there
+is a method <code>setNumConsecutiveInsertionsAllowed(int)</code>
+which controls how many insertions are allowed in a row.  
+Set this to <code>1</code>, its default value, if at all possible.
+This will usually help with both accuracy and has a huge impact
+on speed.
+</p>
+
+<h4>N-best Size</h4>
+<p>
+The n-best size restricts how many potential edits are considered
+at once.  The smaller the n-best size, the faster the decoder.
+The problem is with a small n-best size, the hypothesis that will
+eventually be the best may fall off the search space; this is known
+as a search error.
+Typically, n-best size will be tuned to the lowest value that
+does not lead to performance degradation through search errors.
+</p>
+<p>
+If the spell checker is used to provide n-best results, 
+the n-best size should be set significantly higher than the
+number of n-best results desired.  This will prevent any of
+the top n final hypotheses falling off the queue of hypotheses
+too early, essentially preventing n-best search errors.
+</p>
+
+<h4>Do-not-Edit Tokens</h4>
+<p>
+A set of tokens may be provided through the method
+<code>setDoNotEditTokens(Set&lt;String&gt;)</code>.  If these
+tokens are seen in the input, they will not be considered for
+edits.  This can have a huge impact on run time.  The larger
+this set is, the faster the decoder will run.  As with other
+parameters, donfigure the set of do-not-edit tokens to be as
+large as possible.  Usually this is done by taking the object
+to counter map from the compiled spell checker and saving tokens
+with high counts.  Unfortunately, there is not a direct way to
+save this set of do-not-edit tokens as part of the model because
+it would've broken backward compatibility on model format.
+</p>
+
+<h4>Minimum Token Length to Correct</h4>
+<p>
+Short tokens wreak havoc with both the language models and the search
+space.  That's because strings like <code>&quot;of the&quot;</code>
+are so popular in text relative to the number of times they are
+misspelled.  The method <code>setMinimumTokenLengthToCorrect(int)</code>
+sets the minimum token length in the input that is considered for
+correction.  We have found that for English, setting this to 3 is
+a workable value.  Users rarely misspell words shorter than this.
+</p>
+
+<h4>First- and Second-Character Edit Costs</h4>
+<p>
+In practice, users make fewer errors on the first and second
+characters in words than in the middles or ends of words.  This
+is not reflected in the weighted edit distance directly, so
+we allow it to be set programatically in the decoder.  The
+methods <code>setFirstCharEditCost(double)</code> and
+<code>setSecondCharEditCost(double)</code> provide additional
+costs to edits of the first or second character in a user's
+input token.
+Note that high first- and second-character edit costs make it
+less likely that short strings will be edited.  We have found
+values of <code>-2.0</code> for the first character and <code>-1.0</code>
+for the second character to be good initial values for English.
+</p>
+
+<h4>Known Token Edit Cost</h4>
+<p>
+Often the language models will want to edit tokens that are
+known, because the resulting string is much more likely.  In
+practice, if users spell tokens correctly, it is much less
+likely they are errors.  This corrects for a bias in queries
+toward rarer known words that is not in line with the underlying
+character language model.  The method
+<code>setKnownTokenEditCost(double)</code> may be used to
+provide an additional penalty for editing a known token.
+We have found values of <code>-2.0</code> or <code>-3.0</code>
+to be good initial values for English.
+</p>
+
+
+<h2>Evaluating Spelling Correctors</h2>
+
+<p>In this section, we provide examples of how to evaluate spelling
+correction.  Evaluation is based on a human-annotated reference
+file matching queries with their corrected versions.</p>
+
+<h3>Training a Spell Checker</h3>
+
+<p>We've included a spell-checker trainer based on the hockey
+data in the directory <code>$LINGPIPE/demos/data/rec.sports.hockey/train</code>
+that not only compiles the model to a file, but also saves the token
+counter to a file.</p>
+
+<p>To run the trainer, use the ant target <code>train</code>:
+</p>
+
+<pre class="code">
+&gt; ant train
+Visiting directory=..\..\data\rec.sport.hockey\train
+Training on file=..\..\data\rec.sport.hockey\train\52550
+Training on file=..\..\data\rec.sport.hockey\train\52551
+Training on file=..\..\data\rec.sport.hockey\train\52552
+...
+Training on file=..\..\data\rec.sport.hockey\train\55022
+
+Compiling spell checker to file=rec.sport.hockey.CompiledSpellChecker
+
+Serializing token counts to file=rec.sport.hockey.ObjectToCounterMap
+
+FINISHED NORMALLY.
+</pre>
+
+<p>The training code may be found in the file <a
+href="src/TrainSpell.java"><code>src/TrainSpell.java</code></a>.  
+Because it is so similar to the earlier code, we only comment
+on how the models are constructed and written to file.
+</p>
+
+<pre class="code">
+    ...
+    NGramProcessLM lm = new NGramProcessLM(nGram);
+    FixedWeightEditDistance fixedEdit = new FixedWeightEditDistance(); // dummy
+    TokenizerFactory tokenizerFactory
+        = new IndoEuropeanTokenizerFactory();
+    TrainSpellChecker trainer
+        = new TrainSpellChecker(lm,fixedEdit,tokenizerFactory);
+    ...
+    // train
+    ...
+    AbstractExternalizable.compileTo(trainer,outputModelFile);
+    AbstractExternalizable.serializeTo(trainer.tokenCounter(),outputTokensFile);
+</pre>
+
+<h3>Creating a Gold-Standard Reference File</h3>
+
+<div class="sidebar">
+<h2>Test-Driven Development</h2>
+<p>
+We're big believers in <a
+href="http://en.wikipedia.org/wiki/Test-driven_development">test-driven
+development</a> for natural language processing.  Just as in
+other kinds of programming, designing test sets by hand plays a
+key role in understanding the problem being computed. 
+That's why our first question to prospective customers is always:  &quot;do you have
+examples of the kind of things you'd like to compute?&quot;.
+</p>
+</div>
+
+<p> To evaluate a spell checker, we need some indication of what the
+expected results are.  For this demo, we define a simple file-based
+format allowing defining the truth.</p>
+
+<p>Typically, the queries being evaluated for spell checking will
+be derived from an actual query log.  The format is set up to 
+allow the original lines from the query log to be maintained.
+</p>
+
+<p>There is an example for the
+hockey data in <a
+href="../../data/spell-eval-annotated.txt"><code>$LINGPIPE/demos/data/spell-eval-annotated.txt</code></a>:
+</p>
+
+<pre class="code">
+D:2178  Canad dian 2006-03-01 20:37:39
+O:Canad dian
+C:Canadian
+
+D:2178  CanadianHockey  2006-03-01 20:38:46
+O:CanadianHockey
+C:Canadian Hockey
+
+D:2178  hokey   2006-03-01 20:38:46
+O:hokey
+C:hockey
+
+D:2334  wayne gretski   2006-03-05 18:41:50
+O:wayne gretski
+C:Wayne Gretzky
+
+D:2334  Calgary 2006-03-05 18:41:50
+O:Calgary
+C:Calgary
+
+D:2334  hky      2006-03-05 18:41:50
+O:hky
+C:hockey
+
+D:2334  exuberation      2006-03-05 18:41:50
+O:exuberation
+C:exuberation
+</pre>
+
+<p>The format is based on line-triplets with prefixes indicating
+function.  The opening line of a triplet begins with <code>D:</code>
+and simply repeats the raw query log information.  This is often
+helpful for purposes external to this evaluation.  We carry these
+lines along for display, but they have no other role.</p>
+
+<p>The next two lines are marked with <code>O:</code> and
+<code>C:</code> for original and corrected query.  Note that if the
+original query was correct, the correct form should be identical.
+Also note that spelling correction is case sensitive, so the data in
+the gold-standard reference file is also case sensitive.  For the
+purposes of this demo, we assume the queries do not have line breaks
+and that the characters are encoded in Latin1
+(<code>ISO-8859-1</code>).</p>
+
+
+<h3>Running the Evaluation</h3>
+
+<p>The evaluation of the trained hockey spelling corrector against
+the demo evaluation data file is done through another preconfigured
+ant target, <code>evalSimple</code>.
+</p>
+
+<h4>Parameter Dump</h4>
+
+<p>The evaluator first prints
+out the parameters of the spell checker being evaluated:
+</p>
+
+<pre class="code">
+&gt; ant evalSimple
+
+SEARCH
+  N-best size=32
+
+TOKEN SENSITIVITY
+  Token sensitive=true
+  # Known Tokens=9673
+
+EDITS ALLOWED
+  Allow insert=true
+  Allow delete=true
+  Allow match=true
+  Allow substitute=true
+  Allow transpose=true
+  Num consecutive insertions allowed=1
+  Minimum Length Token Edit=3
+  # of do-not-Edit Tokens=0
+
+EDIT COSTS
+  Edit Distance=Edit Distance Class=class com.aliasi.spell.FixedWeightEditDistanceFixedWeightEditDistance costs:  match weight=0.0  insert weight=-2.0  delete weight=-2.0  substitute weight=-2.0  transpose weight=-2.0
+  Known Token Edit Cost=-2.0
+  First Char Edit Cost=-2.0
+  Second Char Edit Cost=-1.0
+
+EDIT DISTANCE
+Edit Distance Class=class com.aliasi.spell.FixedWeightEditDistanceFixedWeightEditDistance costs:  match weight=0.0  insert weight=-2.0  delete weight=-2.0  substitute weight=-2.0  transpose weight=-2.0
+
+TOKENIZER FACTORY
+com.aliasi.tokenizer.IndoEuropeanTokenizerFactory@46ae506e
+
+...
+</pre>
+
+
+<h4>Case by Case Evaluation</h4>
+
+<p>Next, the program goes case by case through the reference
+data, evaluating each case:
+</p>
+
+<pre class="code">
+...
+
+ec:
+D:2178  hock ey 2006-03-01 20:37:39
+O: Canad (0) dian (0)  : -43.46794876269996
+C: Canadian (71)  : -13.696078942157328
+S: Canadian (71)  : -13.696078942157328
+------- user error, spell check correctly
+
+ec:
+D:2178  CanadianHockey  2006-03-01 20:38:46
+O: CanadianHockey (0)  : -49.16564917261712
+C: Canadian (71) Hockey (191)  : -20.98497186028908
+S: Canadian (71) Hockey (191)  : -20.98497186028908
+------- user error, spell check correctly
+
+ec:
+D:2178  hokey   2006-03-01 20:38:46
+O: hokey (0)  : -23.082462430000305
+C: hockey (434)  : -11.477494647726417
+S: hockey (434)  : -11.477494647726417
+------- user error, spell check correctly
+
+ee:
+D:2334  wayne gretski   2006-03-05 18:41:50
+O: wayne (4) gretski (0)  : -67.6034702733159
+C: Wayne (39) Gretzky (68)  : -21.767181660390634
+S: wayne (4) Gretzky (68)  : -24.96715794910415
+------- user error, spell check wrong suggestion
+
+cc:
+D:2334  Calgary 2006-03-05 18:41:50
+O: Calgary (128)  : -13.610888023802545
+C: Calgary (128)  : -13.610888023802545
+S: Calgary (128)  : -13.610888023802545
+------- user correct, spell check correct
+
+e_:
+D:2334  zz      2006-03-05 18:41:50
+O: hky (0)  : -17.589905977249146
+C: hockey (434)  : -11.477494647726417
+S: hky (0)  : -17.589905977249146
+------- user error, spell check no suggestion
+
+ee:
+D:2334  zz      2006-03-05 18:41:50
+O: exuberation (0)  : -42.65078176371753
+C: exuberation (0)  : -42.65078176371753
+S: edu (956)  : -10.196045160293579
+------- user correct, spell check incorrect
+
+...
+</pre>
+
+<p>
+The output looks very much like the input with further annotations.
+For each annotation entry the <code>EvaluateSpell</code> class runs the original
+query from the <code>O:</code> line in the reference file
+against the <code>didYouMean()</code> method of the spell checker.
+The <code>C:</code> line is also from the reference file, and represents
+the intended correction.  The <code>S:</code> line contains the string
+returned by the <code>didYouMean()</code> method.  The system is
+correct when the system answer matches the correct result.
+</p>
+
+<p>The token counts in the training data for each token in the
+training data is displayed in parentheses.  For instance,
+<code>Wayne</code> appeared 39 times in the data and
+<code>wayne</code> only 4 times.  The tokens that appear
+zero times are special in that they are considered unknown
+tokens.  Unknown tokens have less of a penalty to edit, but
+can not be the output of editing when spell checkers are
+configured to be token sensitive.
+</p>
+
+
+<p> In addition, each of the <code>O:</code>, <code>C:</code> and
+<code>S:</code> lines has the <code>log2Estmate()</code> appended from
+the underlying language model in the CompiledSpellChecker. This score
+is very important for tuning as will become evident.  </p> 
+
+<p> There are 5 possible outcomes in the scoring which is reflected in
+a compact form in the first line of the ouput: </p>
+
+<table>
+<tr><th>Class</th><th>Error?</th><th>Description</th></tr>
+<tr><td>ee:</td><td>user error</td><td>didYouMean() wrong</td></tr>
+<tr><td>ec:</td><td>user error</td><td>didYouMean() right</td></tr>
+<tr><td>e_:</td><td>user error</td><td>didYouMean() no suggestion</td></tr>
+<tr><td>ce:</td><td>user correct</td><td>didYouMean() wrong</td></tr>
+<tr><td>cc:</td><td>user correct</td><td>didYouMean() no suggestion</td></tr>
+</table>
+
+
+<h4>Evaluation Summary</h4>
+
+<p>The final output is a summary of the various counts:
+</p>
+
+<pre class="code">
+...
+user error: sys correct 3, sys incorrect 1, sys no sugg 1
+user correct: sys no suggestion 1, sys incorrect 1
+Out of vocab query count: 1
+Out of vocab query wrong: 1
+Score 0.30000000000000004
+</pre>
+
+<h4>Scoring Metric</h4>
+
+<p>The final report statistics are self-explanatory other than
+for the score, which is computed as follows:</p>
+
+<pre class="code">
+   double score
+       = userErrorSystemNoSuggestion * -.2.0
+       + userErrorSystemWrongCorrection * -1.0
+       + userErrorSystemCorrect * 1.0
+       + userCorrectSystemWrongCorrection * -1.5;
+</pre>
+
+<p>The idea is to compute an overall utility for the spell
+checker.  The scoring parameters will depend on the business
+use case.  The above scoring system represents a reward of
+1 in the case of the system properly correcting a user
+error, a penalty of -1 for suggesting the wrong correction,
+a penalty of -2 for not making any suggestion at all when
+there is a user error, and a penalty of -1.5 when the
+the user was correct and the system proposed an erroneous
+correction.  The motivation for this particular scoring is
+that the worst kind of error is one where the user query
+is an error, but the system makes no suggestion, because
+this is the case where the user will never find the right
+answer.  If we provide a correction for a correct user
+input, at least they see the correct results for search
+initially.  
+</p>
+
+<h3>The Tuning Cycle</h3>
+
+<p>After creating labeled evaluation data, various system
+paramters may be tested for their performance.  Typically,
+we start with reasonable defaults (which will be much larger
+penalties for edits when we get to realistic size data),
+and then tune the parameters one at a time in an attempt
+to improve the system.  
+</p>
+
+<p>It's very easy to tune posterior weights, like edit distances.
+It's harder to tune the underlying language model, as it must be
+recompiled.  It's possible to serialize a large language model and
+then prune it to evaluate, though we do not provide code to do that as
+part of this tutorial.</p>
+
+<p>It's important to realize that when tuning on a reference
+collection, it has the role of development data.  It's tempting
+to highly optimize scores on development data, but it's dangerous
+due to the likelihood of overfitting the data.  A statistically
+sound evaluation would have you set aside two labeled reference
+data sets.  One would be used for development, that is, to tune
+the parameters.  The second would then be used to report final
+test results.  This is a much more sound estimate of future
+performance than testing on a single development set.
+</p>
+
+
+<a name="auto-complete"></a>
+<h2>Automatic Phrase Completion</h2>
+
+<p>LingPipe provides an alternative to spelling checking that finds the
+most likely completion among a set of fixed phrases for the text
+entered so far by a user.</p>
+
+<h3>Web Form Auto-Completion</h3>  
+
+<p>Auto-completion is by now familiar from
+the web, for instance on <a href="http://google.com">Google's Home Page</a>.
+For instance, if I type &lt;anaz&gt; as a query, Google pops up
+the following suggestions:
+</p>
+
+<div style="margin:1em 0 1em 3em">
+<img src="google-auto-complete.png"
+     alt="Google auto completion example" />
+</div>
+
+<p>Note that the application is performing spelling checking at the
+same time as completion.  For instance, the top suggestion is
+"amazon", even though the query so far is &quot;anaz&quot;.  This is
+not surprising given the number of results reported for the phrases
+starting with &quot;anaz&quot; is so small.</p>
+
+<p>Next note that it's not doing word suggestion, but phrase
+suggestion.  Some of the results like &quot;anazao salon&quot; are
+two words.</p>
+
+<p>One important difference between the auto-completion and spell
+checking is that auto-completion typically operates over a fixed set
+of phrases.  What this means is that if I type a query &lt;I want to
+find anaz&gt;, there are no suggested completions.</p>
+
+<h3>Finding Phrases with Counts</h3>
+
+<p>The source of phrases for a web search is typically high frequency
+queries from the query logs.  In Google's case, they don't return
+suggestions in order of number of results; if they did,
+<code>anazapta</code> would occur above <code>anazao</code>, since
+they both match exactly on the prefix.</p>
+
+<p>For our demos, we'll assume that the user supplies a list of
+phrases followed by counts.  For instance, we supply a list of
+U.S. states in <a
+href="../../data/us-state-populations-06.txt"><code>$LINGPIPE/demos/data/us-state-populations-06.txt</code></a>.
+This initial segment of the population count file is:
+</p>
+
+<pre class="code">
+Alabama 4599000
+Alaska 670000
+Arizona 6166000
+Arkansas 2811000
+California 36458000
+Colorado 4753000
+Connecticut 3505000
+Delaware 853000
+District of Columbia 58200
+Florida 18090000
+...
+</pre>
+
+<p>The spaces are just spaces.  We've just used state populations
+(estimated in the middle of 2006), which may or may not be a good
+proxy for search popularity.  It's a reasonable proxy if you are
+asking people randomly selected from the U.S. population to list their
+home state.  But if you're selecting a travel destination, Hawaii and
+the District of Columbia are much more popular than their populations
+would suggest.  In general, the counts are going to be used to balance
+which results are most popular, and should reflect the results likely
+to be desired by users.  </p>
+
+<h3>Running the Command-Line Demo</h3>
+
+<p>We've included a command-line demo, as well as a GUI demo we
+describe in the next section.  To run the command-line demo, run
+the ant target:
+</p>
+
+<pre class="code">
+&gt; ant complete-cmd
+
+|N|
+ -3.95 New York
+ -5.08 North Carolina
+ -5.10 New Jersey
+ -6.90 Nevada
+ -7.26 New Mexico
+
+|New|
+ -3.95 New York
+ -5.10 New Jersey
+ -7.26 New Mexico
+ -7.83 New Hampshire
+-16.90 Nevada
+
+|New Y|
+ -3.95 New York
+-15.10 New Jersey
+-17.26 New Mexico
+-17.83 New Hampshire
+
+|New Yor|
+ -3.95 New York
+
+|Mew |
+-13.95 New York
+-15.10 New Jersey
+-17.26 New Mexico
+-17.83 New Hampshire
+
+|U|
+ -6.87 Utah
+-13.04 California
+-13.67 Texas
+-13.95 New York
+-14.05 Florida
+
+|Uta|
+ -6.87 Utah
+-23.04 California
+
+|ZebraFish|
+</pre>
+
+<p>The results report the queries (between vertical bars so the
+spaces are clear) followed by up to five auto-complete suggestions.
+The scores consist of log (base 2) numbers scaled as probabilities like
+for spelling (more on that below).</p>
+
+<p>Note that we get auto-complete suggestions from non-matching prefixes,
+as in the query &lt;New&gt; getting the auto-complete suggestion
+&quot;Nevada&quot;.</p>
+
+
+<h3>Running the GUI Demo</h3>
+
+<p>If you'd like to play around with queries, you can either
+add new command-line arguments to the command in ant, or you 
+can run the GUI demo, which displays results in real-time as
+you type:</p>
+
+<pre class="code">
+&gt; ant complete-gui
+</pre>
+
+<p>which pops up an interface that looks like this:
+</p>
+
+<div>
+<img src="lp-auto-complete-demo.png"
+     alt="LingPipe auto-completion GUI demo"/>
+</div>
+
+<p>It's configured to only suggest three completions
+per input.</p>
+
+
+<h3>The Search Problem</h3>
+
+<p>As explained in the javadoc for <code>spell.AutoCompleter</code>,
+the auto-completer finds the best scoring phrases for a given prefix.
+The score of a phrase versus a prefix is the sum of the score of the
+phrase and the maximum score of the prefix against any prefix of the
+phrase.  The score for a phrase is just its log (base 2) maximum
+likelihood probability estimate; that is, the log of its count divided
+by the sum of all counts.  The score for matching &quot;Mew Y&quot;
+against &quot;New York&quot; requires a substitution of the initial
+'M' for 'N'.  Scores are computed by weighted edit distance, just as
+for spelling.</p>
+
+
+<h3>Code Walkthrough</h3>
+
+<p>Configuring auto-completion is very much like configuring
+spelling, only with a fixed list of phrases and counts supplied
+to the constructor along with search parameters and a weighted
+edit distance.</p>
+
+<p>We'll walk through the command-line demo, all of the code for which
+is in the <code>main()</code> method in the file <a
+href="src/AutoCompleteCommand.java"><code>src/AutoCompleteCommand.java</code></a>.
+</p>
+
+<p>The initial part of the code just reads the phrase counts from the
+file into a map from <code>String</code> to <code>Float</code>
+objects:</p>
+
+<pre class="code">
+public static void main(String[] args) throws IOException {
+    File wordsFile = new File(args[0]);
+    String[] lines = FileLineReader.readLineArray(wordsFile,&quot;ISO-8859-1&quot;);
+    Map&lt;String,Float&gt; counter = new HashMap&lt;String,Float&gt;(200000);
+    for (String line : lines) {
+        int i = line.lastIndexOf(' ');
+        if (i &lt; 0) continue;
+        String phrase = line.substring(0,i);
+        String countString = line.substring(i+1);
+        Float count = Float.valueOf(countString);
+        counter.put(phrase,count);
+    }
+</pre>
+
+<p>Note the use of the <code>FileLineReader.readLinesArray()</code>
+method, which ireads the lines from a file into an array using a
+specified character encoding.  The code in the loop just parses the
+lines apart based on the last space and adds them to the map.</p>
+
+<p>The next step is to configure the edit distance.  This will measure
+how close a prefix of a target phrase is to the query prefix.  This
+class uses a fixed-weight edit distance, but any edit distance may
+be used in general:</p>
+
+
+<pre class="code">
+    double matchWeight = 0.0;
+    double insertWeight = -10.0;
+    double substituteWeight = -10.0;
+    double deleteWeight = -10.0;
+    double transposeWeight = Double.NEGATIVE_INFINITY;
+    FixedWeightEditDistance editDistance
+        = new FixedWeightEditDistance(matchWeight,
+                                      deleteWeight,
+                                      insertWeight,
+                                      substituteWeight,
+                                      transposeWeight);
+</pre>
+
+<p>Finally, we need to configure the auto-completer itself:
+</p>
+
+<pre class="code">
+    int maxResults = 5;
+    int maxQueueSize = 10000;
+    double minScore = -25.0;
+    AutoCompleter completer
+        = new AutoCompleter(counter, editDistance,
+                            maxResults, maxQueueSize, minScore);
+</pre>
+
+<p>In addition to the phrase counter (in general, a map from
+strings to numbers) and edit distance, the configuration specifies
+the maximum number of results to return, the maximum search queue
+size, and the minimum score of returned results (phrases with match
+scores below the minimum will be discarded rather than displayed).
+</p>
+
+<p>Finally, we walk through the arguments and compute the auto-completions.</p>
+
+<pre class="code">
+    for (int i = 1; i &lt; args.length; ++i) {
+        SortedSet&lt;ScoredObject&lt;String&gt;&gt; completions
+            = completer.complete(args[i]);
+</pre>
+
+<p>which are returned as an instance of <code>java.util.SortedSet</code> containing
+<code>ScoredObject&lt;String&gt;</code> objects, where a scored string consists
+of a string and a score.  We then just walk over the scored strings and print them
+out:</p>
+
+<pre class="code">
+        System.out.println(&quot;\n|&quot; + args[i] + &quot;|&quot;);
+        for (ScoredObject&lt;String&gt; so : completions)
+            System.out.printf(&quot;%6.2f %s\n&quot;, so.score(), so.getObject());
+    }
+}
+</pre>
+
+<h3>Tuning Auto-Completion</h3>
+
+<p>There are really only three parameters for tuning auto-completion,
+the edit distance, and the search parameters.  The edit distance is
+tuned in exactly the same way as it is for spelling.</p>
+
+<p>The maximum number of results to return is more of an application
+decision than a tuning decision.  Having said that, smaller result sets
+are faster to compute.</p>
+
+<p>The maximum queue size indicates how big the set of hypotheses
+can get inside the auto-completer before being pruned.  To tune,
+this should be set as low as possible without causing search errors.
+</p>
+
+
+<h2>References</h2>
+
+<p>
+For further reading, check out these summaries:
+</p>
+
+<ul>
+
+<li>
+Kukich, Karen. 1992. Techniques for automatically correcting
+words in text.  <i>ACM Computing Surveys</i> <b>24</b>(4):377-437.
+<br />
+<span class="smallnote">A surprisingly up-to-date summary.</span>
+</li>
+
+<li> Jurafsky, Dan and James H. Martin. 2000. <i>Speech and Language
+Processing</i>. Prentice-Hall. Chapter 5.
+<br />
+<span class="smallnote">Textbook treatment of noisy channel models.</span>
+</li>
+
+<li>Shannon, Claude. 1949.
+<a href="http://www.stanford.edu/class/ee104/shannonpaper.pdf">Communication
+in the presence of noise</a>.
+<i>Proceedings of the IRE.</i> <b>37</b>(1):10-21.
+<br />
+<span class="smallnote">The original noisy channel decoding paper.</span>
+</li>
+
+<li>Peter Norvig. 2007.  <a
+href="http://norvig.com/spell-correct.html">How to Write a Spelling
+Corrector</a>.  On http://norvig.com.
+<br />
+<span class="smallnote">Very nice summary with straightforward Python demo code.</span>
+</li>
+
+</ul>
+
+<p>
+Here are a few other alternatives, both explained by <a href="http://www.lexemetech.com/">Tom White</a>.
+</p>
+
+<ul>
+
+<li>Tom White.  <a
+href="http://today.java.net/pub/a/today/2005/08/09/didyoumean.html">Did
+You Mean: Lucene?</a>.  Java.net.</li>
+
+<li>Tom White. <a href="http://www-128.ibm.com/developerworks/java/library/j-jazzy/">Can't beat Jazzy</a>.  IBM Developerworks.</li>
+
+</ul>
+
+<p>
+For the case restoration problem, a good reference evalaution is
+the following paper from IBM:
+</p>
+
+<ul>
+<li>Lucian Vlad Lita et al.  2003. <a href="http://acl.ldc.upenn.edu/P/P03/P03-1020.pdf">tRuEcasIng</a>. In Proc. ACL.
+</li>
+</ul>
+
+<p>For accent restoration, David Yarowsky describes a classifier-based
+approach for Spanish and French (ironically, wrongly cased in the
+IBM bibliography due to human error with BibTeX).</p>
+
+<ul>
+<li>David Yarowsky. 1994. <a href="http://acl.ldc.upenn.edu/P/P94/P94-1013.pdf">Decision lists for ambiguity resolution:
+Application to accent restoration in Spanish
+and French</a>. In Proc. ACL.</li>
+</ul>
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+

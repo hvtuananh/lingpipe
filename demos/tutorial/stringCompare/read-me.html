@@ -1,0 +1,1208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: String Comparison and String Distance Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">String Comparison Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a class="current" href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<h2>About String Comparison</h2>
+
+<p>
+String comparison attempts to measure the similarity between
+strings. This is useful for applications ranging from database
+deduplication and record linkage to terminology extraction,
+spell checking, and k-nearest-neighbors classifiers.
+</p>
+<p>
+In this tutorial, we demonstrate the ways in which string
+comparisons are used in LingPipe.
+</p>
+
+<h2>Distances and Proximities</h2>
+
+
+<p>There are two interfaces at the heart of comparisons
+in LingPipe, <a href="../../../docs/api/com/aliasi/util/Distance.html"><code>util.Distance&lt;E&gt;</code></a>
+and <a href="../../../docs/api/com/aliasi/util/Proximity.html"><code>util.Proximity&lt;E&gt;</code></a>.
+Their signatures
+are both very simple.  The distance interface specifies a single
+method which computes a distance between two objects of type
+<code>E</code>:
+</p>
+
+<pre class="code">
+public interface Distance&lt;E&gt; {
+    public double distance(E e1, E e2);
+}
+</pre>
+
+<p>The proximity interface also specifies a single method:
+</p>
+
+<pre class="code">
+public interface Proximity&lt;E&gt; {
+    public double proximity(E e1, E e2);
+}
+</pre>
+
+<p>String similarity can be specified in terms of distance.
+If two strings are more similar, the distance between them will
+be less.  Similarity can also be specified in terms of proximity.
+If two strings are more similar, the proximity between them will
+be greater.  It's always possible to convert a proximity into
+a distance or vice-versa by either negation (additive inverse) or
+inversion (multiplicative inverse).
+</p>
+
+<h2>Simple Edit Distance</h2>
+
+<p>There are a variety of distance measures defined in terms
+of edit operations of various kinds.</p>
+
+<h3>Damerau-Levenstein Distance</h3>
+
+<p>The simplest form of edit distances were introduced in the by
+Damerau (1964) and Levenshtein (1965).  The distance between two
+strings is defined as the minimal number of edits required to
+convert one into the other.
+</p>
+<p>In the simpler Levenshtein distance, the allowable edit
+operations are the deletion of a single character, the insertion
+of a single character and the substitutione of one character
+for another.  In Damerau's version, transposition is also an
+allowable edit.
+</p>
+
+<p>The distance between <code>&quot;Bob&quot;</code> and
+<code>&quot;Bob&quot;</code> is zero (0), because no edits are
+required to convert a string into itself.  The edit distance between
+strings is only zero if the strings are identical.
+</p>
+
+<p> The distance between <code>&quot;Brett&quot;</code> and
+<code>&quot;Brent&quot;</code> is one (1), because it requires a
+substitution of an <code>'n'</code> for a <code>'t'</code>.  The
+distance between <code>&quot;Brett&quot;</code> and <code>Bret</code>
+is one, requiring the deletion of one of the two <code>'t'</code>
+characters in <code>&quot;Brett&quot;</code>.  The sequence of
+edits must be minimal, but need not be unique.  Further note
+that <code>&quot;Bret&quot;</code> can be converted to
+<code>&quot;Brett&quot;</code> with a single insertion of
+a <code>'t'</code> character.
+</p>
+
+<p> The distance between <code>&quot;Bob&quot;</code> and
+<code>&quot;bob&quot;</code> is also 1, as it requires the
+substitution of a lowercase <code>'b'</code> for its uppercase
+equivalent <code>'B'</code>.  </p>
+
+
+<h3>Running Edit Distance Demo</h3>
+
+<p>The edit distance demo may be run through ant:
+using the <code>edit-distance</code> target:
+</p>
+
+<pre class="code" style="font-size:70%">
+&gt; ant edit-distance
+
+ String1       String2  Dist1  Dist2   Prox1  Prox2
+     hte           hte    0.0    0.0    -0.0   -0.0
+     hte          htne    1.0    1.0    -1.0   -1.0
+     hte          thhe    2.0    2.0    -2.0   -2.0
+     hte           the    2.0    1.0    -2.0   -1.0
+     hte          then    3.0    2.0    -3.0   -2.0
+     hte           The    2.0    2.0    -2.0   -2.0
+     hte           THE    3.0    3.0    -3.0   -3.0
+    htne           hte    1.0    1.0    -1.0   -1.0
+    htne          htne    0.0    0.0    -0.0   -0.0
+    htne          thhe    3.0    2.0    -3.0   -2.0
+    htne           the    2.0    2.0    -2.0   -2.0
+    htne          then    3.0    2.0    -3.0   -2.0
+    htne           The    3.0    3.0    -3.0   -3.0
+    htne           THE    4.0    4.0    -4.0   -4.0
+    thhe           hte    2.0    2.0    -2.0   -2.0
+    thhe          htne    3.0    2.0    -3.0   -2.0
+    thhe          thhe    0.0    0.0    -0.0   -0.0
+    thhe           the    1.0    1.0    -1.0   -1.0
+    thhe          then    2.0    2.0    -2.0   -2.0
+    thhe           The    2.0    2.0    -2.0   -2.0
+    thhe           THE    4.0    4.0    -4.0   -4.0
+     the           hte    2.0    1.0    -2.0   -1.0
+     the          htne    2.0    2.0    -2.0   -2.0
+     the          thhe    1.0    1.0    -1.0   -1.0
+     the           the    0.0    0.0    -0.0   -0.0
+     the          then    1.0    1.0    -1.0   -1.0
+     the           The    1.0    1.0    -1.0   -1.0
+     the           THE    3.0    3.0    -3.0   -3.0
+    then           hte    3.0    2.0    -3.0   -2.0
+    then          htne    3.0    2.0    -3.0   -2.0
+    then          thhe    2.0    2.0    -2.0   -2.0
+    then           the    1.0    1.0    -1.0   -1.0
+    then          then    0.0    0.0    -0.0   -0.0
+    then           The    2.0    2.0    -2.0   -2.0
+    then           THE    4.0    4.0    -4.0   -4.0
+     The           hte    2.0    2.0    -2.0   -2.0
+     The          htne    3.0    3.0    -3.0   -3.0
+     The          thhe    2.0    2.0    -2.0   -2.0
+     The           the    1.0    1.0    -1.0   -1.0
+     The          then    2.0    2.0    -2.0   -2.0
+     The           The    0.0    0.0    -0.0   -0.0
+     The           THE    2.0    2.0    -2.0   -2.0
+     THE           hte    3.0    3.0    -3.0   -3.0
+     THE          htne    4.0    4.0    -4.0   -4.0
+     THE          thhe    4.0    4.0    -4.0   -4.0
+     THE           the    3.0    3.0    -3.0   -3.0
+     THE          then    4.0    4.0    -4.0   -4.0
+     THE           The    2.0    2.0    -2.0   -2.0
+     THE           THE    0.0    0.0    -0.0   -0.0
+</pre>
+
+
+<p>The demo takes its command line arguments and returns
+the edit distances with (Dist2) and without (Dist1) transposition, and
+the proximities, with (Prox2) and without (Prox1) transposition.</p>
+
+<div class="sidebar">
+<h2>Edit Distance is a Distance</h2>
+<p>
+Standard edit distance defines a
+<a href="http://en.wikipedia.org/wiki/Metric_space">distance metric</a> over
+the set of strings.   That is, it meets the three conditions making up
+the
+<a href="http://en.wikipedia.org/wiki/Distance">mathematical definition of distance</a>, which requires the distance <code>d(a,b)</code> from point
+<code>a</code> to <code>b</code> to satisfy:
+</p>
+<ul>
+<li> <b>Non-Negative and Zero only if Equal</b>
+     <br />
+     <code>d(a,b) &gt;= 0;  d(a,b) = 0</code> iff <code>a = b</code></li>
+<li> <b>Symmetry</b>
+      <br />
+      <code>d(a,b) = d(b,a)</code>
+</li>
+<li> <b>Triangle Inequality</b>
+     <br />
+     <code>d(a,b) + d(a,c) &gt;= d(a,c) [triangle inequality]</code>
+</li>
+</ul>
+</div>
+
+<p>First note that
+the distance between any string itself is zero (0).  Second,
+note that the measure is symmetric, so that the order of the
+string arguments doesn't matter.</p>
+
+<p>Looking at <code>&quot;The&quot;</code> and
+<code>&quot;the&quot;</code>, we find an edit distance of 1.0,
+corresponding to the substitution of a lower-case <code>'t'</code>
+for an upper-case <code>'T'</code>.</p>
+<p>The distance with transposition is less than or equal to that
+without transposition.  For instance, <code>&quot;the&quot;</code> and
+<code>&quot;hte&quot;</code> have a distance of one (1) with
+transposition, because <code>&quot;the&quot;</code> can be converted
+to <code>&quot;hte&quot;</code> by a single transposition of the first
+two characters.  Without transposition, two (2) edits are required;
+this can either be two substitutions, or a delete and insert in either
+order.</p>
+
+
+<h3>Proximity is Inverse Distance</h3>
+
+<p>For simple edit distance, proximities are defined by additively
+inverting distances with negation:
+</p>
+
+<pre class="code">
+proximity(x,y) = -distance(x,y)
+</pre>
+
+
+<div class="sidebar">
+<h2>Alternative Proximity from Edit Distance</h2>
+<p>
+It also makes sense to define proximity as the multiplicative
+inverse distance instead of the additive inverse:
+</p>
+<pre class="code">
+proximity(x,y) = 1 / dist(x,y)
+</pre>
+<p>The only problem is that if <code>dist(x,y) = 0</code>,
+then</p>
+<pre class="code">proximity(x,y) = 1 / 0
+               = Double.POSITIVE.INFINITY
+</pre></div>
+
+<p> This means that the greater the distance, the smaller
+the proximity and vice-versa.</p>
+
+
+
+
+
+
+
+
+<h3>Code Walk Through</h3>
+
+<p>The code for the edit distance demo is trivial.  First,
+we assign edit distances to constants, including edit
+distance with and without transpose, and proximity,
+with and without transpose:
+</p>
+
+<pre class="code">
+static final Distance&lt;CharSequence&gt; D1
+    = new EditDistance(false);
+
+static final Distance&lt;CharSequence&gt; D2
+    = new EditDistance(true);
+
+static final Proximity&lt;CharSequence&gt; P1
+    = new EditDistance(false);
+
+static final Proximity&lt;CharSequence&gt; P2
+    = new EditDistance(true);
+</pre>
+
+
+<p>As these assginments make clear, the class
+<code>spell.EditDistance</code> implements both the
+<code>util.Distance&lt;CharSequence&gt;</code> and the
+<code>util.Proximity&lt;CharSequence&gt;</code> interfaces.  The
+boolean argument to the constructor indicates whether transposition is
+considered an edit or not.</p>
+
+<p>The rest of the code simply loops over the pair of strings
+in the input argumentws prints out the distances and
+proximities, with and without transpositions:</p>
+
+<pre class="code">
+public static void main(String[] args) {
+    for (String s1 : args)
+        for (String s2 : args)
+            System.out.printf(&quot;%12s  %12s  %5.1f  %5.1f   %5.1f  %5.1f\n&quot;,
+                              s1,
+                              s2,
+                              D1.distance(s1,s2),
+                              D2.distance(s1,s2),
+                              P1.proximity(s1,s2),
+                              P2.proximity(s1,s2));
+}
+</pre>
+
+<p>The input strings may be changed in the ant target in <a href="build.xml"><code>build.xml</code></a>.</p>
+
+
+<h2>Weighted Edit Distance</h2>
+
+<p>Edit distance has been generalized in many different ways.  In
+LingPipe, we've considered simple weighted edit distance, where the
+cost of a substitution, insertion, deletion and transposition may vary
+and may depend on the actual characters being edited.  This general
+setup subsumes the <a href="http://en.wikipedia.org/wiki/Needleman-Wunsch_algorithm">Needlman-Wunsch algorithm</a> used in
+molecular biology.
+</p>
+
+<h3>Fixed Weight Edit Distance</h3>
+
+<p>The simplest form of weighted edit distance simply sets a constant
+cost for each of the edit operations: match, substitute, insert,
+delete, transpose.  The LingPipe class <a
+href="http://alias-i.com/lingpipe/docs/api/com/aliasi/spell/FixedWeightEditDistance.html"><code>spell.FixedWeightEditDistance</code></a>
+implements this approach.
+</p>
+
+<h4>Running the Demo</h4>
+
+<p>The demo may be invoked from the ant target <code>fixed-edit-distance</code>:
+</p>
+
+<pre class="code" style="font-size:70%">
+&gt; ant fixed-edit-distance
+match= 0.0  del=-10.0  ins=-8.0  subst=-9.0  trans=-9.0
+
+     String1       String2   Dist
+         hte           hte   <b>-0.0</b>
+         hte          htne    8.0
+         hte          thhe   17.0
+         hte           the    9.0
+         hte          then   17.0
+         hte           The   18.0
+         hte           THE   27.0
+        htne           hte   10.0
+        htne          htne   -0.0
+        htne          thhe   18.0
+        htne           the   17.0
+        htne          then   18.0
+        htne           The   26.0
+        htne           THE   35.0
+        thhe           hte   17.0
+        thhe          htne   18.0
+        thhe          thhe   -0.0
+        thhe           the   10.0
+        thhe          then   18.0
+        thhe           The   17.0
+        thhe           THE   35.0
+         the           hte    9.0
+         the          htne   17.0
+         the          thhe    8.0
+         the           the   -0.0
+         the          then    <b>8.0</b>
+         the           The    9.0
+         the           THE   27.0
+        then           hte   19.0
+        then          htne   18.0
+        then          thhe   18.0
+        then           the   <b>10.0</b>
+        then          then   -0.0
+        then           The   19.0
+        then           THE   35.0
+         The           hte   16.0
+         The          htne   24.0
+         The          thhe   17.0
+         The           the    9.0
+         The          then   17.0
+         The           The   -0.0
+         The           THE   18.0
+         THE           hte   27.0
+         THE          htne   35.0
+         THE          thhe   35.0
+         THE           the   27.0
+         THE          then   35.0
+         THE           The   18.0
+         THE           THE   -0.0
+</pre>
+
+<p>We do not print proximities this time; they're just
+the negations of the edit distances.</p>
+
+<p>Note that in these results, because the match score is 0.0,
+identical strings are still at distance 0.0.  With match scores
+greater than 0.0, matching a string against itself will result
+ina  distance that is its length times the negative match weight.</p>
+
+<div class="sidebar">
+<h2>Asymmetric &quot;Distance&quot;</h2>
+<p>
+Although the standard <a href="http://en.wikipedia.org/wiki/Distance#General_case">mathematical definition of distance</a> (see the previous sidebar) requires
+symmetry, the real-world notion is rather more flexible.
+If by distance, we mean flight time, then flying from
+New York to London is shorter than the other way around
+because of the <a href="http://en.wikipedia.org/wiki/Jet_stream">jet stream</a>.
+</p>
+</div>
+
+<p>Further note that the results are not symmetric.  The &quot;distance&quot;
+from <code>&quot;the&quot;</code> to <code>&quot;then&quot;</code> is
+8.0, representing a single insertion, whereas the distance measured
+the other way is 10.0.</p>
+
+<h4>Code Walk Through</h4>
+
+<p>The code for this demo is in
+<a href="src/FixedEditDistanceDemo.java"><code>src/FixedEditDistanceDemo.java</code></a>.
+A  fixed-weight edit distance is an immutable object where weights are set in
+the constructor:
+</p>
+
+<pre class="code">
+FixedWeightEditDistance(double matchWeight,
+                        double deleteWeight,
+                        double insertWeight,
+                        double substituteWeight,
+                        double transposeWeight);
+</pre>
+
+<p>In the demo,
+these values are read from the command line, parsed into doubles, and
+spuplied to the constructor.  Otherwise, this program is just like the last
+one, only we do not report proximities, but only distances.</p>
+
+<p>These weights should be negative.  In applications like
+spell checking, they will be weighted as log probabilities.
+When used for distance, they'll be negated to give edit
+distances.
+</p>
+
+
+<h3>General Weighted Edit Distance</h3>
+
+<p>The class <a
+href="../../../docs/api/com/aliasi/spell/WeightedEditDistance.html"><code>spell.WeightedEditDistance</code></a>
+implements a more general notion of weighted edit distance that allows the
+weights to be set on a per-character basis.  These weights are mediated
+through abstract methods such as:
+</p>
+
+<pre class="code">
+abstract double deleteWeight(char cDeleted);
+abstract double insertWeight(char cInserted);
+abstract double substituteWeight(char cDeleted, char cInserted);
+abstract double transposeWeight(char cFirst, char cSecond);
+</pre>
+
+<h3>Simple Custom Weighted Edit Distance</h3>
+
+<p>We've implemented a customized edit disance as a static nested class in
+<a href="src/WeightedEditDistanceDemo.java"><code>src/WeightedEditDistanceDemo.java</code></a>.  Here's the complete code for the weighted edit distance implementation:
+</p>
+
+<pre class="code">
+static class CasePunctuationDistance extends WeightedEditDistance {
+
+    public double deleteWeight(char c) {
+        return (Character.isLetter(c) || Character.isDigit(c))
+            ? -1
+            : 0;
+    }
+
+    public double insertWeight(char c) {
+        return deleteWeight(c);
+    }
+
+    public double substituteWeight(char cDeleted, char cInserted) {
+        return (Character.toLowerCase(cDeleted) == Character.toLowerCase(cInserted))
+            ? 0
+            : -1;
+    }
+
+    public double matchWeight(char cMatched) {
+        return 0;
+    }
+
+    public double transposeWeight(char cFirst, char cSecond) {
+        return Double.NEGATIVE_INFINITY;
+    }
+}
+</pre>
+
+
+<div class="sidebar">
+<h2>Empirical Edit Distances</h2>
+<p>
+There has been a substantial amount of work put into
+inferring reasonable edit distances for characters in
+text.   For instance, see
+<a href="http://citeseer.ist.psu.edu/86609.html">Ristad and Yianilos (1997)</a>,
+or <a href="http://acl.ldc.upenn.edu/C/C90/C90-2036.pdf">Kernighan, Chruch and
+Gale (1990)</a>.  The latter introduces more complex context-sensitive
+edits.  Typicall, the edits aren't marked in corpora, so
+latent alignments must be computed using techniques such
+as expectation maximization (EM).
+</p>
+</div>
+
+<p>Match weight is set to zero for all characters.</p>
+
+<p>The weight for deleting alpha-numeric characters is -1, and the
+weight for deleting all other characters is 0.  This includes space,
+punctuation, etc.  The insertion weights are set to be equal to the
+deletion weights, so that insertion and deletion are symmetric.</p>
+
+<p>Substitution is free (zero cost) for letters that are
+equal other than for case, and -1 if the letters are not
+the same modulo case.  This actually introduces multiple paths,
+as substituting a character for itself has cost 0 either through
+a match or substitute operation.  The match could actually
+bet set to Double.NEGATIVE_INFINITY without changing any
+scores here.</p>
+
+<p>Finally, the transposition weight is set to negative infinity,
+effectively turning off transposition.</p>
+
+<h4>Running the Demo</h4>
+
+
+
+
+
+<p>The demo is run like all the others, with inputs specified
+as command-line arguments and outputs computing all pairwise
+distances.</p>
+
+<div class="sidebar">
+<h2>Comparing Dialects with Edit Distance</h2>
+<p>
+Nerbonne et al.'s (1999) <a href="http://www.let.rug.nl/~nerbonne/papers/tw-se-mm.pdf">Edit distance and dialect proximity</a> provides an example of the use of
+edit distance to compare dialects.  Here, phoneme-to-phoneme edits are
+used to compare dialects of Dutch.
+</p>
+</div>
+
+
+<pre class="code">
+&gt; ant weighted-edit-distance
+
+      the           the   -0.0
+      the           The   -0.0
+      the           THE   -0.0
+      the         T H E   -0.0
+      the           hte    2.0
+      the          then    1.0
+      The           the   -0.0
+      The           The   -0.0
+      The           THE   -0.0
+      The         T H E   -0.0
+      The           hte    2.0
+      The          then    1.0
+      THE           the   -0.0
+      THE           The   -0.0
+      THE           THE   -0.0
+      THE         T H E   -0.0
+      THE           hte    2.0
+      THE          then    1.0
+    T H E           the   -0.0
+    T H E           The   -0.0
+    T H E           THE   -0.0
+    T H E         T H E   -0.0
+    T H E           hte    2.0
+    T H E          then    1.0
+      hte           the    2.0
+      hte           The    2.0
+      hte           THE    2.0
+      hte         T H E    2.0
+      hte           hte   -0.0
+      hte          then    3.0
+     then           the    1.0
+     then           The    1.0
+     then           THE    1.0
+     then         T H E    1.0
+     then           hte    3.0
+     then          then   -0.0
+</pre>
+
+<div class="sidebar">
+<h2>L33T-Speak Edits</h2>
+<p>
+It's possible to produce a crude version of edit
+distance which places ordinary spellings
+and their <a href="http://en.wikipedia.org/wiki/Leet">L33t-speak</a>
+variants close together.
+</p>
+<p>The basic rules of L33t are that vowels can be
+deleted, or substituted with numerical look-alikes.
+For instance,
+'4' is used in place of 'A', '3' for 'E',
+'1' for 'I', '0' for 'O' (zero for oh), and so on.
+It's also common to replace 'l' (letter L) with
+'|' (vertical bar), and to replace 'o' with 'p'.
+</p>
+<p>
+Unfortunately, truly capturing l33t-speak requires
+multiple substitutions, and sensitivity to sound.
+Peripheral vowels tend to get dropped.  Because
+the 'i' in &quot;elite&quot; is pronounced like
+&quot;ee&quot; in American English, the word
+becomes &quot;3l33t&quot;, but because it's fun
+to drop vowels, this reduces to just plain
+&quot;l33t&quot;.  Similarly,
+&quot;newbie&quot; becomes &quot;n00b&quot;
+and &quot;ownage&quot; might become &quot;pwn4g3&quot;
+('p' is also a common substitution for 'o').
+</p>
+</div>
+
+<p>Note that case variation and space no longer matter.
+Note that any pair of spellings of <code>&quot;the&quot;</code>
+have distance zero,
+including <code>&quot;the&quot;</code>,
+<code>&quot;The&quot;</code>,
+<code>&quot;THE&quot;</code>, and
+<code>&quot;T H E&quot;</code>.
+</p>
+
+<p>To see that transposition is indeed turned off,
+consider that the distance between <code>&quot;the&quot;</code>
+and <code>&quot;hte&quot;</code> is 2, because it requires
+a pair of substitutions.</p>
+
+<h3>Weighted Edit Distance in LingPipe</h3>
+
+<h4>Tsuruoka and Tsujii Distance</h4>
+
+<p>LingPipe provides a pre-specified weighted edit distance
+for comparing protein names, following the specification
+found in
+<a href="http://www-tsujii.is.s.u-tokyo.ac.jp/~tsuruoka/papers/acl03bio.pdf">Tsuruoka and Tsujii (2003)</a>.
+</p>
+
+<p>The implementation of T &amp; T eidt distance is defined as a
+constant in the approximate dictionary chunker package, namely <a
+href="../../../docs/api/com/aliasi/dict/ApproxDictionaryChunker.html#TT_DISTANCE"><code>dict.ApproxDictionaryChunker.TT_DISTANCE</code></a>.
+It has special weights for spaces or hyphens, digit subsitution,
+capital for lowercase, and so on.  Follow the link to the constant for a full
+version.</p>
+
+
+<h4>Spell Checking</h4>
+
+<p>The spell checker uses weighted edit distances to model likelihoods
+of errors in formulating queries (typos and brainos).  The <a
+href="../querySpellChecker/read-me.html">spell checking tutorial</a>
+contains a section discussing the tuning of weighted edit distances
+for applications.</p>
+
+
+<div class="sidebar">
+<h2>Substitution Matrices: PAM and BLOSUM</h2>
+<p>
+For comparing sequences of proteins, biologically
+informed models represent how likely each of the 20
+amino acids making up proteins are to be inserted,
+deleted, or substituted for one another.  These
+likelihoods (on a log scale) form the basis of edit-distance
+based comparisons of sequences.
+</p>
+<p><i>Warning:</i> The common substitution matrices,
+PAM and BLOSUM, express entries as log odds between
+p(a,b) and p(a)*p(b), thus modeling the strenght
+of independence.  <a href="http://www.ncbi.nlm.nih.gov/pubmed/2051488">Altschul (1991)</a> explains the relation, as does
+the Wikipedia article for <a href="http://en.wikipedia.org/wiki/Substitution_matrix">substitution matrix</a>.</p>
+</div>
+
+
+<h4>Chinese Word Segmentation</h4>
+
+<p>The Chinese word segmenter is an application of spell checking,
+using a custom weighted edit distance in which the only allowable edit
+is the insertion of a space (between tokens).  See the <a
+href="../chineseTokens/read-me.html">chinese tokenization tutorial</a>
+for more information on the role of weighted edit distance.
+</p>
+
+
+<h4>Case Restoration</h4>
+
+<p>Spell checking may be used for restoring case to uniform
+case data by employing weighted edit distance that charges
+no penalty for converting among case variants.</p>
+
+
+<h2>Jaccard Distance</h2>
+
+<p>Another common method for comparing strings, which is actually much
+more efficient to implement, is the so-called &quot;Jaccard
+distance&quot;.  The Jaccard distance implementation in <a
+href="../../../docs/api/com/aliasi/spell/JaccardDistance.html"><code>spell.JaccardDistance</code></a>
+operates at a token level, comparing two strings by first
+tokenizing them and then dividing the number of tokens shared
+by the strings by the total number of tokens.
+</p>
+
+<h3>Running the Demo</h3>
+
+<p>The demo may be run using the <code>jaccard</code> target in
+ant:
+</p>
+
+<pre class="code">
+&gt; ant jaccard
+
+String1=p53, also known as protein 53 (TP53), is a transcription factor that regulates the cell cycle and hence functions as a tumor suppressor.
+String2=p53, also known as protein 53 (TP53), is a transcription factor that regulates the cell cycle and hence functions as a tumor suppressor.
+distance=0.00  proximity=1.00
+
+String1=p53, also known as protein 53 (TP53), is a transcription factor that regulates the cell cycle and hence functions as a tumor suppressor.
+String2=It is important in multicellular organisms as it helps to suppress cancer.
+distance=0.91  proximity=0.09
+
+String1=p53, also known as protein 53 (TP53), is a transcription factor that regulates the cell cycle and hence functions as a tumor suppressor.
+String2=The name p53 is in reference to its apparent molecular mass: it runs as a 53-kilodalton (kDa) protein on SDS-PAGE.
+distance=0.79  proximity=0.21
+
+String1=p53, also known as protein 53 (TP53), is a transcription factor that regulates the cell cycle and hence functions as a tumor suppressor.
+String2=The human gene that encodes for p53 is TP53.
+distance=0.83  proximity=0.17
+
+String1=p53, also known as protein 53 (TP53), is a transcription factor that regulates the cell cycle and hence functions as a tumor suppressor.
+String2=The gene is named TP53 after the protein it codes for (TP53 is another name for p53).
+distance=0.76  proximity=0.24
+
+...
+
+
+String1=The gene is named TP53 after the protein it codes for (TP53 is another name for p53).
+String2=The human gene that encodes for p53 is TP53.
+distance=0.65  proximity=0.35
+
+...
+</pre>
+
+<p>First note that the distance between a string and itself is zero.  All
+distances are between zero (0) and one (1).  Proximity for Jaccard distance
+is defined as one minus the distance, so proximity also ranges between
+zero and one.
+</p>
+
+<p>To see why the distance is 0.35 for the last (and closest) example,
+consider the size of the set of words in both sentences divided by
+the total number of words in both:
+</p>
+
+<pre class="code">
+size({The, gene, is, TP53, p53, for, . })
+/ size({The, gene, is, named, TP53, after, the, protein, it, codes, for, (, another, name, p53, ), ., human, that, encodes})
+= 7/20 = 0.35.
+</pre>
+
+<h3>Code Walk Through</h3>
+
+<p>The code for this demo is in <a
+href="src/JaccardDistanceDemo.java"><code>src/JaccardDistanceDemo.java</code></a>.
+It is almost trivial, and only varies from the other examples in terms
+of how the distance object is set up:
+</p>
+
+<pre class="code">
+   TokenizerFactory tokenizerFactory = IndoEuropeanTokenizerFactory.FACTORY;
+   JaccardDistance jaccard = new JaccardDistance(tokenizerFactory);
+</pre>
+
+<p>
+The <code>JaccardDistance</code> class implements both the distance
+and proximity interfaces, with proximity defined to be one minus
+the distance.
+</p>
+
+
+<h3>Tuning Jaccard (and TF/IDF) Distances</h3>
+
+<p>Any tokenizer factory may be plugged into the Jaccard distance.
+As shown in the next section, a TF/IDF-based distance may use
+exactly the same variety of tokenizers with roughly the same
+effect.
+</p>
+
+<h4>Stemming, Stoplisting and Case Normalization</h4>
+
+<p>
+Recall that tokenizers may perform various filtering operations,
+such as stoplisting (removing common or function words), case
+normalization, and stemming. For instance, using a case normalizing
+tokenizer filter would produce results in which <code>&quot;The&quot;</code>
+and <code>&quot;the&quot;</code> were considered a single (matching)
+token.  Similarly, using a stemming filter, the tokens
+<code>&quot;named&quot;</code>
+and <code>&quot;name&quot;</code> would be considered equivalent.
+With stoplisting, function words like <code>&quot;the&quot;</code>
+and usually punctuation like <code>&quot;,&quot;</code> would be
+removed.
+</p>
+
+<h4>Character- and Line-Level Comparisons</h4>
+
+<p>By setting up a character tokenizer factory (<a
+href="../../../docs/api/com/aliasi/tokenizer/CharacterTokenizerFactory.html"><code>tokenizer.CharacterTokenizer</code></a>,
+the comparison will be at the character level rather than the token
+level (and whitespace will be ignored).</p>
+
+<p>At the other extreme, a line tokenizer factory
+(<a href="../../../docs/api/com/aliasi/tokenizer/LineTokenizerFactory.html"><code>tokenizer.LineTokenizerFactory</code></a>),
+would compare
+documents for the number of matching lines rather than
+the number of matching words.
+</p>
+
+<h4>N-gram Comparisons</h4>
+
+<p>With an n-gram tokenizer factory
+(<a href="../../../docs/api/com/aliasi/tokenizer/NGramTokenizerFactory.html"><code>tokenizer.NGramTokenizerFactory</code></a>),
+comparisons will be on the basis of character substrings rather
+than whole words.</p>
+
+
+<h2>Jaro-Winkler Distance</h2>
+
+<p>There are a family of distance measures defined by the U.S.  Census
+Bureau for comparing single person names.  The original metric was
+defined by Matt Jaro and later refined by Bill Winkler.  A complete
+definition of the measure may be found in the javadoc for the
+implementing class, <a
+href="../../../docs/api/com/aliasi/spell/JaroWinklerDistance.html"><code>spell.JaroWinklerDistance</code></a>,
+as well as in <a
+href="http://www.census.gov/srd/papers/pdf/rrs2006-02.pdf">Winkler's
+(2006) survey paper</a>.  </p>
+
+<h3>Running the Demo</h3>
+
+<p>The demo may be run from the ant target <code>jaro-winkler</code>:
+</p>
+
+<pre class="code">
+&gt; ant jaro-winkler
+
+
+          String1             String2   Dist   Prox
+           MARTHA              MARHTA  0.039  0.961
+            JONES             JOHNSON  0.168  0.832
+       DUNNINGHAM          CUNNINGHAM  0.067  0.933
+         MICHELLE             MICHAEL  0.079  0.921
+        NICHLESON           NICHULSON  0.044  0.956
+           MASSEY              MASSIE  0.067  0.933
+           ABROMS              ABRAMS  0.078  0.922
+           HARDIN            MARTINEZ  0.278  0.722
+            ITMAN               SMITH  0.533  0.467
+        JERALDINE           GERALDINE  0.074  0.926
+           JULIES              JULIUS  0.067  0.933
+            TANYA               TONYA  0.120  0.880
+           DWAYNE               DUANE  0.160  0.840
+             SEAN               SUSAN  0.195  0.805
+              JON                JOHN  0.067  0.933
+              JON                 JAN  0.200  0.800
+</pre>
+
+<p>The demo compares a sequence of name pairs, printing out
+distance and proximity information.  Note that proximity is
+just one minus the distance, and both are scaled between
+zero and one.
+</p>
+
+<h3>Code Walk Through</h3>
+
+<p>The code is trivial.  We simply use the distance constant
+in the Jaro-Winkler class, and then read in arguments to split
+and compare:
+</p>
+
+<pre class="code">
+public static void main(String[] args) {
+    JaroWinklerDistance jaroWinkler = JaroWinklerDistance.JARO_WINKLER_DISTANCE;
+    for (String s : args) {
+        String[] pair = s.split(&quot;\\|&quot;);
+        String s1 = pair[0];
+        String s2 = pair[1];
+        System.out.printf(&quot;%18s  %18s  %5.3f  %5.3f\n&quot;,
+                          s1, s2,
+                          jaroWinkler.distance(s1,s2),
+                          jaroWinkler.proximity(s1,s2));
+    }
+}
+</pre>
+
+<p>
+The command-line arguments are then provided as pairs of strings
+separated by a vertical bar, as in:
+</p>
+
+<pre class="code">
+&lt;target name=&quot;jaro-winkler&quot;
+  ...
+  &lt;java classname=&quot;JaroWinklerDemo&quot; ...&gt;
+    &lt;arg value=&quot;MARTHA|MARHTA&quot;/&gt;
+    &lt;arg value=&quot;JONES|JOHNSON&quot;/&gt;
+    ...
+</pre>
+
+
+<h2>TF/IDF Distance</h2>
+
+<p>LingPipe implements a second kind of token-based distance
+in the class <a href="../../../docs/api/com/aliasi/spell/TfIdfDistance.html"><code>spell.TfIdfDistance</code></a>.
+By varying tokenizers, different behaviors may be had with the same
+underlying implementation.
+</p>
+
+<p>TF/IDF distance is based on vector similarity (using the cosine
+measure of angular similarity) over dampened and discriminatively
+weighted term frequencies.  The basic idea is that two strings are
+more similar if they contain many of the same tokens with the same
+relative number of occurrences of each.  Tokens are weighted more
+heavily if they occur in few documents.  See the class documentation
+for a full definition of TF/IDF distance.  </p>
+
+<h3>Running the Demo</h3>
+
+<p>The TF/IDF distance demo may be run from ant using the <code>tf-idf</code>
+target:</p>
+
+<pre class="code">
+&gt; ant tfIdf
+
+
+               Term  Doc Freq       IDF
+                and         1      1.95
+              known         1      1.95
+            encodes         1      1.95
+               gene         3      0.85
+...
+                p53         5      0.34
+          Mutations         1      1.95
+          molecular         1      1.95
+...
+                kDa         1      1.95
+                  .         7      0.00
+                 is         6      0.15
+          reference         1      1.95
+
+String1=p53, also known as protein 53 (TP53), is a transcription factor that regulates the cell cycle and hence functions as a tumor suppressor.
+String2=p53, also known as protein 53 (TP53), is a transcription factor that regulates the cell cycle and hence functions as a tumor suppressor.
+distance=0.00  proximity=1.00
+
+String1=p53, also known as protein 53 (TP53), is a transcription factor that regulates the cell cycle and hence functions as a tumor suppressor.
+String2=It is important in multicellular organisms as it helps to suppress cancer.
+distance=0.95  proximity=0.05
+
+String1=p53, also known as protein 53 (TP53), is a transcription factor that regulates the cell cycle and hence functions as a tumor suppressor.
+String2=The name p53 is in reference to its apparent molecular mass: it runs as a 53-kilodalton (kDa) protein on SDS-PAGE.
+distance=0.82  proximity=0.18
+
+String1=p53, also known as protein 53 (TP53), is a transcription factor that regulates the cell cycle and hence functions as a tumor suppressor.
+String2=The human gene that encodes for p53 is TP53.
+distance=0.87  proximity=0.13
+
+String1=p53, also known as protein 53 (TP53), is a transcription factor that regulates the cell cycle and hence functions as a tumor suppressor.
+String2=The gene is named TP53 after the protein it codes for (TP53 is another name for p53).
+distance=0.84  proximity=0.16
+
+...
+
+String1=The gene is named TP53 after the protein it codes for (TP53 is another name for p53).
+String2=The human gene that encodes for p53 is TP53.
+distance=0.60  proximity=0.40
+
+...
+</pre>
+
+<p>The first part of the program is set up to dump out the complete
+set of terms found in the set of strings being compared, followed
+by their document frequency (the number of strings in which they
+appear), followed by their inverse document frequency weight.
+Note that the word &quot;gene&quot; shows up in 3 documents
+and has an IDF of 0.85, whereas the word &quot;encodes&quot;
+shows up in only one document and thus has a weight of 1.95.
+Finally note that the period (<code>.</code>) shows up in
+each string, so has an IDF weight of 0.0, effectively throwing it
+out of the comparison process.  In practice, IDF weighting
+means that rarer words count for more in the overall comparison.
+Specifically, sharing the token &quot;kDa&quot; counts for
+more than sharing the word &quot;is&quot;.
+</p>
+
+<p>Following the dump of terms and IDFs is the comparison values.
+As with Jaccard distance, strings are distance zero from themselves,
+and all distances are between zero and one.  Also like Jaccard
+distance, the proximity is defined as one minus the distance.
+</p>
+
+<p>A further similarity with Jaccard distance is that various
+tokenization factories may be plugged in to form the basis
+of the comparison.</p>
+
+<h3>Code Walk Through</h3>
+
+<p>The code for this demo may be found in <a
+href="src/TfIdfDistanceDemo.java"><code>src/TfIdfDistanceDemo.java</code></a>.
+</p>
+
+<p>The code for TF/IDF distance is more involved than that for
+Jaccard distance, because the IDF values need to be computed
+from data.  In the demo, the IDF values are populated with
+the strings being compared:
+</p>
+
+<pre class="code">
+    TokenizerFactory tokenizerFactory = IndoEuropeanTokenizerFactory.FACTORY;
+    TfIdfDistance tfIdf = new TfIdfDistance(tokenizerFactory);
+
+    for (String s : args)
+        tfIdf.handle(s);
+</pre>
+
+<p>A TF/IDF distance is constructed just like a Jaccard distance.
+But then it is given training instances for the IDF weighting
+through the method <code>trainIdf(String)</code>.  Each
+string sent to training counts as a document.</p>
+
+<p>In general, the IDF values may
+be constructed from anywhere (for instance, by running over
+a large corpus of sentences for sentence-level IDF).
+</p>
+
+<p>The next thing the code does is print out the terms,
+their document frequencies, and their inverse document
+frequency multipliers:</p>
+
+<pre class="code">
+    for (String term : tfIdf.termSet())
+        System.out.printf(&quot;  %18s  %8d  %8.2f\n&quot;,
+                          term,
+                          tfIdf.docFrequency(term),
+                          tfIdf.idf(term));
+</pre>
+
+<p>The rest of the code just iterates through the arguments
+and prints out distances and proximities like all the other
+demos.</p>
+
+
+<h2>References</h2>
+
+<ul>
+<li>Damerau, Fred J. 1964. A technique for computer detection and correction of spelling errors, <i>Communications of the ACM</i> <b>7</b>(3):171-176.</li>
+
+<li>Levenshtein, V. I. 1966. Binary codes capable of correcting deletions, insertions, and reversals. <i>Soviet Physics Doklady</i>.</li>
+
+<li>Navarro, Gonzalo. 2001.
+<a href="http://www.egeen.ee/u/vilo/edu/2002-03/Tekstialgoritmid_I/Articles/Approximate/Navarro_Review_on_Approximate_Matching_p31-navarro.pdf">A guided tour to approximate string matching</a>.
+<i>ACM Computing Surveys</i> <b>33</b>(1):31-88.
+</li>
+
+<li>
+Needleman, Saul and Christian Wunsch. 1970.
+<a href="http://www.ncbi.nlm.nih.gov/pubmed/5420325">A general method applicable to the search for similarities in the amino acid sequence of two proteins.</a> <i>J Mol Biol.</i> <b>48</b>(3):443-53.
+</li>
+
+<li>
+Winkler, William E.  2006.
+<a href="http://www.census.gov/srd/papers/pdf/rrs2006-02.pdf">Overview of
+Record Linkage and Current Research Directions</a>.
+Statistical Research Division, U.S. Census Bureau.
+</li>
+
+
+
+</ul>
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+
+
+
+
+
+
+
+

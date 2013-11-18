@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: API Tutorials</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+<link href="../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">API Tutorials</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../../index.html">home</a></li>
+
+<li><a href="../../web/demos.html">demos</a></li>
+
+<li><a href="../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../web/download.html">lingpipe core</a></li>
+<li><a href="../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../web/install.html">install</a></li>
+<li>
+<a class="current" href="read-me.html">tutorials</a>
+<ul>
+<li><a href="classify/read-me.html">classification</a></li>
+<li><a href="ne/read-me.html">named-entity recognition</a></li>
+<li><a href="cluster/read-me.html">clustering</a></li>
+<li><a href="posTags/read-me.html">part of speech</a></li>
+<li><a href="sentences/read-me.html">sentences</a></li>
+<li><a href="querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="stringCompare/read-me.html">string comparison</a></li>
+<li><a href="interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="lm/read-me.html">character language models</a></li>
+<li><a href="chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="langid/read-me.html">language identification</a></li>
+<li><a href="wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="svd/read-me.html">singular value decomposition</a></li>
+<li><a href="logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="crf/read-me.html">conditional random fields</a></li>
+<li><a href="em/read-me.html">expectation maximization</a></li>
+<li><a href="eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../web/bugs.html">bugs</a></li>
+<li><a href="../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../web/competition.html">competition</a></li>
+<li><a href="../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../web/contact.html">contact</a></li>
+
+<li><a href="../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<h2>About the API Tutorials</h2>
+
+
+
+
+
+
+<p>
+The application program interface (API) turorials are intended to help
+developers get started with the LingPipe API.   Each tutorial is designed
+to stand alone.
+</p>
+
+<h3>Included Data and Precompiled Scripts</h3>
+<p>
+Most of the tutorials come with sample data, precompiled jars and an
+example that works out of the box.  Tutorials which require third-party
+data or software with restricted distribution (e.g.  MySQL) are noted
+below.
+</p>
+
+
+<h2>The Tutorials</h2>
+
+<p>
+This section provides a list of available tutorials:
+</p>
+
+<div class="sidebar">
+<h2>Code Style Warnings</h2>
+<p>
+The tutorial code is designed to be self-contained and clear rather
+than robust.  In particular, it:
+</p>
+<ul>
+<li>
+prints exceptions and exits rather than
+logging, recovering, and/or releasing resources,
+</li>
+<li>
+uses static and/or hard-coded constructs that would
+normally be configurable, 
+</li>
+<li>
+greedily consumes memory rather than streaming, and
+</li>
+<li>
+doesn't check input consistency or guarantee object
+consistency.
+</li>
+</ul>
+</div>
+
+
+
+<h3><a href="classify/read-me.html">Topic Classification</a></h3>
+<p>
+Categorization of news articles by genre using character language models.
+</p>
+
+<h3><a href="ne/read-me.html">Named Entity Recognition</a></h3>
+<p>
+How to run named-entity recognizers in first-best, n-best and
+per-entity confidence modes.  How to train and evaluate named-entity
+recognizers.  Examples with newswire in Spanish and genomics in English.
+</p>
+
+<h3><a href="cluster/read-me.html">Clustering</a></h3>
+<p>
+An illustration of the single-link and complete-link hierarchical
+clusterers, including a variety of cluster evaluation techniques.
+There is an example of using clustering for cross-document coreference, with
+an example application resolving different John Smiths in the news.
+There is also an extensive tutorial on latent Dirichlet allocation (LDA).
+</p>
+
+
+<h3><a href="posTags/read-me.html">Part-of-Speech Tagging</a></h3>
+<p>
+ How to train part-of-speech (POS) taggers from corpora using tag
+ parsers and handlers, how to compile models to disk and read them in,
+ and how
+to run and evaluate first-best, n-best and confidence-scored
+ taggers.  Examples include the Brown, Genia, and GenTag
+ part-of-speech corpora.
+</p>
+
+<h3><a href="sentences/read-me.html">Sentence Detection</a></h3>
+<p>
+How to run sentence detection using the chunking interface, how to
+evaluate the performance of a sentence model against a corpu s using
+sentence chunk parsers and handlers, and how to tune a model for a
+particular corpus.  Examples from the Genia corpus.
+</p>
+
+<h3><a href="querySpellChecker/read-me.html">Spelling Correction</a></h3>
+<p>
+&quot;Did you mean&quot;-style search engine spell checking.  How to
+train and tune a model.
+</p>
+
+<h3><a href="db/read-me.html">Database Text Mining</a></h3>
+<p>
+Part one populates a MySQL database with MEDLINE citations using
+JDBC. Part two runs over a database of documents to create
+tables of
+sentences and entities.  Part three shows how to do text data mining
+through database queries.
+<br />
+<span class="smallnote">[Requires GNU-licensed MySQL.]</span>
+</p>
+
+<h3><a href="stringCompare/read-me.html">String Comparison</a></h3>
+<p>
+How to use distance and proximity measures over strings, including
+weighted edit disance, TF/IDF distance, Jaccard distance, Jaro-Winkler
+distance, etc.
+</p>
+
+<h3><a href="interestingPhrases/read-me.html">Interesting Phrase Detection</a></h3>
+<p>
+Extraction of statistically significant multi-word phrases in one
+corpus and of relatively significant (&quot;hot&quot;) terms in one
+corpus relative to another.  
+</p>
+
+<h3><a href="lm/read-me.html">Character Language Modeling</a></h3>
+<p>
+Training and tuning character language models, extending
+<code>com.aliasi.util.AbstractCommand</code> and using the
+<code>com.aliasi.corpus.TextHandler</code> and
+<code>com.aliasi.corpus.Parser</code> interfaces.
+</p>
+
+<h3><a href="chineseTokens/read-me.html">Chinese Word Segmentation</a></h3>
+<p>
+Shows how to segment a stream of Chinese characters into distinct
+words.  The demo uses the standard LingPipe spelling corrector with an
+edit distance tuned for word segmentation.  Shows how to train and
+evaluate using publicly available training corpora from the First and
+Second International Chinese Word Segmentation Bakeoffs.
+<br />
+<span class="smallnote">[Requires SigHan data download.]</span>
+</p>
+
+<h3><a href="hyphenation/read-me.html">Hyphenation and Syllabification</a></h3>
+<p>
+Shows how to train a hyphenator or syllabifier from dictionary
+training data.  Examples in Dutch, English and German.
+</p>
+
+
+<h3><a href="sentiment/read-me.html">Sentiment Analysis</a></h3>
+<p>
+Uses language model classifiers to do sentiment analysis over movie
+reviews.  Whole movie reviews are classified by polarity (thumbs up or
+thumbs down), and single sentences are classified with respect to
+subjectivity (subjective/opinion or objective/fact).  Walks through
+compiling models and reading the extensive output produced by the
+classifier evaluators.  Also explains hierarchical classification
+which stacks the polarity classifier on top of the subjectivity
+classifier for improved performance.  Discusses binomial confidence
+intervals and the danger of <i>a posteriori</i> parameter setting.
+<br />
+<span class="smallnote">[Requires sentiment data download.]</span>
+</p>
+
+
+<h3><a href="langid/read-me.html">Language Identification</a></h3>
+<p>
+Language identification as a classification problem.  How to train
+and evaluate language identifiers, with examples from the Leipzig
+corpus of 15 languages.
+</p>
+
+<h3><a href="svd/read-me.html">Singular Value Decomposition</a></h3>
+<p>
+Use singular value decomposition to factor matrices.  Explains
+how to deal with unknown value imputation, regularization and
+setting tuning parameters.
+</p>
+
+<h3><a href="logistic-regression/read-me.html">Logistic Regression</a></h3>
+<p>
+How to estimate regularized multinomial logistic regression
+models for discriminitive classification.
+</p>
+
+<h3><a href="em/read-me.html">Expectation Maximization</a></h3>
+<p>
+How to use expectation maximization for semi-supervised learning
+for a variety of tasks.
+</p>
+
+<h3><a href="wordSense/read-me.html">Word Sense Disambiguation</a></h3>
+<p>
+Word sense disambiguation is the process of determing which
+of a word's possible meanings is intended by a particular
+instance of the word.  Word sense disambiguation has applications
+for classification, search, clustering, etc.
+</p>
+
+
+<h3><a href="eclipse/read-me.html">Eclipse</a></h3>
+<p>
+Basic instructions on how to compile and test LingPipe using
+the Eclipse integrated development environment (IDE).
+</p>
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+

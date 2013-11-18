@@ -1,0 +1,2527 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Singular Value Decomposition Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">SVD Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a class="current" href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<h2>What is Singular Value Decomposition?</h2>
+
+<h3>SVD as Factorization</h3>
+
+<p>Singular value decomposition (SVD) is a means of decomposing a a
+matrix into a product of three simpler matrices.  In this way it is
+related to other matrix decompositions such as eigen decomposition,
+principal components analysis (PCA), and non-negative matrix
+factorization (NNMF).</p>
+
+<h3>SVD as Least Squares Approximation</h3>
+
+<p>Full rank SVD recreates the underlying matrix exactly, whereas
+lower-order SVD provides the best (in the least square error sense)
+approximation of a matrix by orthogonal row and column factors.
+These lower-order approximations to the larger
+matrix may uncover interesting relationships among the rows and/or
+columns of the underlying matrix.</p>
+
+<h3>SVD for Matrices with Unknown Values</h3>
+
+<p>LingPipe's stocastic gradient descent SVD solver is designed to
+accomodate a partial matrix as input.  By partial, we mean a matrix
+only some of whose values are known.  SVD may be used in this case to
+impute the value of the positions whose values are unknown.  In so
+doing, it uses the least-squares property of singular value
+decomposition.</p>
+
+
+
+<h2>Applications of SVD</h2>
+
+<p>Singular value decomposition may be applied anywhere a least-squares
+fit, possibly with unknown values, is needed.</p>
+
+<h3>Latent Semantic Analysis</h3>
+
+<p> The original and most well known application of SVD in natural language processing has
+been for latent semantic analysis (LSA).
+LSA is an application of reduced-order SVD in
+which the rows of the input matrix represent words and the columns
+documents, with entries being the count of the words in the document.
+The singular vectors and correspdoning singular values produced by SVD
+allow words and documents to be mapped into the same &quot;latent
+semantic space&quot;.  The resulting embedding places similar words
+and documents as measured by co-occurrence near one another even if
+they never co-occurred in the training corpus.
+</p>
+
+<h3>Latent Semantic Indexing</h3>
+
+<p>It is straightforward to apply LSA's notion of term-document
+similarity to information retrieval, the resulting systems being
+known as latent semantic indexing (LSI).  A query consisting of
+several terms just corresponds to the sum of their k-dimensional vector
+representations.  The resulting k-dimensional query vector may be
+compared to the k-dimensional document vectors to determine similarity
+(typically using the cosine measure).</p>
+
+<h3>SVD for General Classification</h3>
+
+<p>Latent semantic indexing is really just a simple classification
+problem where each document is its own category, the training
+data for the category is the text extracted from the document,
+and where queries are just texts to classify. </p>
+
+<p>Many researchers have applied SVD to other classification problems.
+The hope, in these cases, is for a degree of robustness arising from
+the lower-order representation of terms and documents.  For instance,
+the main architect of LingPipe, Bob Carpenter, applied it with
+Jennifer Chu-Carroll to automatic routing of telphone calls (after a
+speech recognition phase), and more interestingly, to generating
+follow-up questions to resolve ambiguities for marginal queries.
+Follow-up questions were generated by looking for terms that could
+be added to the query to resolve it as one category or another.
+</p>
+
+<h3>SVD for Clustering and Features</h3>
+<p>
+Because of the simple vector representations of terms and documents
+produced by SVD, SVD (as well as PCA) has been widely used for
+clustering.
+</p>
+<p>
+More generally, SVD has been applied to feature generation.
+Rather than taking raw features, or in addition to raw features,
+it is common to add the first few factors from the singular
+value decomposition of relevant inputs (such as words).  These
+decompositions may be drawn from large data sets in the hopes
+of smoothing the representations with reasonable assumptions about
+their meanings.
+</p>
+
+
+
+<h3>SVD for Collaborative Filtering</h3>
+
+<p>Outside of strictly linguistic applications, SVD has been used for
+collaborative filtering, most notably in the context of the
+<a href="http://www.netflixprize.com/">Netflix Prize</a>
+competition.  In this context, rows represent users and columns
+represent movies.  The scores that exist are ratings provided by
+users for films (on a 1-5 integer scale).  The contest involves
+guessing ratings for films a user hasn't rated; that is, imputing
+the unknown values.
+</p>
+
+
+<h2>Definition of SVD</h2>
+
+<div class="sidebar">
+<h2>Repeating Ourselves</h2>
+<p>
+A similar technical description of SVD may be found in
+the class documentation for:
+</p>
+<ul>
+<li><a href="../../../docs/api/com/aliasi/matrix/SvdMatrix.html"><code>com.aliasi.matrix.SvdMatrix</code></a></li>
+</ul>
+</div>
+
+<p>
+We first consider the case where all values are known.  When all values
+are known,
+singular value decomposition (SVD) factors an
+<code>m&nbsp;&times;&nbsp;n</code> matrix <code>A</code> into a product of
+three matrices:</p>
+
+<pre class="code">
+A = U * S * V<sup><sup>T</sup></sup>
+</pre>
+
+<p>where <code>U</code> is an <code>m&nbsp;&times;&nbsp;k</code> matrix,
+<code>V</code> is an <code>n&nbsp;&times;&nbsp;k</code> matrix, and
+<code>S</code> is a <code>k&nbsp;&times;&nbsp;k</code> matrix, where
+<code>k</code> is the rank of the matrix <code>A</code>.  The
+multiplication (<code>*</code>) is matrix multiplication and
+the superscripted <code>T</code> indicates matrix transposition.</p>
+
+<h3>Singular Vectors: An Orthonormal Basis</h3>
+
+<p>The <code>m</code>-dimensional vectors making up the columns of
+<code>U</code> are called left singular vectors, whereas
+the <code>n</code>-dimesnional vectors making up the columns of
+<code>V</code> are called right singular vectors.</p>
+
+<p> The set of left and set of right singular vectors are orthonormal
+(that is, both orthogonal and normal).  Normality means that each
+singular vector is of unit length (length <code>1</code>).  A set of
+vectors is said to be orthogonal if any pair of vectors in the set is
+orthogonal; recall that vectors are orthogonal if and only if their
+product (equivalently cosine) is zero (<code>0</code>).  Orthogonality
+that any pair of left singular vectors is The right singular vectors
+are also orthonormal, being of unit length and pairwise orthogonal.  </p>
+
+<h3>Singular Values: Factor Weighting</h3>
+
+<p> The values on the diagonal of <code>S</code> are called the
+singular values.  The combination of
+the <code>q</code>-th left singular vector, right singular vector and
+singular value is known as a factor.  The singular values determine
+the relative importance of the dimensions, and are arranged in
+non-increasing order:
+</p>
+<pre class="code">
+S[i][i] &gt;= S[i+1][i+1]   &nbsp;&nbsp; (for i &lt; k)
+</pre>
+
+<h3>Uniqueness</h3>
+
+<p>Matrices have unique singular-value decompositions
+up to the re-ordering of columns with equal singular values and
+up to offsetting sign changes in the singular vectors.</p>
+
+<h3>Implementing SVD Matrices</h3>
+
+<p>The upshot of the first equation <code>A = U * S * V<sup><sup>T</sup></sup></code>
+is that a single value <code>A[i][j]</code> in the matrix may be computed by the
+dot product of the <code>i</code>-th row vector and the <code>j</code>-th column
+vector, scaled by singular values:
+</p>
+
+<pre class="code">
+A[i][j]
+
+= <big><big>&Sigma;</big></big><sub>i &lt; k</sub> U[i][k] * S[k][k] * V[j][k]
+
+= <big><big>&Sigma;</big></big><sub>i &lt; k</sub>  U[i][k] * sqrt(S[k][k]) * sqrt(S[k][k]) * V[j][k]
+
+= <big><big>&Sigma;</big></big><sub>i &lt; k</sub>  (U[i][k] * sqrt(S[k][k])) * (sqrt(S[k][k]) * V[j][k])
+
+= (U[i] * sqrt(S<sub>diag</sub>)<sup><sup>T</sup></sup>) * (V[j] * sqrt(S<sub>diag</sub>)<sup><sup>T</sup></sup>)<sup><sup>T</sup></sup>
+</pre>
+
+<h4>Calculating Values</h4>
+
+
+<p>In the implementation <code>com.aliasi.matrix.SVDMatrix</code> of the matrix
+interface <code>com.aliasi.matrix.Matrix</code>, the scaled row and column
+vectors are stored.  For instance, here is the value of the <code>i</code>th
+row vector after scaling by the square root of the singular values:
+</p>
+
+<pre class="code">
+U[i] * sqrt(S<sub>diag</sub>)<sup><sup>T</sup></sup>
+= { U[i][0] * sqrt(S[0][0]),
+    U[i][1] * sqrt(S[1][1]),
+    ...,
+    U[i][k] * sqrt(S[k][k]) }
+</pre>
+
+<h4>Time and Space Requirements</h4>
+
+<p>Thus extracting a value from an SVD matrix of order <code>k</code> requires
+<code>k</code> multiplications and additions.  </p>
+
+<p>The storage space required for an SVD representation of a matrix of
+dimensionality <code>m &times; n</code> of order <code>k</code>
+is <code>(n+m)*k</code> double values (of eight bytes each).</p>
+
+
+<h2>Latent Semantic Analysis and Indexing</h2>
+
+<p>Latent semantic analysis (LSA) is a straightforward application of
+singular value decomposition to term-document matrices.  Latent
+semantic indexing (LSI) applies LSA to information retrieval.
+To illustrate LSI, we implement the example from Deerwester
+et al.'s original LSI paper (see the references below).
+</p>
+
+<h3>Running the Demo</h3>
+
+<p>To run the example, simply invoke the Ant target <code>lsi</code>:
+</p>
+
+<pre class="code">
+&gt; cd $LINGPIPE/demos/tutorial/svd
+&gt; ant lsi
+
+Buildfile: build.xml
+
+compile:
+    [javac] Compiling 1 source file to C:\carp\mycvs\lingpipe\demos\tutorial\svd\build\classes
+
+lsi:
+     [java]   Computing SVD
+     [java]     maxFactors=2
+     [java]     featureInit=0.01
+     [java]     initialLearningRate=0.0050
+     [java]     annealingRate=1000
+     [java]     regularization0.0
+     [java]     minImprovement=0.0
+     [java]     minEpochs=10
+     [java]     maxEpochs=50000
+     [java]
+     [java] SCALES
+     [java] 0  3.34
+     [java] 1  2.54
+     [java]
+     [java] TERM VECTORS
+     [java] ( 0.22, -0.11)  human
+     [java] ( 0.20, -0.07)  interface
+...
+</pre>
+
+<p>We'll explain all the output produced as we go through the code
+and a brief explanation of how latent semantic indexing works
+through SVD.</p>
+
+
+<h3>Term-Document Matrix</h3>
+
+<p>LSI begins with a term-document matrix.  The following 9 documents are
+titles of technical reports.  We have taken the liberty of renumbering
+them from 0 to 8.</p>
+
+<table>
+<tr><th colspan="2" class="title">Documents (Deerwester et al. (1990), Table 2, Part 1)</th></tr>
+<tr><th>Doc</th><th>Text</th></tr>
+<tr><td>0</td><td>Human machine interface for Lab ABC computer applications</td></tr>
+<tr><td>1</td><td>A survey of user opinion of computer system response time</td></tr>
+<tr><td>2</td><td>The EPS user interface management system</td></tr>
+<tr><td>3</td><td>System and human system engineering testing of EPS</td></tr>
+<tr><td>4</td><td>Relation of user-perceived response time to error measurement</td></tr>
+<tr><td>5</td><td>The generation of random, binary, unordered trees</td></tr>
+<tr><td>6</td><td>The intersection graph of paths in trees</td></tr>
+<tr><td>7</td><td>Graph minors IV: Widths of trees and well-quasi-ordering</td></tr>
+<tr><td>8</td><td>Graph minors: A survey</td></tr>
+</table>
+
+<p>The terms are just the words occurring in more than one document, with closed-class
+words like &quot;and&quot; and &quot;to&quot; removed.  The words are normalized
+for case by downcasing, but not otherwise stemmed or filtered.  The
+terms may be the result of an arbitrary tokenization, including stemming,
+stoplisting, case normalization, and even character n-grams.</p>
+
+<table>
+<tr><th colspan="10" class="title">Term-Document Matrix (Deerwester et al., Table 2, Part 2)&nbsp;</th></tr>
+<tr><th rowspan="2">Term</th><th colspan="9">Document</th></tr>
+<tr><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr>
+<tr><td>human</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>interface</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>computer</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>user</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>system</td><td>0</td><td>1</td><td>1</td><td>2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>response</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>time</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>EPS</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>survey</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>trees</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+<tr><td>graph</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>minors</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+</table>
+
+<p>The count of a term in a document here is just the raw frequency
+count.  In applications of SVD, these counts are often weighted using
+inverse document frequency and dampened using square roots or
+logs.</p>
+
+
+
+
+<h3>LSI Code</h3>
+
+<p>The code for our LSI demo can be found in the file
+<a href="src/Lsi.java"><code>src/Lsi.java</code></a>.  Because we
+are only concerned with creating the single example, it is quite
+compact.</p>
+
+<p>The code starts by defining the term-document matrix
+and the array of terms and documents themselves:
+</p>
+
+<pre class="code">
+    static final String[] TERMS
+        = new String[] {
+        &quot;human&quot;,
+        &quot;interface&quot;,
+        &quot;computer&quot;,
+        &quot;user&quot;,
+        &quot;system&quot;,
+        &quot;response&quot;,
+        &quot;time&quot;,
+        &quot;EPS&quot;,
+        &quot;survey&quot;,
+        &quot;trees&quot;,
+        &quot;graph&quot;,
+        &quot;minors&quot;
+    };
+</pre>
+
+<pre class="code">
+    static final String[] DOCS
+        = new String[] {
+        "Human machine interface for Lab ABC computer applications",
+        "A survey of user opinion of computer system response time",
+        "The EPS user interface management system",
+        "System and human system engineering testing of EPS",
+        "Relation of user-perceived response time to error measurement",
+        "The generation of random, binary, unordered trees",
+        "The intersection graph of paths in trees",
+        "Graph minors IV: Widths of trees and well-quasi-ordering",
+        "Graph minors: A survey"
+    };
+</pre>
+
+<pre class="code">
+    static final double[][] TERM_DOCUMENT_MATRIX
+        = new double[][] {
+            {1, 0, 0, 1, 0, 0, 0, 0, 0 },
+            {1, 0, 1, 0, 0, 0, 0, 0, 0 },
+            {1, 1, 0, 0, 0, 0, 0, 0, 0 },
+            {0, 1, 1, 0, 1, 0, 0, 0, 0 },
+            {0, 1, 1, 2, 0, 0, 0, 0, 0 },
+            {0, 1, 0, 0, 1, 0, 0, 0, 0 },
+            {0, 1, 0, 0, 1, 0, 0, 0, 0 },
+            {0, 0, 1, 1, 0, 0, 0, 0, 0 },
+            {0, 1, 0, 0, 0, 0, 0, 0, 1 },
+            {0, 0, 0, 0, 0, 1, 1, 1, 0 },
+            {0, 0, 0, 0, 0, 0, 1, 1, 1 },
+            {0, 0, 0, 0, 0, 0, 0, 1, 1 }
+    };
+</pre>
+
+<p>There is a row for each term, with the columns
+indexed by the document ID (0 to 8). The terms and
+term-document matrix would obviously have to be
+computed from the documents in a general application.
+Here, we have just copied Deerwester et al.'s matrix
+into a data structure by hand.  We only use the term
+array and document array for display purposes.</p>
+
+<p>We compute the singular value decomposition of the matrix
+using the <code>svd()</code> method of <code>SvdMatrix</code>,
+with the number of factors (latent semantic dimensions) set
+in a constant (to 2, in this case, following Deerwester
+et al.'s example):
+</p>
+
+<pre class="code">
+static final int NUM_FACTORS = 2;
+
+public static void main(String[] args) throws Exception {
+    maxFactors = 2;
+    double featureInit = 0.01;
+    double initialLearningRate = 0.005;
+    int annealingRate = 1000;
+    double regularization = 0.00;
+    double minImprovement = 0.0000;
+    int minEpochs = 10;
+    int maxEpochs = 50000;
+
+    SvdMatrix matrix
+        = SvdMatrix.svd(TERM_DOCUMENT_MATRIX,
+                        maxFactors,
+                        featureInit,
+                        initialLearningRate,
+                        annealingRate,
+                        regularization,
+                        null,
+                        minImprovement,
+                        minEpochs,
+                        maxEpochs);
+        ...
+</pre>
+
+<p>The final argument is <code>null</code>, which turns
+off feedback from the SVD solver during the solution process.
+We discuss what it outputs and how to tune SVD in the
+next sections on complete and partial SVD.</p>
+
+<p>We print the output vectors for the two-dimensional
+SVD we have computed.  The singular values, left
+singular vectors and right singular values are extracted
+from the SVD matrix:</p>
+
+<pre class="code">
+        double[] scales = matrix.singularValues();
+        double[][] termVectors = matrix.leftSingularVectors();
+        double[][] docVectors = matrix.rightSingularVectors();
+</pre>
+
+<p>We do not repeat the code here to print out these arrays,
+but here's what the demo program prints:
+</p>
+
+<pre class="code">
+SCALES
+0  3.34
+1  2.54
+
+TERM VECTORS
+( 0.22, -0.11)  human
+( 0.20, -0.07)  interface
+( 0.24,  0.04)  computer
+( 0.40,  0.06)  user
+( 0.64, -0.17)  system
+( 0.27,  0.10)  response
+( 0.27,  0.10)  time
+( 0.30, -0.14)  EPS
+( 0.21,  0.27)  survey
+( 0.01,  0.49)  trees
+( 0.04,  0.62)  graph
+( 0.03,  0.45)  minors
+
+DOC VECTORS
+( 0.20, -0.06)  Human machine interface for Lab ABC computer applications
+( 0.61,  0.16)  A survey of user opinion of computer system response time
+( 0.46, -0.13)  The EPS user interface management system
+( 0.54, -0.23)  System and human system engineering testing of EPS
+( 0.28,  0.10)  Relation of user-perceived response time to error measurement
+( 0.00,  0.19)  The generation of random, binary, unordered trees
+( 0.01,  0.44)  The intersection graph of paths in trees
+( 0.02,  0.62)  Graph minors IV: Widths of trees and well-quasi-ordering
+( 0.08,  0.53)  Graph minors: A survey
+</pre>
+
+<p>These values match those reported in the appendix (page 26) of
+<a href="http://citeseer.comp.nus.edu.sg/189631.html">Deerwester et al. (2000)</a>.
+This is the complete latent semantic indexing of the specified
+document collection.</p>
+
+<p>Note that this representation makes clear how the terms and
+documents are cast into the same k-dimensional space for comparison.
+This is often called the latent semantic space.  For comparison, the
+dimensions are scaled by their corresponding singular values.  We
+could, for instance, use these vectors for clustering terms,
+clustering documents or relating terms to documents.  </p>
+
+<p>Next we consider the search component of latent semantic indexing.
+Queries are computed by taking the centroid of the term
+vectors corresponding to the terms in the query.  For instance,
+Deerwester et al. use the query &quot;human computer interaction&quot;
+for illustration, and we repeat their example here.  Only the terms
+&quot;human&quot; and &quot;computer&quot; show up.  The centroid's
+computed pointwise, by adding the values in each dimension:
+</p>
+
+<pre class="code">
+human            computer
+(0.22, -0.11) + (0.24, 0.04) = (0.46, -0.07)
+</pre>
+
+<p>
+This is then matched against the document vectors using the scaling
+provided by the singular values, with the following result:
+</p>
+
+<pre class="code">
+Query=[human, computer, interaction]
+Query Vector=( 0.46, -0.07 )
+
+DOCUMENT SCORES VS. QUERY
+  0:  0.31  Human machine interface for Lab ABC computer applications
+  1:  0.91  A survey of user opinion of computer system response time
+  2:  0.74  The EPS user interface management system
+  3:  0.88  System and human system engineering testing of EPS
+  4:  0.41  Relation of user-perceived response time to error measurement
+  5: -0.03  The generation of random, binary, unordered trees
+  6: -0.05  The intersection graph of paths in trees
+  7: -0.07  Graph minors IV: Widths of trees and well-quasi-ordering
+  8:  0.03  Graph minors: A survey
+</pre>
+
+<p>As noted by Deerwester et al., document 2 and document 4, neither
+of which contain any of the search terms, score relatively high.  This
+is b
+ecause of second-order relations between terms, such as the term
+&quot;user&quot; showing up in the related documents.  If we were
+to match the query vector to terms, we get the following related
+query terms:
+</p>
+
+<pre class="code">
+TERM SCORES VS. QUERY
+  0:  0.36  human
+  1:  0.32  interface
+  2:  0.36  computer
+  3:  0.61  user
+  4:  1.02  system
+  5:  0.39  response
+  6:  0.39  time
+  7:  0.49  EPS
+  8:  0.27  survey
+  9: -0.07  trees
+  10: -0.05  graph
+  11: -0.03  minors
+</pre>
+
+<p>Note that the query &quot;human computer interaction&quot; supplies
+terms &quot;human&quot; and &quot;computer&quot; which are both judged
+reasonably close to the query itself, which is the centroid of the
+vectors for &quot;human&quot; and &quot;interface&quot;.  More interestingly,
+terms such as &quot;interface&quot; and &quot;system&quot; are also
+close to the query in latent semantic space.
+</p>
+
+<p>Given the indexing (the singular value decomposition, that is), it
+is straightforward to compute these scorings.  Here is the code
+from <a href="src/Lsi.java"><code>src/Lsi.java</code></a>.
+</p>
+
+<pre class="code">
+public static void main(String[] args) throws Exception {
+    ...
+    SvdMatrix matrix
+        = SvdMatrix.svd(TERM_DOCUMENT_MATRIX,
+    ...
+    double[] scales = matrix.singularValues();
+    double[][] termVectors = matrix.leftSingularVectors();
+    double[][] docVectors = matrix.rightSingularVectors();
+    ...
+    for (int m = 0; m &lt; args.length; ++m)
+        search(scales,termVectors,docVectors,args[m]);
+</pre>
+
+<p>We just iterate through the arguments and search relative
+to the indexing.  Here's the search method:
+</p>
+
+<pre class="code">
+static void search(double[] scales,
+                   double[][] termVectors,
+                   double[][] docVectors,
+                   String arg) {
+
+    String[] terms = arg.split(" |,"); // space or comma separated
+    double[] queryVector = new double[NUM_FACTORS];
+    Arrays.fill(queryVector,0.0);
+    for (String term : terms)
+        addTermVector(term,termVectors,queryVector);
+    ...
+</pre>
+
+<p>The code first finds the terms by splitting on spaces or
+commas.  It then initializes the query vector to be the number
+of dimensions in the latent semantic space, that is, the number
+of factors in the SVD.  It then iterates over the terms and adds
+their term vectors to the query vector.  The addition's done
+by brute force, looking for the term in the list of terms and
+then adding its vector if found.  If the term isn't found in the
+array of terms, it's ignored.
+</p>
+
+<pre class="code">
+static void addTermVector(String term, double[][] termVectors, double[] queryVector) {
+    for (int i = 0; i &lt; TERMS.length; ++i) {
+        if (TERMS[i].equals(term)) {
+            for (int j = 0; j &lt; NUM_FACTORS; ++j) {
+                queryVector[j] += termVectors[i][j];
+            }
+            return;
+         }
+    }
+}
+</pre>
+
+<p>Finally, the query vector is printed (we do not repeat that code) and
+then scored against the document and term vectors:
+</p>
+
+<pre class="code">
+    System.out.println("DOCUMENT SCORES VS. QUERY");
+    for (int j = 0; j &lt; docVectors.length; ++j) {
+        double score = dotProduct(queryVector,docVectors[j],scales);
+        System.out.printf("  %d: % 5.2f  %s\n",j,score,DOCS[j]);
+    }
+
+    System.out.println("TERM SCORES VS. QUERY");
+    for (int i = 0; i &lt; termVectors.length; ++i) {
+        double score = dotProduct(queryVector,termVectors[i],scales);
+        System.out.printf("  %d: % 5.2f  %s\n",i,score,TERMS[i]);
+    }
+</pre>
+
+<p>Dot product is computed relative to the scales as follows:
+</p>
+
+<pre class="code">
+static double dotProduct(double[] xs, double[] ys, double[] scales) {
+    double sum = 0.0;
+    for (int k = 0; k &lt; xs.length; ++k)
+        sum += xs[k] * ys[k] * scales[k];
+    return sum;
+}
+</pre>
+
+<p>It's common to replace the dot product measure of similarity
+with a cosine ordering.  That would look like this:
+</p>
+
+<pre class="code">
+static double cosine(double[] xs, double[] ys, double[] scales) {
+    double product = 0.0;
+    double xsLengthSquared = 0.0;
+    double ysLengthSquared = 0.0;
+    for (int k = 0; k &lt; xs.length; ++k) {
+        double sqrtScale = Math.sqrt(scales[k]);
+        double scaledXs = sqrtScale * xs[k];
+        double scaledYs = sqrtScale * ys[k];
+        xsLengthSquared += scaledXs * scaledXs;
+        ysLengthSquared += scaledYs * scaledYs;
+        product += scaledXs * scaledYs;
+    }
+    return product / Math.sqrt(xsLengthSquared * ysLengthSquared);
+}
+</pre>
+
+<p>Cosine-based scores are as follows (with dot-product scores reproduced
+in parens for convenience):
+</p>
+
+<pre class="code">
+DOCUMENT SCORES VS. QUERY
+  0:  0.99  Human machine interface for Lab ABC computer applications      ( 0.31)
+  1:  0.94  A survey of user opinion of computer system response time      ( 0.91)
+  2:  0.99  The EPS user interface management system                       ( 0.74)
+  3:  0.98  System and human system engineering testing of EPS             ( 0.88)
+  4:  0.90  Relation of user-perceived response time to error measurement  ( 0.41)
+  5: -0.11  The generation of random, binary, unordered trees              (-0.03)
+  6: -0.09  The intersection graph of paths in trees                       (-0.05)
+  7: -0.09  Graph minors IV: Widths of trees and well-quasi-ordering       (-0.07)
+  8:  0.05  Graph minors: A survey                                         ( 0.03)
+
+TERM SCORES VS. QUERY
+  0:  0.96  human      ( 0.36)
+  1:  0.98  interface  ( 0.32)
+  2:  0.96  computer   ( 0.36)
+  3:  0.97  user       ( 0.61)
+  4:  1.00  system     ( 1.02)
+  5:  0.90  response   ( 0.39)
+  6:  0.90  time       ( 0.39)
+  7:  0.97  EPS        ( 0.49)
+  8:  0.55  survey     ( 0.27)
+  9: -0.10  trees      (-0.07)
+  10: -0.06  graph     (-0.05)
+  11: -0.05  minors    (-0.03)
+</pre>
+
+<p>Note that cosine changes the actual ranking of results as well as
+the relative scores.  Euclidean distance or other distance measures
+would be a third way to measure.  Dot product is the most natural for
+the underlying linear model implied by the use of singular value
+decomposition.</p>
+
+<p>And that's it.  A complete demo implementation of
+latent semantic indexing in a few lines of code.
+</p>
+
+
+
+
+
+<h2>Complete Matrix SVD</h2>
+
+<p>The API is set up to allow easy calculation of SVDs for a complete
+matrix, that is, one where every value is known.  There is a single
+method call, but the method requires a slew of fairly sensitive arguments,
+the effects of which we will endeavour to illustrate in this section.
+Before doing that, let's get an example up and running.</p>
+
+<h3>Complete SVD for Token Bigrams</h3>
+
+<p>For our first exercise, we will simply look at bigram counts in
+textual data.  Bigram counts are asymmetric; for example, &quot;of the&quot;
+occurs much more frequently than &quot;the of&quot; in English.
+</p>
+
+<div class="sidebar">
+<h2>Replicating Gorrell</h2>
+<p>
+This demo replicates the NLP application in Genevieve Gorrell's
+<a href="http://acl.ldc.upenn.edu/eacl2006/main/papers/05_1_gorrell_176.pdf">2005 EACL paper</a> on stochastic gradient descent for SVD
+(see <a href="#references">references</a> below for a full citation).
+</p>
+</div>
+
+<h4>The Code</h4>
+<p>
+The code may be found in the standalone
+demo code file <a href="src/TokenBigramSvd.java"><code>src/TokenBigramSvd.java</code></a>.
+</p>
+
+<h4>Downloading <span style="font-style:normal">Pride and Prejudice</span></h4>
+
+<p>Before we can run, we need text data.  We chose to analyze Jane
+Austen's early 19th century English novel, <i>Pride and Prejudice</i>.
+It may be downloaded from <a href="http://www.gutenberg.org/">Project Gutenberg</a>
+from:
+</p>
+
+<ul>
+<li><a href="http://www.gutenberg.org/etext/1342"><b>Overview:</b> <i>Pride and Prejudice</i></a></li>
+<li><a href="http://www.gutenberg.org/dirs/etext98/pandp12.txt"><b>Text: </b> <i>Pride and Prejudice</i></a> [700KB ASCII]</li>
+</ul>
+
+<p>After downloading, place the text in a file, which we'll call
+<code>$TEXT_FILE</code>.  We suggest editing out the top of the file,
+which is the Project Gutenberg header.  It always helps to start with clean data.
+You may use texts other than <i>Pride and Prejudice</i>, of course.
+</p>
+
+<h3>Running the Demo</h3>
+
+
+<h4>Running from Ant</h4>
+
+<p>The demo may be run directly from ant, with the path to the
+text data file supplied on the command line:
+</p>
+
+<pre class="code">
+&gt; cd $LINGPIPE/demos/tutorial/svd
+&gt; ant -Dtext.file=e:\data\gutenberg\dist\JaneAusten\PrideAndPrejudice.txt tokenBigram
+...
+</pre>
+
+
+<h4>Parameter Report</h4>
+
+<p>The first thing the program does is report all of its parameters.
+Other than the file name, these are hardcoded into the program and
+reported here for convenience.
+</p>
+
+<pre class="code">
+...
+TokenBigramSVD
+  Extracting Bigrams
+    File=E:\data\gutenberg\dist\JaneAusten\PrideAndPrej
+    tokenizerFactory.getClass()=class com.aliasi.tokeni
+    input charset=ASCII
+    Number of tokens=146592
+    Number of distinct tokens=6628
+    #Matrix entries=43930384
+  Computing SVD
+    Max factors=3
+    featureInit=0.1
+    initialLearningRate=0.0010
+    annealingRate=10
+    regularization0.0
+    minImprovement=0.0
+    minEpochs=10
+    maxEpochs=200
+    output charset=ASCII
+...
+</pre>
+
+<h4>Factor- and Epoch-Level Report</h4>
+
+<div class="sidebar">
+<h2>Your Results <i>Will</i> Vary</h2>
+<p>
+Because of the random initialization of the
+singular vectors, the exact sequence of RMSE
+values and even the results may vary between
+runs.  Run several times to guarantee convergence
+if there is any doubt.
+</p>
+</div>
+
+<p>After the report, the iterative SVD solver comes into
+play.  The factors are computed one at a time.  For each
+factor, the entire matrix is visited several times.  Each
+loop through the data is referred to as an &quot;epoch&quot;.
+The number of epochs is bounded below and above by parameters
+passed to SVD.  The SVD method may be enabled for online
+reporting, which we have done here.  Reports from the SVD
+solver are preceded by &quot;<code>partialSvd|</code>&quot;.
+It reports when each factor is started and root mean square
+error for the current factorization (involving the current
+factor and all previous factors).
+</p>
+
+<pre class="code">
+...
+partialSvd| Start
+partialSvd|   Factor=0
+partialSvd|     epoch=0 rmse=0.2307442009625624
+partialSvd|     epoch=1 rmse=0.2307009155564279
+partialSvd|     epoch=2 rmse=0.2306634757907735
+partialSvd|     epoch=3 rmse=0.2305997643148771
+partialSvd|     epoch=4 rmse=0.23037212972010507
+partialSvd|     epoch=5 rmse=0.2293394109578155
+partialSvd|     epoch=6 rmse=0.22494535998882884
+partialSvd|     epoch=7 rmse=0.21186634823241973
+partialSvd|     epoch=8 rmse=0.19391353624907023
+partialSvd|     epoch=9 rmse=0.18656738572758658
+partialSvd|     epoch=10 rmse=0.18585605225301427
+...
+partialSvd|     epoch=197 rmse=0.1830182265560673
+partialSvd|     epoch=198 rmse=0.1830134851434906
+partialSvd|     epoch=199 rmse=0.18300877442023536
+partialSvd|   Factor=1
+partialSvd|     epoch=0 rmse=0.18187860408677023
+partialSvd|     epoch=1 rmse=0.1818195893457582
+partialSvd|     epoch=2 rmse=0.18177486371581822
+...
+partialSvd|     epoch=197 rmse=0.16628383740250385
+partialSvd|     epoch=198 rmse=0.16627595545058857
+partialSvd|     epoch=199 rmse=0.16626816248929846
+partialSvd|   Factor=2
+partialSvd|     epoch=0 rmse=0.1653360181791556
+partialSvd|     epoch=1 rmse=0.16527773279071495
+partialSvd|     epoch=2 rmse=0.16523608990094368
+...
+partialSvd|     epoch=197 rmse=0.1501681463210289
+partialSvd|     epoch=198 rmse=0.1501662935811939
+partialSvd|     epoch=199 rmse=0.15016445305391138
+</pre>
+
+<p>Note that as the epochs progress, error is gradually reduced.  The
+algorithm is actually guaranteed to find the unique solution (up to
+ordering, signs and arithmetic precision) if allowed enough epochs
+with an appropriate learning rate (more on these tuning parameters
+below).  We have specified a maximum of 200 epochs, at which point
+RMSE is only decreasing in the 5th or 6th decimal place.  We see that
+with one factor, the original matrix was reconstructed with RMSE of
+0.192, with two factors, RMSE is 0.175 and with three factors, 0.158.
+With as many factors as the minimum dimension of the input matrix,
+RMSE will converge to zero (we show this with some small artificial
+examples below).</p>
+
+<h4>Results: Factors</h4>
+
+<div class="sidebar">
+<h2>Two Negatives Make a Positive</h2>
+<p>
+Your results <b>will</b> vary.  They might even be negative.
+That is, the extremely
+low values may have non-zero values instead of the
+positive ones.  For real numbers, two negatives
+do make a positive, at least when multiplied.
+</p>
+</div>
+
+<p>After computing the SVD, our demo program reports on the
+singular values and vectors it has found.  Following Gorrell's
+paper, we report singular values along with the largest and
+smallest values in the left and right singular vectors.  These
+are labeled by the token. Here's the report for the first factor:</p>
+
+<pre class="code">
+...
+ORDER=0 singular value=992.3642458892039
+Extreme Left Values
+          0 of               0.632
+          1 to               0.417
+          2 in               0.386
+          3 and              0.243
+          4 for              0.198
+          5 with             0.166
+          6 on               0.150
+          7 that             0.139
+          8 by               0.133
+          9 at               0.116
+...
+       7026 DEAR            -0.000
+       7027 Michael         -0.000
+       7028 EVEN            -0.000
+
+Extreme Right Values
+          0 the              0.748
+          1 her              0.372
+          2 his              0.267
+          3 a                0.211
+          4 be               0.209
+          5 it               0.115
+...
+       7027 NIECE           -0.000
+       7028 However         -0.000
+...
+</pre>
+
+<p>The first singular value is 985, which is very high for this corpus,
+where average counts are quite low.
+This says that the first factor provides high
+counts to bigrams with first words &quot;of&quot;,
+&quot;to&quot;, &quot;in&quot;, and &quot;and&quot;,
+and with second words like &quot;the&quot;,
+&quot;her&quot;, and &quot;be&quot;.
+</p>
+<p>
+As the report below shows,
+&quot;of the&quot; is the most common bigram in Jane Austen's
+text, with a count of only 461.  If we used only the first
+factor to predict, we would predict &quot;of the&quot; to
+have a count of <code>0.614 * 0.742 * 985.0 = 448</code>,
+which is pretty close to the empirical corpus count of 461.
+This is not surprising, as the first factor will always account
+for the largest patterns in the data.  It further predicts
+that &quot;to the&quot; has a high corpus count, but
+only 0.441/0.614 as high as &quot;of the&quot;.  Similarly
+&quot;of her&quot; is predicted to have a count that's
+only 0.373/0.742 as high as &quot;of the&quot;.
+</p>
+
+<p>Subsequent factors are required to be orthogonal to the
+first dimension.  They are also required to have singular
+values that are equally sized or smaller than previous factors.
+Here's the second factor report:
+</p>
+
+<pre class="code">
+...
+ORDER=1 singular value=525.2432789690466
+Extreme Left Values
+          0 of               0.281
+          1 in               0.191
+          2 for              0.087
+          3 that             0.069
+          4 on               0.068
+          5 and              0.067
+...
+       7025 not             -0.185
+       7026 would           -0.208
+       7027 I               -0.358
+       7028 to              -0.701
+
+Extreme Right Values
+          0 the              0.160
+          1 a                0.082
+          2 his              0.061
+          3 it               0.053
+          4 she              0.042
+          5 I                0.040
+...
+       7025 do              -0.149
+       7026 am              -0.196
+       7027 have            -0.328
+       7028 be              -0.766
+...
+</pre>
+
+<p>Note that it not only adds positive counts for good bigrams
+like &quot;she had&quot;, but positive counts bad bigrams
+like &quot;she be&quot;.  Remember, this is just an approximation,
+and it's being driven by least squares, not linguistic theory.
+</p>
+
+<p>What's interesting to note is that there are large
+negative dimensions in this factor.  But remember the
+signs.  These values will reduce estimates for
+bigrams like &quot;I her&quot; and &quot;for was&quot;,
+but will actually increase counts in cases where both
+values are negative, such as &quot;in his&quot;.</p>
+
+<p>Here's the third factor (remember we count from zero):</p>
+
+<pre class="code">
+...
+     [java] ORDER=2 singular value=486.5512054169151
+     [java] Extreme Left Values
+     [java]           0 I                0.471
+     [java]           1 she              0.430
+     [java]           2 he               0.336
+     [java]           3 it               0.312
+     [java]           4 and              0.233
+     [java] ...
+     [java]        7025 of              -0.028
+     [java]        7026 must            -0.038
+     [java]        7027 will            -0.039
+     [java]        7028 to              -0.304
+     [java]
+     [java] Extreme Right Values
+     [java]           0 was              0.518
+     [java]           1 had              0.391
+     [java]           2 am               0.283
+     [java]           3 is               0.209
+     [java]           4 could            0.199
+     [java] ...
+     [java]        7025 the             -0.042
+     [java]        7026 make            -0.053
+     [java]        7027 her             -0.055
+     [java]        7028 be              -0.302
+...
+</pre>
+
+<p>The third singular value is also high, at 488.6, which means
+the factor is still quite significant.  As the singular values decrease,
+so does the effect of the dimension.  In factor 2, we see left tokens
+making up subject
+nouns like &quot;he&quot; or &quot;she&quot; (and &quot;that&quot; used
+as a subject relative), and right tokens making up auxiliaries and
+object nouns, which is rather difficult to interpret.  Also note the
+high negative values, which accounts for the special behavior of
+auxiliaries like &quot;be&quot;.  Here we remove the counts
+for &quot;she be&quot;, correcting an estimation error incurred by the
+first two factors alone.</p>
+
+<h4>Results: Reconstruction</h4>
+
+<p>Finally, with just the three factors, here is how well the original
+values are reconstructed for the token pairs with the highest counts
+in the training data:
+</p>
+
+<pre class="code">
+...
+RECONSTRUCTED TOP COUNTS
+LeftToken,RightToken OriginalValue SvdValue
+of,the  475.0  493.20816651434825
+to,be  437.0  413.3925446237487
+in,the  372.0  302.55408105368076
+I,am  302.0  101.95034167348793
+of,her  262.0  234.09037956436723
+to,the  253.0  256.92410882744946
+of,his  233.0  176.70164636168101
+had,been  198.0  2.177427219085274
+I,have  187.0  95.79751755804523
+to,her  173.0  161.8049819111378
+she,had  168.0  86.28589374732717
+that,he  168.0  20.290267706751138
+could,not  167.0  9.925917868636159
+and,the  162.0  181.341092484635
+it,was  161.0  82.93542413282482
+she,was  156.0  114.16278862013016
+for,the  155.0  153.97709624041548
+he,had  145.0  67.52377567671842
+on,the  138.0  117.40751622553063
+such,a  138.0  6.3652589510111826
+have,been  135.0  1.6367507551545604
+did,not  131.0  2.981038158810108
+he,was  126.0  89.33272971786619
+that,she  124.0  25.93488437393153
+in,a  123.0  88.78029570435424
+</pre>
+
+<div class="sidebar">
+<h2>Gone with Copyright</h2>
+<p>The estate of the author of <i>Gone with the Wind</i>
+<a href="http://yro.slashdot.org/article.pl?sid=04/10/27/038257">sued Project Gutenberg</a>
+to remove the book from <a href="http://gutenberg.net.au/">Project Gutenberg of Australia</a> (PGA), where
+the book is in the public domain.  Here's the donwload link from PGA:
+</p>
+<ul>
+<li><a href="http://gutenberg.net.au/ebooks02/0200161.txt"><i>Gone with the Wind</i></a>
+from Gutenberg Australia</li>
+</ul>
+</div>
+
+
+<p>Note that some bigrams are reconstructed accurately, whereas others
+are way off.  Remember that square error is the metric.  For
+instance, the original count of &quot;to be&quot; is 436, the
+reconstructed count is 393, so the difference is 436-393=43, for
+a contribution to square error of 43*43=1849 (recall this is divided
+by the number of positions in the matrix to determine mean square
+error, the square root of which is reported as RMSE in the epoch reports).
+</p>
+
+<h4>Comparison with Gorrell's Results</h4>
+
+<p>Gorrell started with a matrix of bigram counts just as we did.
+But she normalized the vectors to a probability scale.  Here's her
+report of the top dimensions of the first two factors:
+</p>
+<pre class="code">
+Gorrell EACL 2005 (<i>Gone with the Wind</i>)
+
+Left Values       Right Values
+
+Factor 0
+of 0.5125468      the 0.8755944
+in 0.49723375     her 0.28781646
+and 0.39370865    a 0.23318098
+to 0.2748983      his 0.14336193
+on 0.21759394     she 0.1128443
+at 0.17932475     it 0.06529821
+for 0.16905183    he 0.063333265
+with 0.16042696   you 0.058997907
+from 0.13463423   their 0.05517004
+
+Factor 1
+she 0.6633538     was 0.58067155
+he 0.38005337     had 0.50169927
+it 0.30800354     could 0.2315106
+and 0.18958427    would 0.17589279
+</pre>
+
+<p>Note that these bear some similarity to our results, which are
+repeated here in a similar form:
+</p>
+
+<pre class="code">
+This Demo (<i>Pride and Prejudice</i>)
+
+Factor 0
+of    0.632       the    0.748
+to    0.417       her    0.372
+in    0.386       his    0.267
+and   0.243       a      0.211
+for   0.198       be     0.209
+with  0.166       it     0.115
+on    0.150       my     0.099
+that  0.139       their  0.092
+by    0.133       Mr     0.088
+at    0.116       all    0.086
+
+Factor 1
+I     0.471       was    0.518
+she   0.430       be     0.391
+he    0.336       am     0.283
+it    0.312       is     0.209
+and   0.233       could  0.199
+</pre>
+
+<p>This is close enough that we may assume that it's the
+text source leading to the difference.  Of course, this illustrates
+the variability of texts; if <i>Pride and Prejudice</i> had
+the same bigram counts as <i>Gone with the Wind</i>, the results
+would've been identical.</p>
+
+<h3>Inspecting the Code</h3>
+
+<p>The code for generating the SVD is quite simple.  Most of
+the work's in I/O as there's only one method call for SVD.  Here's
+the top-level command implementation from
+<a href="src/TokenBigramSvd.java"><code>src/TokenBigramSvd.java</code></a>:
+</p>
+
+<pre class="code">
+public static void main(String[] args) throws Exception {
+
+    File textFile = new File(args[0]);
+    MapSymbolTable symbolTable = new MapSymbolTable();
+    TokenizerFactory tokenizerFactory = IndoEuropeanTokenizerFactory.FACTORY;
+    String charset = &quot;ASCII&quot;;
+    double[][] values = extractBigrams(textFile,symbolTable,tokenizerFactory,charset);
+
+    int maxFactors = 3;
+    double featureInit = 0.1;
+    double initialLearningRate = 0.001;
+    int annealingRate = 10;
+    double regularization = 0.00;
+    double minImprovement = 0.000000;
+    int minEpochs = 10;
+    int maxEpochs = 200;
+    PrintWriter verbosePrintWriter
+        = new PrintWriter(new OutputStreamWriter(System.out,charset));
+    Reporter reporter
+        = Reporters.writer(verbosePrintWriter).setLevel(LogLevel.DEBUG);
+
+    SvdMatrix matrix
+        = SvdMatrix.svd(values,
+                        maxFactors,
+                        featureInit,
+                        initialLearningRate,
+                        annealingRate,
+                        regularization,
+                        reporter,
+                        minImprovement,
+                        minEpochs,
+                        maxEpochs);
+
+    reportSvd(values,matrix,symbolTable);
+}
+</pre>
+
+<p>The first batch of code here simply extracts a matrix of bigram
+counts from the specified text file and assigns it to the variable
+<code>values</code>.  This requires a tokenizer factory.  As it works,
+it the bigram extractor populates a symbol table mapping the tokens to
+the dimensions of the matrix; this is used later for output reporting,
+but otherwise does not come into play in the SVD computation.</p>
+
+<p>The second group of statements simply sets all the parameters for
+the run.  We will explain these in detail shortly.</p>
+
+<p>Next is the actual SVD computation, which is handled by a call
+to the static method <code>svd()</code>, which is found in the
+<code>com.aliasi.matrix.SvdMatrix</code> class.  The result is
+an instance of the class <code>SvdMatrix</code>.  As we mentioned
+earlier, the <code>SvdMatrix</code> class implements the
+<code>Matrix</code> interface by storing the scaled singular vectors
+and using them to compute values at run time.</p>
+
+<p>Note that we have created an instance of <code>com.aliasi.io.Reporter</code>
+using a static factory method in <code>com.aliasi.io.Reporters</code>,
+and then set its log level (<code>com.aliasi.io.LogLevel</code>) to
+the enum value <code>DEBUG</code>.  This is passed in to the
+SVD process to provide feedback on the progress of the optimizer.
+The argument may be <code>null</code> for no reporting, or reports
+can be sent to files, standard output, etc.</p>
+
+<p>The final piece of the code reports on the resulting SVD
+matrix using the original array of values and symbol table.</p>
+
+<pre class="code">
+static void reportSvd(double[][] values,
+                      SvdMatrix matrix,
+                      MapSymbolTable symbolTable) {
+    double[] singularValues = matrix.singularValues();
+    double[][] leftSingularVectors = matrix.leftSingularVectors();
+    double[][] rightSingularVectors = matrix.rightSingularVectors();
+    for (int order = 0; order &lt; singularValues.length; ++order) {
+        System.out.println(&quot;\n\nFACTOR=&quot; + order + &quot; singular value=&quot; + singularValues[order]);
+
+        System.out.println(&quot;Extreme Left Values&quot;);
+        extremeValues(leftSingularVectors,order,symbolTable);
+
+        System.out.println(&quot;\nExtreme Right Values&quot;);
+        extremeValues(rightSingularVectors,order,symbolTable);
+    }
+    ...
+</pre>
+
+<p>The first thing the report method does is pull out the vector of
+singular values and matrices of singular vectors.  We then just walk
+through the factors (the dimensionality of all three arrays) and
+report on the singular value and extreme values.  The extreme values
+computation is straightforward.  It uses our convenience class
+<code>util.ObjectToDoubleMap</code> to create a map from symbol to
+counts, and then simply reports on the top values.  Note that the
+symbol table is required to map the dimension <code>i</code> back
+to a symbol <code>token</code>.
+</p>
+<pre class="code">
+static void extremeValues(double[][] values,
+                          int order,
+                          MapSymbolTable symbolTable) {
+
+    ObjectToDoubleMap&lt;String&gt; topVals = new ObjectToDoubleMap&lt;String&gt;();
+    for (int i = 0; i &lt; values.length; ++i) {
+        String token = symbolTable.idToSymbol(i);
+        topVals.set(token,values[i][order]);
+    }
+
+    List&lt;String&gt; tokensByValue = topVals.keysOrderedByValueList();
+    int size = tokensByValue.size();
+
+    for (int i = 0; i &lt; 10 &amp;&amp; i &lt; size; ++i) {
+        String token = tokensByValue.get(i);
+        double value = topVals.getValue(token);
+        System.out.printf(&quot;     %6d %-15s % 5.3f\n&quot;,i,token,value);
+    }
+
+    System.out.println(&quot;...&quot;);
+
+    for (int i = 10; --i &gt;= 0; ) {
+        String token = tokensByValue.get(size-i-1);
+        double value = topVals.getValue(token);
+        System.out.printf(&quot;     %6d %-15s % 5.3f\n&quot;,size-i-1,token,value);
+    }
+}
+</pre>
+
+
+
+<h2>Tuning SVD</h2>
+
+<p>In this section, we will cover all the parameters required for
+singular value decomposition.  These are described in technical detail
+in the class javadoc, <a
+href="../../../docs/api/com/aliasi/matrix/SvdMatrix.html"><code>matrix.SvdMatrix</code></a>.
+</p>
+
+<table>
+<tr><th class="title" colspan="3">Total SVD Parameters</th></tr>
+<tr><th>Parameter</th> <th>Demo Value</th> <th>Description</th></tr>
+<tr><td><code>values</code></td>
+    <td>(counts from <i>Pride &amp; Prejudice</i>)</td>
+    <td>Input matrix.</td>
+</tr>
+<tr><td><code>maxOrder</code></td>
+    <td><code>3</code></td>
+    <td>Maximum number of factors produced.</td>
+</tr>
+<tr><td><code>featureInit</code></td>
+    <td><code>0.1</code></td>
+    <td>Initial value for singular vector dimensions.  Good values
+        lead to lower initial RMSE in each epoch.  Require good value
+        to converge.</td>
+</tr>
+<tr><td><code>initialLearningRate</code></td>
+    <td><code>0.001</code></td>
+    <td>How much to change singular vectors/values away from errors.  Determines
+        whether and how quickly the algorithm terminates.</td>
+</tr>
+<tr><td><code>annealingRate</code></td>
+    <td><code>10</code></td>
+    <td>How quickly the learning rate is lowered (annealed).</td>
+</tr>
+<tr><td><code>regularization</code></td>
+    <td><code>0.0</code></td>
+    <td>How much penalty is assessed for singular value size. Setting
+        higher than zero essentially smoothes and allows better convergence
+        properties, but results in non-zero error at convergence.</td>
+</tr>
+<tr><td><code>minImprovement</code></td>
+    <td><code>0.0001</code></td>
+    <td>Relative reduction in RMSE per epoch required to continue
+        to next epoch.</td>
+</tr>
+<tr><td><code>minEpochs</code></td>
+    <td><code>10</code></td>
+    <td>Minimum number of training epochs per factor.</td>
+</tr>
+<tr><td><code>maxEpochs</code></td>
+    <td><code>200</code></td>
+    <td>Maximum number of training epochs per factor.  Must
+        be set high enough to converge as much as required.</td>
+</tr>
+<tr><td><code>verbosePrintWriter</code></td>
+    <td><code>new PrintWriter( new OutputStreamWriter( System.out, charset))</code></td>
+    <td>Print writer for verbose output on factors and epochs from SVD method.</td>
+</tr>
+</table>
+
+<h3>Utility Features</h3>
+
+<h4>Maximum Order</h4>
+
+<p>Specifying the maximum number of factors allows SVDs with
+relatively small numbers of factors (compared to the rank of
+the matrix) to be computed without computing the entire SVD.
+This should simply be determined by how close the approximation
+is.  Using fewer factors leads to more smoothing, that is
+a less exact approximation, of the underlying matrix.  For
+large-scale NLP problems, such as latent semantic indexing,
+typical values are around 100.
+</p>
+
+<h4>PrintWriter</h4>
+
+<p>A print writer may be supplied or it may be left null.  If
+it's supplied, the SVD algorithm reports each factor and each
+epoch back to the printer.</p>
+
+
+<h3>Regularization</h3>
+
+<p>The regularization parameter places a penalty on the
+size of singular values.  Directly, it places a penalty on
+the magnitude of the incremental singular vector dimensions,
+which has the result of reducing singular values in the end.
+</p>
+
+<p>The regularization parameter is important for two reasons.
+The first reason is that it makes ill-conditioned
+problems well-behaved.  An ill-conditioned SVD problem arises
+when two dimensions of the input matrix are highly correlated
+(in the worst case, linear multiple of each other, for a
+correlation of 1.0).  Ill-conditioned matrices cause uncertainty
+in numerical solvers as there is little constraint on the
+magnitudes of the dimensions.</p>
+
+<p>The second reason regularization is important is to reduce
+overfitting.  Without regularization, the solver may work
+very hard to fit quirky facts of the data.  With regularization,
+that becomes expensive, as it requires large values in singular
+vectors.
+</p>
+
+
+<h3>Learning and Convergence Features</h3>
+
+<p>Feature initialization, learning rates, and annealing rate
+primarily affect the convergence of the algorithm.
+</p>
+
+
+
+<h4>Feature Initialization</h4>
+<p>
+The initial value of all positions in the singular vectors
+are given by the feature initialization value.  The value
+should be set so that there is a finite RMSE, and ideally
+so that the RMSE after training epochs is as low as possible.
+</p>
+
+<p>Initial Learning Rate</p>
+<p>
+The initial learning rate determines how quickly the singular
+vectors move to reduce their error.  If the rate is too low,
+it will take too many epochs to move in the right direction.
+If the rate is too high, the algorithm will overshoot the
+target and oscillate rather than converging.
+</p>
+
+<p>Let's consider some examples.  If we set the learning
+rate down to 0.01, we cannot even get off the ground:
+</p>
+<pre class="code">
+...
+    initialLearningRate=0.01
+...
+partialSvd|   Factor=0
+partialSvd|     epoch=0 rmse=NaN
+</pre>
+
+<p>
+If we start with a smaller learning rate, such
+as 0.0001, that is, 1.0E-4, convergence is too slow.
+Here's the RMSE after ten epochs for learning
+rate 0.0001, with the results for learning rate 0.001
+in parentheses.
+</p>
+
+<pre class="code">
+...
+     initialLearningRate=1.0E-4 (0.001)
+...
+partialSvd|   Factor=0
+...
+partialSvd|     epoch=10 rmse=0.2426697687009369 (0.19438242531824138)
+</pre>
+
+<p>This illustrates how we narrow down the acceptable
+values for parameters.  Here we have determined that
+0.01 is too fast a learning rate and 0.0001 too slow
+a learning rate.  We could put more effort in to
+determine how close 0.001 is to optimal, but we have
+not done so for this tutorial.</p>
+
+<h4>Simulated Annealing</h4>
+
+
+
+<p>
+The annealing rate determines how quickly the learning rate
+is lowered.  If it is set too low, the learning rate may
+be lowered too quickly and there may not be enough epochs for
+the factor to move to its correct value.  If the annealing
+rate is set too high, the learning rate may not be lowered
+quickly enough to converge tightly on the proper value.
+</p>
+
+<div class="sidebar">
+<h2>Why's it Called &quot;Annealing&quot;?</h2>
+<p>
+The standard use of &quot;annealing&quot; is
+for the <a href="http://en.wikipedia.org/wiki/Annealing_%28metallurgy%29">metallurgical
+process</a> in which steel is heated and then gradually
+cooled to increase its hardness.
+</p>
+<p>If we think of our factors as metal, and the
+learning rate as the temperature, then lowering the
+learning rate gradually corresponds to annealing.
+This approach is so widely used that it's called
+&quot;<a href="http://en.wikipedia.org/wiki/Simulated_annealing">simulated annealing</a>&quot; to
+distinguish it from the physical process.
+</p>
+</div>
+
+
+
+<p>
+The learning rate in an epoch is a fraction of
+the learning rate proportional to the epoch.  The value is
+the number of epochs required to increment the denominator.
+With an annealing rate of 10, then after 10 epochs, the
+learning rate is 1/(1+1) = 1/2 of its original value.
+After 20 epochs, the rate is 1/(1+2), and so on.  After
+90 epochs, the rate is 1/(1+9) = 1/10th of its original
+magnitude.  After 990 epochs, the rate is 1/100th of
+its original magnitude and so on.
+</p>
+
+<p>We started with an annealing rate of 10, which is very
+agressive in that the temperature cools very quickly.
+If we set the annealing rate even faster, say to 1,
+we won't converge fast enough.  Here's an example run
+with the rate set to 1 (and the original rate 10 shown
+in parentheses):</p>
+
+<pre class="code">
+...
+    annealingRate=1 (10)
+...
+partialSvd|     epoch=10 rmse=0.23664566796409153 (0.19438242531824138)
+...
+partialSvd|     epoch=199 rmse=0.1925776063676676 (0.19184783367034072)
+</pre>
+
+<p>We are not converging fast enough with the annealing rate
+set so low (that is, fast).</p>
+
+<p>If we set the annealing rate to 100, the temperature
+will cool much more slowly (again shown with the original
+annealing rate of 10 shown in parens).</p>
+
+<pre class="code">
+     annealingRate=100 (10)
+...
+partialSvd|     epoch=10 rmse=0.19589718967682496   (0.19438242531824138)
+...
+partialSvd|     epoch=199 rmse=0.19314865895356362  (0.19184783367034072)
+</pre>
+
+<p>Here, the temperature remains too high to converge to
+a stable solution.  As with the other parameters,
+experimentation (i.e. trial and error) is the best guide.
+</p>
+
+<p>
+Keep in mind that the values of learning rate and annealing
+rate are highly dependent on one another.  As the learning
+rate goes up (higher temperature), the annealing rate may go down
+(faster cooling).
+</p>
+
+<div class="sidebar">
+<h2>Chocolate is not Steel</h2>
+<p>The process of
+<a href="http://www.cookingforengineers.com/article/155/Tempering-Chocolate">tempering chocolate</a>
+used for making candy is a form of annealing.  It just happens at a much
+lower temperature than annealing steel.
+</p>
+<p>
+ The right initial temperature and
+cooling schedule is required for each problem.
+This requires experimentation, otherwise known
+as &quot;trial and error&quot;.
+</p>
+</div>
+
+
+<p>Minimum Improvement and Stopping</p>
+
+<p>
+The minimum and maximum number of epochs control the
+number of epochs used in exactly the way suggested by their names.
+</p>
+
+<p>The minimum improvement value is the relative reduction
+in root mean square error (RMSE) required to continue to the
+next epoch.  If an epoch's work doesn't lower the RMSE by
+the percentage indicated, the loop exits and the factor is
+considered complete.</p>
+
+<p>Setting the minimum improvement to 0.0 means that the
+maximum number of epochs will always be used.  If the minimum
+improvement is set too high, say 0.1, then the singular
+vectors won't be oriented in the correct directions and
+the singular value won't have the correct magnitude.  The
+value should be set as high as possible for the precision
+desired.</p>
+
+<p>Using all the same parameters as above, setting
+the minImprovement value to 0.0001 leads to fewer
+loops:</p>
+
+<pre class="code">
+...
+     minImprovement=1.0E-4
+...
+partialSvd|   Factor=0
+...
+partialSvd|     epoch=27 rmse=0.19294226306082
+partialSvd|      exiting in epoch=27 rmse=0.19294226306082 relDiff=9.601844361088717E-5
+...
+partialSvd|   Factor=1
+...
+partialSvd|     epoch=37 rmse=0.17625093353760177
+partialSvd|      exiting in epoch=37 rmse=0.17625093353760177 relDiff=9.66111026136112E-5
+...
+partialSvd|   Factor=2
+...
+partialSvd|     epoch=63 rmse=0.15869432360581204
+partialSvd|      exiting in epoch=63 rmse=0.15869432360581204 relDiff=9.714495167956563E-5
+</pre>
+
+<p>Note that the final RMSE is 0.1587, which is much higher than the 0.1576
+RMSE of the run allowed 200 epochs per factor.  This reflects stopping
+before convergence (as does the previous run, in fact), so the singular values
+and vectors are slightly different.  For instance, here's the first
+singular vector's extreme values (with the original 200 epoch per factor
+run's values in parens):</p>
+
+<pre class="code">
+...
+     minImprovement=1.0E-4  (0.000)
+...
+FACTOR=0 singular value=980.4105120083517 (985.0349975062319)
+Extreme Left Values
+          0 of               0.624 (0.614)
+          1 to               0.424 (0.441)
+          2 in               0.387 (0.388)
+          3 and              0.244 (0.242)
+Extreme Right Values
+          0 the              0.740 (0.742)
+          1 her              0.376 (0.373)
+          2 his              0.269 (0.268)
+          3 be               0.218 (0.217)
+</pre>
+
+<p>It's clear the answer is in roughly the same ballpark.  The other
+factors are similarly close, though they vary more as the order increases.
+Whether or not the exact singular values matter is going to be application
+dependent.  Often, computing more exact answers is not necessary.</p>
+
+
+<h2>Regularization by Shrinkage</h2>
+
+<div class="sidebar">
+<h2>Why all these Squares?</h2>
+<p>
+I (Bob) remember sitting around the Carnegie Mellon Uni philosophy
+department lunchroom over <a href="http://en.wikipedia.org/wiki/Chana_masala">chana masala</a>
+and asking the assembled
+statistical wizards (e.g. <a href="http://www.hss.cmu.edu/philosophy/faculty-glymour.php">Clark Glymour</a>,
+<a href="http://nlp.stanford.edu/~manning/">Chris Manning</a>, and
+<a href="http://research.microsoft.com/~meek/meek.htm">Chris Meek</a>), "Why all the squares?".
+They told me it was how the math worked out.
+</p>
+<p>It took me a few more years to understand which
+math they meant and why it always seemed to work out
+to squares.
+</p>
+<p>The math in question in many cases is the <a href="http://en.wikipedia.org/wiki/Central_limit_theorem">central
+limit theorem</a>.  The math in question here is
+<a href="http://en.wikipedia.org/wiki/Partial_differential_equation">partial
+different equations</a>.  There's a deeper connection of least
+squares to minimizing normal distribution estimation error, but
+we'll put that aside for now.</p>
+<p>The reason we like square error is that we are
+looking for solutions or estimates that minimize error.
+We know the  minimum, if there is one, will occur where
+all the partial derivatives are zero.  If the error is
+a quadratic function in the parameters, then the
+<a href="http://en.wikipedia.org/wiki/Gradient">gradient</a>, which is the collection of partial derivatives
+of the error with respect to the parameters,
+is a linear function in the parameters.  We know how to
+solve <a href="http://en.wikipedia.org/wiki/System_of_linear_equations">systems of linear equations</a>.  We can
+whip out some algebra, or use <a href="http://en.wikipedia.org/wiki/Stochastic_gradient_descent">stochastic gradient
+descent</a>, as in LingPipe's implementation of SVD.
+We even know there's a solution because multivariate
+quadratics are <a href="http://en.wikipedia.org/wiki/Convex_function">convex</a>.
+</p>
+<p>
+In our case, the parameters are the singular values
+and singular vectors.
+</p>
+</div>
+
+<p>Regularized singular value decomposition optimizes a slightly
+different scoring function than standard SVD.  The standard variety
+finds the solution with the least square error of any orthogonal
+factorization for any given order.  At the order equal to the rank
+of the matrix (number of linearly independent rows and columns),
+the standard SVD returns an exact factorization (up to arithmetic
+precision and estimate convergence iterations).</p>
+
+<p>Regularized SVD considers not only squared error from the original
+matrix values, but also the size of the singular values.  It provides
+the square of the singular values times the shrinkage factor as an
+additional error term.  In simpler terms, it penalizes large singular
+values proportionally to the square of their length.
+Regularized SVD thus minimizes the combined error: least squares
+plus squared singular values.
+</p>
+
+<p>With linear regression, problems may be ill-conditioned if
+there are linear dependencies among the input vectors.  Regularization
+is often used to overcome this problem.  Ill-conditioning does not
+cause a problem for our stochastic gradient descent SVD solver.</p>
+
+<p>Linear regression often overfits a set of training data.  To
+compensate for overfitting, regularization is often used to reduce
+the magnitude of the regression coefficients.  This use corresponds
+to the use in SVD.</p>
+
+<p>Finally, regularization is able to eliminate dimensions, much like
+non-parametric process models, such as the Dirichlet process prior for
+a multinomial of unknown dimensionality.  Like the process priors,
+regularization may be interpreted as a prior on the size of
+singular values.
+</p>
+
+<p>The exact definition of regularization is found in the class
+documentation for <code>SvdMatrix</code>, which also contains
+references to textbook presentations of regularization.</p>
+
+<h3>Running the Demo</h3>
+
+<p>The demo may be run using the following ant target.</p>
+
+<pre class="code">
+&gt; cd $LINGPIPE/demos/tutorial/svd
+&gt; ant -D<b>regularization=0.00</b> -DmaxEpochs=100000 regularized
+Regularized SVD.
+
+TEST MATRIX
+ 1.0,  2.0,  3.0, -4.0
+ 1.0,  4.0,  9.0, -16.0
+ 1.0,  8.0,  27.0, -64.0
+-1.0, -16.0, -81.0,  256.0
+
+SVD PARAMS
+Regularization=0.0
+  Computing SVD
+    maxFactors=4
+    featureInit=0.01
+    initialLearningRate=5.0E-4
+    annealingRate=10000
+    regularization=0.0
+    minImprovement=0.0
+    minEpochs=10
+    maxEpochs=100000
+
+Singular Values
+ k=0  value=    278.47
+ k=1  value=      9.00
+ k=2  value=      1.03
+ k=3  value=      0.00
+
+Reconstructed Matrix
+   0.96,    2.04,    2.98,   -4.00
+   1.06,    3.94,    9.03,  -15.99
+   0.98,    8.02,   26.99,  -64.00
+  -1.00,  -16.00,  -81.00,  256.00
+</pre>
+
+<div class="sidebar">
+<h2>AKA: Ridge Regression, Weight Decay, MDL</h2>
+<p>
+Adding a penalty for parameter length is also known
+as <i>ridge regression</i> in the machine learning
+literature and as <i>weight decay</i> in the
+neural networks literature.  It is also a form
+of minimum description length (MDL) learning
+where we have encoded the length of the singular
+values.
+</p>
+</div>
+
+<p>The are two properties supplied by command line, the
+regularization parameter and the maximum number of epochs to run.
+With 100,000 epochs, the SVD completes in under a second with
+an accurate reconstruction.  </p>
+
+<p>The code is just like our other cases, so we do not repeat it
+here. It may be found in the file <a
+href="src/RegularizedSvd.java"><code>src/RegularizedSvd.java</code></a>.
+</p>
+
+<p>Let's see what happens when we keep our matrix the same,
+but change the regularization parameter.  With a value of
+0.01, the output is:
+</p>
+
+<pre class="code">
+&gt; ant -D<b>regularization=0.01</b> -DmaxEpochs=100000 regularized
+...
+Singular Values
+ k=0  value=    278.43
+ k=1  value=      8.96
+ k=2  value=      0.99
+ k=3  value=      0.00
+
+Reconstructed Matrix
+   0.93,    2.02,    2.99,   -4.00
+   1.04,    3.92,    9.02,  -16.00
+   0.99,    8.01,   26.95,  -64.00
+  -1.00,  -16.00,  -81.00,  255.96
+</pre>
+
+<p>The reconstruction is not as accurate, and the
+singular values ar ea bit smaller.  Now let's look
+at 0.1 and 1.0:
+</p>
+
+<pre class="code">
+&gt; ant -D<b>regularization=0.1</b> -DmaxEpochs=100000 regularized
+...
+Singular Values
+ k=0  value=    278.08
+ k=1  value=      8.60
+ k=2  value=      0.63
+ k=3  value=      0.00
+
+Reconstructed Matrix
+   0.71,    1.82,    3.04,   -3.99
+   0.91,    3.75,    8.93,  -16.01
+   1.08,    7.95,   26.63,  -64.02
+  -0.99,  -16.01,  -80.97,  255.61
+</pre>
+
+<p>And here is with regularization of 1.0:</p>
+
+<pre class="code">
+&gt; ant -D<b>regularization=1.0</b> -DmaxEpochs=100000 regularized
+...
+Singular Values
+ k=0  value=    274.54
+ k=1  value=      5.00
+ k=2  value=      0.00
+ k=3  value=      0.00
+
+Reconstructed Matrix
+   0.22,    1.04,    2.50,   -4.16
+   0.47,    2.58,    7.53,  -16.30
+   0.89,    6.51,   24.07,  -64.01
+  -1.06,  -16.24,  -80.61,  252.11
+</pre>
+
+<p>The reconstruction becomes less and less exact as the
+regularization goes up.  B the time the regularization
+is 1.0, there are only two factors being returned.  The
+third and forth singular values are zero. With a regularization
+of 10, we are down to a single factor:</p>
+
+<pre class="code">
+&gt; ant -D<b>regularization=10.0</b> -DmaxEpochs=100000 regularized
+...
+Singular Values
+ k=0  value=    239.02
+ k=1  value=      0.00
+ k=2  value=      0.00
+ k=3  value=      0.00
+
+Reconstructed Matrix
+   0.02,    0.26,    1.28,   -3.95
+   0.07,    0.99,    4.80,  -14.83
+   0.28,    3.80,   18.35,  -56.67
+  -1.07,  -14.70,  -70.96,  219.21
+</pre>
+
+<p>It is an empirical matter in an application to see
+whether regularization helps or not.</p>
+
+<h3>Scaling Inputs</h3>
+
+<p>Although standard SVD is invariant under the scaling of
+the input matrix, regularized regression is not.  That is,
+if we rescale the inputs and leave the scaling factor
+the same, we get answers that are different (and not just
+different by the scaling factors).  A typical kind of
+scaling is normalizing to Z-scores.  This might be done
+per-row, per-column, or for the whole matrix, depending
+on the kind of application.  Note that the Z-score conversion
+is not linear.  Then the SVD is taken of
+the transformed matrix, and the results converted back
+using an inverse z-score.    For a single problem, this
+doesn't matter.  One can simply choose an appropriate
+regularization parameter.  But if you are fitting a regularization
+parameter across problems, a Z-score conversion is likely
+in order.
+</p>
+
+
+
+
+
+<h2>Partial Matrix SVD</h2>
+
+<p>The real strength of stochastic gradient descent is that
+it allows SVDs to be computed for partial matrices.   A partial
+matrix is one where some values are unknown.  LingPipe's
+gradient descent solver works by minimizing the square error
+between the SVD reconstructed matrix and the known values.
+</p>
+
+<h3>Representing Partial Matrices</h3>
+<p>
+We represent a partial matrix <code>A</code> using
+a pair of parallel two-dimensional matrices:
+</p>
+
+<pre class="code">
+int[][] columnIndexes;
+double[][] values;
+</pre>
+
+<p>
+The arrays <code>values[i]</code> and <code>columnIndexes[i]</code>
+represent the <code>i</code>-th row of the partial matrix.
+Thus <code>values.length</code> must be the same as
+<code>columnIndexes.length</code>, namely the number of rows
+in the partial matrix.  The array <code>columnIndexes[i]</code>
+represents the columns taking values <code>values[i]</code>.
+That is, the original matrix takes values:
+</p>
+
+<pre class="code">
+A[i][columnIndexes[i][j]] = values[i][j]
+</pre>
+
+<p>Thus for each row <code>i</code>,
+<code>columnIndexes[i]</code> and <code>values[i]</code>
+must be the same length.
+</p>
+
+<h4>Worked Example</h4>
+
+<p>
+Suppose we have a 3 &times; 4 partial matrix:
+</p>
+
+<pre class="code">
+A = { { 1, ?, 2, 5 },   A[0][0] = 1;  A[0][2] = 2; A[0][3] = 5;
+      { ?, ?, 9, ? },   A[1][2] = 9;
+      { 3, 7, ?, ? } }  A[2][0] = 3;  A[2][1] = 7
+</pre>
+
+<p>We use <code>?</code> to indicate unknown values.  This
+partial matrix would be represented by the following pair of
+parallel arrays:
+</p>
+
+<pre class="code">
+columnIndexes = { { 0, 2, 3 },
+                  { 2 },
+                  { 0, 1 } }
+
+values= { { 1.0, 2.0, 5.0 },
+          { 9.0 },
+          { 3.0, 7.0 } }
+</pre>
+
+
+<h3>Example of Partial SVD</h3>
+
+<p>We will illustrate partial matrix SVD using the same
+data as for full matrix SVD, but we'll cheat.  We'll consider
+all the zero values as unknown, rather than as zero.  The effect of
+ignoring zero entries is that we will not consider the error on
+bigrams with zero counts in fitting the SVD.
+</p>
+
+<p>The code for the partial SVD is in <a
+href="src/PartialTokenBigramSvd.java"><code>src/PartialTokenBigram.svd</code></a>.
+The only difference is in how the inputs are computed and which SVD method is called.  We start with the same complete two-dimensional array <code>values</code> of counts, only this time they are transformed into a partial
+array representation:
+</p>
+
+<pre class="code">
+double[][] values
+    = TokenBigramSvd
+      .extractBigrams(textFile,symbolTable,tokenizerFactory,charset);
+int[][] columnIds = columnIds(values);
+double[][] partialValues = partialValues(values);
+</pre>
+
+<p>
+The <code>columnIds()</code> and <code>partialValues()</code> methods are
+similar, so we only show one here:
+</p>
+
+<pre class="code">
+static int[][] columnIds(double[][] values) {
+    int[][] columnIds = new int[values.length][];
+    for (int i = 0; i &lt; values.length; ++i)
+        columnIds[i] = columnIdsRow(values[i]);
+    return columnIds;
+}
+
+static int[] columnIdsRow(double[] values) {
+    int count = 0;
+    for (int i = 0; i &lt; values.length; ++i)
+        if (values[i] != 0)
+            ++count;
+    int[] columnIdsRow = new int[count];
+
+    count = 0;
+    for (int i = 0; i &lt; values.length; ++i)
+        if (values[i] != 0)
+            columnIdsRow[count++] = i;
+    return columnIdsRow;
+}
+</pre>
+
+<p>The only substantial difference with the values computation is
+that arrays of double precision floating point are allocated and
+the assignment in the innermost loop is:
+</p>
+
+<pre class="code">
+static double[] partialValuesRow(double[] values) {
+...
+        if (values[i] != 0)
+            partialValuesRow[count++] = values[i];
+...
+</pre>
+
+<p>Then, a call is made to the partial SVD method:</p>
+
+<pre class="code">
+    SvdMatrix matrix
+        = SvdMatrix.partialSvd(columnIds,
+                               partialValues,
+                               maxFactors,
+...
+</pre>
+
+<p>We have ellided all the other arguments as they are
+exactly the same as for the complete matrix method
+<code>svd()</code>.  The report on the resulting SVD matrix
+is the same.  We have used similar, though not identical
+parameters (see the program run's report for values):
+</p>
+
+<pre class="code">
+&gt; ant -Dtext.file=c:\carp\data\gutenberg\dist\JaneAusten\pandp12.txt partialTokenBigram
+...
+TokenBigramSVD
+  Extracting Bigrams
+    File=C:\carp\data\gutenberg\dist\JaneAusten\pandp12.txt
+    tokenizerFactory.getClass()=class com.aliasi.tokenizer.IndoEuropeanTokenizerFactory
+    input charset=ASCII
+    Number of tokens=149362
+    Number of distinct tokens=7029
+    #Matrix entries=49406841
+  Computing SVD
+    maxFactors=3
+    featureInit=1.0
+    initialLearningRate=0.0020
+    annealingRate=100
+    regularization0.0
+    minImprovement=0.0
+    minEpochs=10
+    maxEpochs=10000
+    output charset=ASCII
+</pre>
+
+<p>We run the partial SVD for many more epochs, as each epoch is
+much cheaper to compute:
+</p>
+
+<pre class="code">
+partialSvd| Start
+partialSvd|   Factor=0
+partialSvd|     epoch=0 rmse=7.133949741392208
+partialSvd|     epoch=1 rmse=6.722808642635284
+partialSvd|     epoch=2 rmse=6.406373728494666
+...
+partialSvd|     epoch=9998 rmse=4.69495343471722
+partialSvd|     epoch=9999 rmse=4.694952358911906
+partialSvd|   Factor=1
+partialSvd|     epoch=0 rmse=4.586320695123342
+partialSvd|     epoch=1 rmse=4.541375190262957
+...
+partialSvd|     epoch=9999 rmse=3.9478144855972626
+partialSvd|   Factor=2
+partialSvd|     epoch=0 rmse=3.871646442556527
+partialSvd|     epoch=1 rmse=3.8383954975292975
+...
+partialSvd|     epoch=9999 rmse=3.2421189213528083
+</pre>
+
+<p>Overall root mean square error (RMSE) is higher,
+but that is largely because we are only measuring
+on the non-zero entries.</p>
+
+<p>Because there is no penalty for estimating unseen
+bigrams as any values, the singular vectors have far
+less bigram coherence:</p>
+
+<pre class="code">
+ORDER=0 singular value=12821.954397532272
+Extreme Left Values
+          0 Lady             0.438
+          1 Miss             0.430
+          2 the              0.320
+          3 of               0.172
+          4 able             0.165
+          5 a                0.148
+          6 to               0.113
+          7 in               0.110
+          8 acquainted       0.096
+          9 obliged          0.090
+
+Extreme Right Values
+          0 am               0.476
+          1 was              0.238
+          2 be               0.227
+          3 the              0.219
+          4 she              0.150
+          5 is               0.144
+          6 had              0.134
+          7 deal             0.129
+          8 been             0.128
+          9 he               0.110
+</pre>
+
+<p>The signular value is also much much higher.   The next
+two singular values and vectors are similarly different
+than the complete values:
+</p>
+
+<pre class="code">
+ORDER=1 singular value=7360.618593364118
+Extreme Left Values
+          0 was              0.208
+          1 such             0.206
+          2 could            0.163
+          3 did              0.146
+          4 do               0.129
+          5 is               0.128
+...
+       7024 in              -0.051
+       7025 part            -0.058
+       7026 she             -0.081
+       7027 he              -0.085
+       7028 of              -0.091
+
+Extreme Right Values
+          0 sister           0.186
+          1 wife             0.166
+          2 been             0.160
+          3 mother           0.126
+          4 length           0.105
+          5 father           0.084
+...
+       7024 was             -0.073
+       7025 had             -0.086
+       7026 world           -0.105
+       7027 am              -0.618
+</pre>
+
+<pre class="code">
+ORDER=2 singular value=4651.550676369403
+Extreme Left Values
+          0 I                0.306
+          1 no               0.118
+          2 that             0.091
+          3 and              0.075
+          4 of               0.069
+          5 resolved         0.061
+...
+       7024 It              -0.084
+       7025 in              -0.113
+       7026 to              -0.114
+       7027 Miss            -0.125
+       7028 a               -0.397
+
+Extreme Right Values
+          0 sure             0.422
+          1 I                0.212
+          2 she              0.210
+          3 he               0.209
+          4 afraid           0.095
+          5 they             0.080
+          6 of               0.078
+...
+       7023 least           -0.049
+       7024 was             -0.052
+       7025 dear            -0.052
+       7026 is              -0.078
+       7027 be              -0.102
+</pre>
+
+<p>For the bigrams with the largest counts, our
+reconstruction accuracy is actually a bit better than
+that for the complete matrix approach:
+</p>
+
+<pre class="code">
+RECONSTRUCTED TOP COUNTS
+LeftToken,RightToken OriginalValue SvdValue
+of,the  475.0  493.26184029020783
+to,be  437.0  383.39913620975636
+in,the  372.0  302.44315562140076
+I,am  302.0  298.54304987916515
+of,her  262.0  253.0247324297928
+to,the  253.0  307.8277758748272
+of,his  233.0  201.66868338777743
+had,been  198.0  173.48675219997824
+I,have  187.0  152.12066400202096
+to,her  173.0  135.74997015344465
+she,had  168.0  107.08355045181543
+that,he  168.0  120.57469837919749
+could,not  167.0  102.27916174649268
+and,the  162.0  53.11393249643995
+it,was  161.0  101.53309536454064
+she,was  156.0  133.15050106612105
+for,the  155.0  85.15527656314849
+he,had  145.0  101.7485686594175
+on,the  138.0  119.02961305369861
+such,a  138.0  88.83854905697908
+have,been  135.0  115.50775127131148
+did,not  131.0  90.29156054123864
+he,was  126.0  121.92024146656152
+that,she  124.0  133.05950294976054
+in,a  123.0  85.86606733901692
+</pre>
+
+<p>The better estimation of high count pairs comes at a cost -- we do
+much worse at estimating the zero counts.
+</p>
+
+
+<h2>Comparison with Algebraic SVD Solvers</h2>
+<p>
+Standard algebraic SVD solvers, such as those found in
+popular matrix libraries (see the book by Strang
+or the Wikipedia article in the references) require cubic time
+to solve in the dimensionality of the matrix.  Standard solvers
+are numerically unstable, but this problem may be overcome
+with regularization.  The biggest problem for standard solvers
+is that they don't apply to partial matrices.
+</p>
+
+<p>
+LingPipe's SVD solver uses stochastic gradient descent.
+This algorithm requires a an amount of arithmetic effort
+bounded by the maximum number of epochs times the number of
+matrix entries times the number of factors.  For full matrices,
+the number of entries is quadratic and the number of epochs
+is usually a relatively small constant like 200.  If a
+full rank decomposition is required, we are still stuck
+with a cubic algorithm.  But if we only require the first
+k factors, we have an <code>O(k * n<sup>2</sup>)</code>
+algorithm, where <code>k</code> is the number of factors
+and <code>n</code> is the number of dimensions.  If the
+matrix is partial, the <code>n<sup>2</sup></code> factor
+is really just the number of defined entries.
+</p>
+
+<p>
+There are better techniques than stochastic gradient descent for
+solving full-rank singular value decompositions on modestly
+sized matrices.  These algorithms are cubic in the dimensionality
+of the matrix, so are prohibitive for large matrices.  Such
+algorithms are not necessary if a low order approximation is
+desired.  The gradient descent algorithm finds a single factor
+at a time with a few hundred steps per entry per factor.
+</p>
+
+<p>An example of full matrix SVD for small matrices, the
+unit test contains examples:
+</p>
+<ul>
+<li><a href="../../../src/com/aliasi/test/unit/matrix/SvdMatrixTest.java"><code>$LINGPIPE/src/com/aliasi/test/unit/matrix/SvdMatrixTest.java</code></a></li>
+</ul>
+
+
+
+
+
+<h2>References</h2>
+
+<h3>Overviews and Reference List</h3>
+
+<ul>
+
+<li>
+Michael Berry.
+<a href="http://www.cs.utk.edu/%7Elsi/">Latent Semantic Indexing Web Site.</a>
+University of Tennessee.
+</li>
+
+<li>
+Benoît Lemaire and Philippe Dessus.
+<a href="http://www-timc.imag.fr/Benoit.Lemaire/lsa.html">Readings in Latent Semantic Analysis for Cognitive Science and Education</a>.
+University of Grenoble.
+</li>
+
+<li>
+University of Colorado. <a href="http://lsa.colorado.edu/">LSA Page</a>.
+</li>
+
+</ul>
+
+<h3>Latent Semantic Analysis and Indexing</h3>
+
+<ul>
+
+<li>
+Scott Deerwester, Susan T. Dumais, George W. Furnas, Thomas K. Landauer, Richard Harshman.  1990.
+<a href="http://citeseer.comp.nus.edu.sg/189631.html">Indexing by Latent Semantic Analysis</a>.
+<i>Journal of the American Society of Information Science</i>.
+<b>41</b>(6):391--407.
+</li>
+
+<li>
+Michael W. Berry,  Susan T. Dumais, and Gavin W. O'Brien. 1995.
+<a href="http://citeseer.ist.psu.edu/berry95using.html">Using linear algebra for intelligent information retrieval</a>.
+<i>SIAM Review</i> <b>37</b>(4):573--595.</li>
+
+</ul>
+
+
+<h3>SVD Solvers</h3>
+
+<ul>
+
+
+<li>
+Gorrell, G. and Webb, B., 2005. <a href="http://www.dcs.shef.ac.uk/~genevieve/gorrell_webb.pdf">Generalized Hebbian Algorithm for Latent Semantic Analysis</a>. <i>Proceedings of Interspeech 2005</i>.
+</li>
+
+<li>Genevieve Gorrell. 2005. <a href="http://acl.ldc.upenn.edu/eacl2006/main/papers/05_1_gorrell_176.pdf">Generalized Hebbian Algorithm for Incremental Singular Value
+Decomposition in Natural Language Processing.</a> EACL 2006.</li>
+
+<li>Genevieve Gorrell.  2006.
+<a href="http://www.dcs.shef.ac.uk/~genevieve/gorrell_thesis.pdf">Generalized Hebbian Algorithm for Dimensionality Reduction in Natural Language Processing</a>. Ph.D. Thesis.
+Link&#246;ping University.  Sweden.</li>
+
+<li>Genevieve Gorrell.  <a href="http://sourceforge.net/projects/ghapack">GHAPACK</a>.</li>
+
+<li>Timely Development's <a href="http://www.timelydevelopment.com/Demos/NetflixPrize.htm">Netflix Prize Page</a>.</li>
+
+<li>
+Gene H. Golub and Charles F. van Loan. 1996.  <i>Matrix Computations</i>. 3rd Edition.
+Johns Hopkins.
+</li>
+
+<li>
+Gilbert Strang.  2006. <i>Linear Algebra and its Applications</i>.  4th Edition.
+Thomson.</li>
+
+</ul>
+
+
+<h3>Other NLP Applications</h3>
+
+<ul>
+
+<li>
+Jennifer Chu-Carroll and Bob Carpenter. 1999.
+<a href="http://acl.ldc.upenn.edu/J/J99/J99-3003.pdf">Vector-based natural language call routing</a>.
+<i>Computational Linguistics</i> <b>25</b>(3).</li>
+
+</ul>
+
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+
+
+
+
+
+
+
+

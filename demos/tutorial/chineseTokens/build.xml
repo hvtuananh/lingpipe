@@ -1,0 +1,187 @@
+<?xml version="1.0"?>
+
+<project name="LingPipe Tutorial - Chinese Tokens"
+         default="compile" basedir=".">
+
+<property name="data.dir"
+          value="..\..\..\..\data"/>
+
+<property name="model.dir"
+          value="..\..\models"/>
+
+<property name="data.sighan03"
+          value="dataDir"/>
+
+<property name="data.sighan05"
+          value="${data.dir}/sigHan2005/dist"/>
+
+<path id="classpath.standard">
+  <pathelement location="build/classes"/>
+  <pathelement location="../../../lingpipe-4.1.0.jar"/>
+  <pathelement location="../../lib/nekohtml-1.9.14.jar"/>
+  <pathelement location="../../lib/xercesImpl-2.9.1.jar"/>
+  <pathelement location="../../lib/xml-apis-2.9.1.jar"/>
+</path>
+
+<target name="clean">
+  <delete dir="build"/>
+  <delete file="zhToksDemo.jar"/>
+  <delete>
+    <fileset dir="." includes="*.segments"/>
+    <fileset dir="." includes="*.knownWords"/>
+    <fileset dir="." includes="*.spell"/>
+  </delete>
+</target>
+
+<target name="compile">
+  <mkdir dir="build/classes"/>
+  <javac includeAntRuntime="false"   optimize="on"
+         debug="yes"
+         debuglevel="source,lines,vars"
+         destdir="build/classes">
+    <compilerarg value="-Xlint:all"/>
+    <classpath refid="classpath.standard"/>
+    <src path="src/"/>
+  </javac>
+</target>
+
+<target name="jar"
+        depends="compile">
+  <jar destfile="zhToksDemo.jar">
+    <fileset dir="build/classes"
+             includes="**/*.class"/>
+  </jar>
+</target>
+
+<target name="run-as"
+        depends="compile">
+  <java classname="ChineseTokens"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${data.sighan03}"/>
+    <arg value="as"/>                <!-- train corpus name -->
+    <arg value="as"/>                <!-- test corpus name -->
+    <arg value="as"/>                <!-- output file name -->
+    <arg value="CP950"/>              <!-- char encoding -->
+    <!-- <arg value="Big5"/> -->             <!-- char encoding -->
+    <arg value="4"/>                 <!-- max n-gram -->
+    <arg value="4.0"/>               <!-- LM interpolation -->
+    <arg value="5000"/>              <!-- LM num chars -->
+    <arg value="256"/>               <!-- max n-best search -->
+    <arg value="0.0"/>               <!-- continue log prob -->
+    <arg value="0.0"/>               <!-- break log prob -->
+  </java>
+</target>
+
+<property name="memory.max"
+          value="1G"/>
+
+
+<target name="run-pk"
+        depends="compile">
+  <java classname="ChineseTokens"
+        maxmemory="${memory.max}"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${data.sighan03}"/>   <!-- data dir -->
+    <arg value="pk"/>                <!-- train corpus name -->
+    <arg value="pk"/>                <!-- test corpus name -->
+    <arg value="pk"/>                <!-- output file name -->
+    <arg value="CP936"/>             <!-- char encoding -->
+    <arg value="5"/>                 <!-- max n-gram -->
+    <arg value="5.0"/>               <!-- LM interpolation -->
+    <arg value="5000"/>              <!-- LM num chars -->
+    <arg value="256"/>               <!-- max n-best search -->
+    <arg value="0.0"/>               <!-- continue log prob -->
+    <arg value="0.0"/>               <!-- break log prob -->
+  </java>
+</target>
+
+<target name="run-cityu"
+        depends="compile">
+  <java classname="ChineseTokens"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${data.sighan03}"/>   <!-- data dir -->
+    <arg value="cityu"/>             <!-- train corpus name -->
+    <arg value="hk"/>                <!-- test corpus name -->
+    <arg value="cityu"/>             <!-- output files prefix -->
+    <arg value="Big5_HKSCS"/>        <!-- char encoding -->
+    <arg value="5"/>                 <!-- max n-gram -->
+    <arg value="5.0"/>               <!-- LM interpolation -->
+    <arg value="5000"/>              <!-- LM num chars -->
+    <arg value="256"/>               <!-- max n-best search -->
+    <arg value="0.0"/>               <!-- continue log prob -->
+    <arg value="0.0"/>               <!-- break log prob -->
+  </java>
+</target>
+
+
+
+<target name="run-as05"
+        depends="compile">
+  <java classname="ChineseTokens05"
+        maxmemory="1400M"
+        fork="true">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+    <arg value="${data.sighan05}"/>
+    <arg value="as"/>                <!-- corpus name -->
+    <arg value="5"/>                 <!-- max n-gram -->
+    <arg value="5.0"/>               <!-- LM interpolation -->
+    <arg value="7000"/>              <!-- LM num chars -->
+    <arg value="1024"/>
+  </java>
+</target>
+
+
+<target name="run-pku05"
+        depends="compile">
+  <java classname="ChineseTokens05"
+        maxmemory="1G"
+        fork="true">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+    <arg value="${data.sighan05}"/>
+    <arg value="pku"/>                <!-- corpus name -->
+    <arg value="5"/>                 <!-- max n-gram -->
+    <arg value="5.0"/>               <!-- LM interpolation -->
+    <arg value="5000"/>              <!-- LM num chars -->
+    <arg value="1024"/>               <!-- max n-best search -->
+  </java>
+</target>
+
+
+<target name="run-cityu05"
+        depends="compile">
+  <java classname="ChineseTokens05"
+        maxmemory="1G"
+        fork="true">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+    <arg value="${data.sighan05}"/>
+    <arg value="cityu"/>                <!-- corpus name -->
+    <arg value="5"/>                 <!-- max n-gram -->
+    <arg value="5.0"/>               <!-- LM interpolation -->
+    <arg value="5000"/>              <!-- LM num chars -->
+    <arg value="1024"/>               <!-- max n-best search -->
+  </java>
+</target>
+
+<target name="run-msr05"
+        depends="compile">
+  <java classname="ChineseTokens05"
+        maxmemory="1G"
+        fork="true">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+    <arg value="${data.sighan05}"/>
+    <arg value="msr"/>               <!-- corpus name -->
+    <arg value="5"/>                 <!-- max n-gram -->
+    <arg value="5.0"/>               <!-- LM interpolation -->
+    <arg value="5000"/>              <!-- LM num chars -->
+    <arg value="1024"/>               <!-- max n-best search -->
+  </java>
+</target>
+
+</project>

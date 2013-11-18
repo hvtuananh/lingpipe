@@ -1,0 +1,1418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Sentence Extraction Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">Sentences Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a class="current" href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<h3 class="author">
+By <a href="http://www.panix.com/~mitzi/MitziMorrisResume.html"><b>Mitzi Morris</b></a>
+</h3>
+
+<h2>What is Sentence Detection?</h2>
+
+<p>
+This tutorial shows how to segment a text into its constituent sentences using
+a LingPipe <code>SentenceModel</code>, and how to evaluate and tune sentence models.
+</p>
+
+<p>
+It uses MEDLINE data as the example data.
+MEDLINE is a collection of 13 million plus citations into the
+bio-medical literature maintained by the United States National
+Library of Medicine (NLM), and is distributed in XML format.
+The <a href="../medline/read-me.html">MEDLINE Parsing and Indexing Demo</a>
+covers how to parse this data from XML into a structured Java object.
+</p>
+
+<p>
+The first part of this tutorial shows how to segment a text into its
+constituent sentences using a LingPipe <code>SentenceModel</code>.
+The second part shows how to use the LingPipe <code>SentenceEvaluator</code>
+together with a corpus of correctly annotated data (a gold standard)
+to determine the accuracy of a model.
+Finally, we discuss the existing sentence models in the API,
+and ways to tune them.
+</p>
+
+<h2>Using Sentence Models</h2>
+
+<h3>The <code>SentenceModel</code> Interface</h3>
+
+<p>
+The LingPipe
+<a href="../../../docs/api/com/aliasi/sentences/SentenceModel.html">
+<code>com.aliasi.sentences.SentenceModel</code></a> interface
+specifies a means of doing sentence segmentation from arrays of
+tokens and whitespaces, namely the <code>boundaryIndices</code> method,
+which takes an array of tokens, and an array of whitespaces, and returns
+an array of indices of sentence-final tokens.
+</p>
+
+<p>
+The <a href="src/SentenceBoundaryDemo.java"><code>SentenceBoundaryDemo.java</code></a>
+program shows how to use a sentence model to find sentence boundaries in a text.
+It takes an input file of plain text.
+It first processes the file into lists of tokens and whitespace,
+and then uses the MEDLINE sentence model to find the sentence boundaries.
+To run this from the command line, type the following on one line (if using Windows, replace the colon ":" with a semicolon ";"):
+</p>
+
+<pre class="code">
+java
+-cp "sentence-demo.jar:../../../lingpipe-4.1.0.jar"
+SentenceBoundaryDemo ../../data/sentence_demo.txt
+</pre>
+
+<p>
+This tutorial also comes with an Ant
+<a href="build.xml"><code>build.xml</code></a> file which defines
+targets used to run all of the demo programs.
+To run the <code>SentenceBoundaryDemo</code> program
+execute the Ant target <code>findbounds</code>:
+</p>
+
+<pre class="code">
+&gt; ant findbounds
+</pre>
+
+<p>
+which produces the following output (with the <code>[java]</code>
+tags inserted by Ant removed for clarity):
+</p>
+
+<pre class="code">
+findbounds:
+ INPUT TEXT:
+  The induction of immediate-early (IE) response genes, such as egr-1,
+  c-fos, and c-jun, occurs rapidly after the activation of T
+  lymphocytes. The process of activation involves calcium mobilization,
+  activation of protein kinase C (PKC), and phosphorylation of tyrosine
+  kinases. p21(ras), a guanine nucleotide binding factor, mediates
+  T-cell signal transduction through PKC-dependent and PKC-independent
+  pathways. The involvement of p21(ras) in the regulation of
+  calcium-dependent signals has been suggested through analysis of its
+  role in the activation of NF-AT. We have investigated the inductions
+  of the IE genes in response to calcium signals in Jurkat cells (in
+  the presence of activated p21(ras)) and their correlated
+  consequences.
+
+ 150 TOKENS
+ 151 WHITESPACES
+ 5 SENTENCE END TOKEN OFFSETS
+ SENTENCE 1:
+ The induction of immediate-early (IE) response genes, such as egr-1,
+  c-fos, and c-jun, occurs rapidly after the activation of T
+  lymphocytes.
+ SENTENCE 2:
+ The process of activation involves calcium mobilization,
+  activation of protein kinase C (PKC), and phosphorylation of tyrosine
+  kinases.
+ SENTENCE 3:
+ p21(ras), a guanine nucleotide binding factor, mediates
+  T-cell signal transduction through PKC-dependent and PKC-independent
+  pathways.
+ SENTENCE 4:
+ The involvement of p21(ras) in the regulation of
+  calcium-dependent signals has been suggested through analysis of its
+  role in the activation of NF-AT.
+ SENTENCE 5:
+ We have investigated the inductions
+  of the IE genes in response to calcium signals in Jurkat cells (in
+  the presence of activated p21(ras)) and their correlated
+  consequences.
+
+</pre>
+
+<p>
+The inputs to the <code>SentenceModel</code> method
+<code>boundaryIndices</code> are an array of tokens and an array of
+whitespaces.  Therefore we must first process the text into token and
+whitespace arrays, then identify sentence boundaries.  The
+<code>SentenceBoundaryDemo.java</code> program uses the class
+<a href="../../../docs/api/com/aliasi/tokenizer/IndoEuropeanTokenizerFactory.html">
+<code>com.aliasi.tokenizer.IndoEuropeanTokenizerFactory</code></a> to
+provide a tokenizer, and a
+<a href="../../../docs/api/com/aliasi/sentences/MedlineSentenceModel.html">
+<code>com.aliasi.sentences.MedlineSentenceModel</code></a>
+to do the sentence boundary detection:
+</p>
+
+<pre class="code">
+static final TokenizerFactory TOKENIZER_FACTORY
+    = IndoEuropeanTokenizerFactory.INSTANCE;
+static final SentenceModel SENTENCE_MODEL
+    = new MedlineSentenceModel();
+</pre>
+
+<p>
+The <code>TokenizerFactory</code> method <code>tokenizer</code>
+returns a a <a
+href="../../../docs/api/com/aliasi/tokenizer/Tokenizer.html">
+<code>com.aliasi.tokenizer.Tokenizer</code></a>.  The
+<code>tokenize</code> method parses the text into tokens and
+whitespaces, adding them to their respective lists:
+</p>
+
+<pre class="code">
+List&lt;String&gt; tokenList = new ArrayList&lt;String&gt;();
+List&lt;String&gt; whiteList = new ArrayList&lt;String&gt;();
+Tokenizer tokenizer
+    = TOKENIZER_FACTORY.tokenizer(text.toCharArray(),
+                                  0,text.length());
+tokenizer.tokenize(tokenList,whiteList);
+</pre>
+
+<p>
+The <code>tokenList</code> and <code>whiteList</code> arrays produced
+by the <code>tokenizer</code> are parallel arrays.  The whitespace at index
+<code>[i]</code> is that which <i>precedes</i> the token at index <code>[i]</code>.
+The tokenizer returns elements for the whitespace preceding the first token and
+the whitespace following the last token.  Therefore in the above example we see that
+the whitespace array contains 151 elements, while the token array contains 150 elements.
+</p>
+
+<p>
+We convert the <code>ArrayList</code> objects into their corresponding <code>String</code>
+arrays, and then invoke the <code>boundaryIndices</code> method:
+</p>
+
+<pre class="code">
+String[] tokens = new String[tokenList.size()];
+String[] whites = new String[whiteList.size()];
+tokenList.toArray(tokens);
+whiteList.toArray(whites);
+int[] sentenceBoundaries
+    = SENTENCE_MODEL.boundaryIndices(tokens,whites);
+</pre>
+
+<p>
+The <code>boundaryIndices</code> method returns an array whose values are the indices of the
+elements in the <code>tokens</code> array which are sentence final tokens.
+To extract the sentences we iterate through the sentence bounaries array,
+keeping track of the indices of the sentence start and end tokens, and printing
+out the correct elements from the tokens and whitespaces arrays.
+Here is the code to print out the sentences found in the abstract, one per line:
+</p>
+
+<pre class="code">
+int sentStartTok = 0;
+int sentEndTok = 0;
+for (int i = 0; i &lt; sentenceBoundaries.length; ++i) {
+    sentEndTok = sentenceBoundaries[i];
+    System.out.println("SENTENCE "+(i+1)+": ");
+    for (int j=sentStartTok; j &lt;= sentEndTok; j++) {
+        System.out.print(tokens[j]+whites[j+1]);
+    }
+    System.out.println();
+    sentStartTok = sentEndTok+1;
+}
+</pre>
+
+<p>
+The above code block prints every token in the <code>tokens</code> array,
+and the whitespace following that token.
+Because line breaks count as whitespace, the individual sentences show the same
+pattern of spacing and linebreaks as in the input text.
+</p>
+
+<h3>Chunkings and Chunkers</h3>
+
+<p>
+In this section we show how to simplify the task of dealing with
+sentences and sentence boundaries, by rewriting the
+<code>SentenceBoundaryDemo</code> to use a
+<a href="../../../docs/api/com/aliasi/sentences/SentenceChunker.html">
+<code>com.aliasi.sentences.SentenceChunker</code></a>.
+</p>
+
+<p>
+The rewritten program is <a
+href="src/SentenceChunkerDemo.java"><code>SentenceChunkerDemo.java</code></a>.
+To run this program execute the Ant target <code>findchunks</code> as before,
+which produces:
+</p>
+
+<pre class="code">
+&gt; ant findchunks
+
+findchunks:
+ INPUT TEXT:
+  The induction of immediate-early (IE) response genes, such as egr-1,
+  c-fos, and c-jun, occurs rapidly after the activation of T
+  lymphocytes. The process of activation involves calcium mobilization,
+  activation of protein kinase C (PKC), and phosphorylation of tyrosine
+  kinases. p21(ras), a guanine nucleotide binding factor, mediates
+  T-cell signal transduction through PKC-dependent and PKC-independent
+  pathways. The involvement of p21(ras) in the regulation of
+  calcium-dependent signals has been suggested through analysis of its
+  role in the activation of NF-AT. We have investigated the inductions
+  of the IE genes in response to calcium signals in Jurkat cells (in
+  the presence of activated p21(ras)) and their correlated
+  consequences.
+
+ SENTENCE 1:
+ The induction of immediate-early (IE) response genes, such as egr-1,
+  c-fos, and c-jun, occurs rapidly after the activation of T
+  lymphocytes.
+ SENTENCE 2:
+ The process of activation involves calcium mobilization,
+  activation of protein kinase C (PKC), and phosphorylation of tyrosine
+  kinases.
+ SENTENCE 3:
+ p21(ras), a guanine nucleotide binding factor, mediates
+  T-cell signal transduction through PKC-dependent and PKC-independent
+  pathways.
+ SENTENCE 4:
+ The involvement of p21(ras) in the regulation of
+  calcium-dependent signals has been suggested through analysis of its
+  role in the activation of NF-AT.
+ SENTENCE 5:
+ We have investigated the inductions
+  of the IE genes in response to calcium signals in Jurkat cells (in
+  the presence of activated p21(ras)) and their correlated
+  consequences.
+</pre>
+
+<p>
+The above output is almost identical to that of <code>SentenceBoundaryDemo</code> except that
+there is no tokenization information.
+This is because the <code>SentenceChunker</code> handles tokenization.
+</p>
+
+<p>
+A <code>SentenceChunker</code> is constructed from a
+<code>TokenizerFactory</code> and a <code>SentenceModel</code>:
+</p>
+
+<pre class="code">
+static final TokenizerFactory TOKENIZER_FACTORY
+    = IndoEuropeanTokenizerFactory.INSTANCE;
+static final SentenceModel SENTENCE_MODEL
+    = new MedlineSentenceModel();
+static final SentenceChunker SENTENCE_CHUNKER
+    = new SentenceChunker(TOKENIZER_FACTORY,
+                          SENTENCE_MODEL);
+</pre>
+
+<p>
+The <code>SentenceChunker</code> method <code>chunk</code> produces a
+<a href="../../../docs/api/com/aliasi/chunk/Chunking.html">
+<code>com.aliasi.chunk.Chunking</code></a> over the text.
+A <code>Chunking</code> is a set of
+<a href="../../../docs/api/com/aliasi/chunk/Chunk.html">
+<code>com.aliasi.chunk.Chunk</code></a> objects
+over a shared <code>CharSequence</code>.
+The <code>chunkSet</code> method returns the set of (sentence) chunks,
+and the <code>charSequence</code> method returns the underlying
+character sequence.
+</p>
+
+<pre class="code">
+Chunking chunking
+    = SENTENCE_CHUNKER.chunk(text.toCharArray(),
+                             0,text.length());
+Set&lt;Chunk&gt; sentences = chunking.chunkSet();
+String slice = chunking.charSequence().toString();
+</pre>
+
+<p>
+We use the start and end index information from each chunk to print
+the text of the sentence in the abstract:
+</p>
+
+<pre class="code">
+int i = 1;
+for (Chunk sentence : sentences) {
+    int start = sentence.start();
+    int end = sentence.end();
+    System.out.println("SENTENCE "+(i++)+":");
+    System.out.println(slice.substring(start,end));
+}
+</pre>
+
+
+
+<h2>Evaluating Sentence Models</h2>
+
+<p>
+In this section we show how to evaluate a sentence model.
+</p>
+
+<p>
+To evaluate a sentence model, we need a reference corpus of text which
+has a set of sentence boundary markers.  For MEDLINE data, we can use
+the <a href="http://www-tsujii.is.s.u-tokyo.ac.jp/GENIA/">GENIA</a>
+XML corpus as the gold standard.  The GENIA XML corpus is a set of
+2000 MEDLINE abstracts which have been annotated for sentence
+boundaries and biomedical terms (&quot;cons&quot; elements).  Here is
+a sample abstract from this corpus (prettified with whitespace):
+</p>
+
+
+<pre class="code">
+&lt;abstract&gt;
+&lt;<b>sentence</b>&gt;
+
+&lt;cons lex="Toremifene"
+sem="G#other_organic_compound"&gt;Toremifene&lt;/cons&gt; exerts
+multiple and varied effects on the &lt;cons lex="gene_expression"
+sem="G#other_name"&gt;gene expression&lt;/cons&gt; of &lt;cons
+lex="human_peripheral_mononuclear_cell" sem="G#cell_type"&gt;human
+peripheral mononuclear cells&lt;/cons&gt;.
+&lt;<b>/sentence</b>&gt;
+&lt;<b>sentence</b>&gt;
+After short-term, in &lt;cons
+lex="vitro_exposure" sem="G#other_name"&gt;vitro exposure&lt;/cons&gt;
+to &lt;cons lex="therapeutical_level"
+sem="G#other_name"&gt;therapeutical levels&lt;/cons&gt;, distinct
+changes in &lt;cons lex="(AND P-glycoprotein_expression
+steroid_receptors_expression p53_expression Bcl-2_expression)"
+sem="(AND G#other_name G#other_name G#other_name
+G#other_name)"&gt;&lt;cons
+lex="P-glycoprotein*"&gt;P-glycoprotein&lt;/cons&gt;, &lt;cons
+lex="steroid_receptor*"&gt;steroid receptors&lt;/cons&gt;, &lt;cons
+lex="p53*"&gt;p53&lt;/cons&gt; and &lt;cons
+lex="Bcl-2*"&gt;Bcl-2&lt;/cons&gt; &lt;cons
+lex="*expression"&gt;expression&lt;/cons&gt;&lt;/cons&gt; take
+place.
+&lt;<b>/sentence</b>&gt;
+&lt;<b>sentence</b>&gt;
+In view of the increasing use of &lt;cons
+lex="antiestrogen" sem="G#lipid"&gt;antiestrogens&lt;/cons&gt; in
+&lt;cons lex="cancer_therapy" sem="G#other_name"&gt;cancer
+therapy&lt;/cons&gt; and &lt;cons lex="cancer_prevention"
+sem="G#other_name"&gt;prevention&lt;/cons&gt;, there is obvious merit
+in &lt;cons lex="long-term_in_vivo_study"
+sem="G#other_name"&gt;long-term in vivo studies&lt;/cons&gt; to be
+conducted.
+&lt;<b>/sentence</b>&gt;
+&lt;/abstract&gt;
+</pre>
+
+<p>
+In order to run parts 2 and 3 of this tutorial, the GENIA corpus must be downloaded directly from the GENIA project website.
+To do this:
+</p>
+
+<ul>
+<li>Go to the
+<a href="http://www-tsujii.is.s.u-tokyo.ac.jp/%7Egenia/geniaform.cgi">GENIA corpus download page</a>.
+</li>
+<li>
+Choose item: &quot;GENIA Corpus/GPML Ver 3.0&quot;, fill in all other required form data, and submit.
+</li>
+<li>
+Save the file &quot;GENIAcorpus3.02.tgz&quot;
+</li>
+<li>
+Uncompress and untar this archive (<code>tar -zxvf GENIAcorpus3.02.tgz</code>).
+It should contain the following files:
+<ul>
+<li>GENIAcorpus3.02.xml</li>
+<li>gpml.css</li>
+<li>gpml.css.legend.html</li>
+<li>gpml.dtd</li>
+<li>gpml.readme.html</li>
+</ul>
+</li>
+<li>Move or copy these files into the directory &quot;lingpipe/demos/data&quot;
+</li>
+</ul>
+
+<p>
+To use this corpus in an evaluation, we parse each abstract into a
+<a href="../../../docs/api/com/aliasi/chunk/Chunking.html">
+<code>com.aliasi.chunk.Chunking</code></a> object.
+The LingPipe API provides a SAX parser with this functionality:
+<a href="../../../docs/api/com/aliasi/corpus/parsers/GeniaSentenceParser.html">
+<code>com.aliasi.corpus.parsers.GeniaSentenceParser</code></a>.
+The <code>Chunking.charSequence</code> holds the plain text of the abstract,
+and the <code>Chunking.chunkSet</code> holds the sentence boundary information.
+</p>
+
+<p>
+We use this as the reference chunking against which to evaluate the performance
+of a sentence model by using a <code>SentenceChunker</code>, as in the
+<code>SentenceChunkerDemo</code>, above:
+first we create a <code>SentenceChunker</code> for the sentence model
+we wish to evaluate.  We invoke the <code>Chunk</code> method on the
+text of the abstract (the <code>charSequence</code> of the reference chunking).
+This gives us a response chunking.
+</p>
+
+<p>
+To evaluate the response chunking  against the reference chunking
+we compare the members of the respective <code>chunkSet</code> objects,
+that is, we compare the set of sentences that we know to be in the abstract
+with the set of sentences found by the sentence model, using a 4-way classification:
+</p>
+
+<ul>
+<li>True Positives (TP): sentences in the reference chunking and in the response chunking.
+</li>
+<li>False Positives (FP): sentences in the response chunking which are not in the reference chunking.
+</li>
+<li>False Negatives (FN): sentences in the reference chunking which are not in the response chunking.
+</li>
+<li>True Negatives (TN): this number is always zero.  It is the number of items which are neither
+in the reference chunking nor in the response chunking.
+Since we only collect the sentences from the GENIA corpus and the response chunking,
+we have no true negatives.
+</li>
+</ul>
+
+<p>
+The LingPipe API provides a
+<a href="../../../docs/api/com/aliasi/sentences/SentenceEvaluator.html">
+<code>com.aliasi.sentences.SentenceEvaluator</code></a>
+which creates this evaluation for us.  From the javadoc:
+</p>
+
+<p>
+A <code>SentenceEvaluator</code> handles reference chunkings by
+constructing a response chunking and adding them to a sentence
+evaluation.  The resulting evaluation may be retrieved through the
+method <code>evaluation()</code> at any time.
+</p>
+
+<p>
+This evaluator class implements the <code>ObjectHandler&lt;Chunking&gt;</code>
+interface.
+The chunkings passed to the <code>handle(Chunking)</code>
+method are treated as reference chunkings.
+Their character sequence is extracted using <code>Chunking#charSequence()</code>
+and the contained sentence chunker is used to produce a
+response chunking over the character sequence.
+The resulting pair of chunkings is passed to the contained sentence evaluation.
+</p>
+
+<p>
+Running the evaluation is straigtforward:
+we create a <code>GeniaSentenceParser</code> instance
+and a <code>SentenceEvalutator</code> instance, and
+then set the <code>SentenceEvaluator</code> as the default handler
+for the <code>GeniaSentenceParser</code>.
+The <code>GeniaSentenceParser</code> parses each abstract into a reference chunking,
+and then invokes the <code>handle(Chunking)</code> method of the
+the <code>SentenceEvaluator</code>.
+The <code>SentenceEvaluator</code> creates the response chunking from the
+reference chunking, and adds the pair of reference, response chunkings to the
+evaluation, so that parsing and evaluation are carried out in tandem.
+The <code>SentenceEvaluator</code> object contains a
+<a href="../../../docs/api/com/aliasi/sentences/SentenceEvaluation.html">
+<code>com.aliasi.sentences.SentenceEvaluation</code></a> object,
+which contains all the evaluation cases, (the pairs of reference and response chunkings),
+and the evaluation metrics, which are updated as each new case is added to the evaluation.
+</p>
+
+<p>
+The <code>SentenceEvaluation</code> contains a
+<a href="../../../docs/api/com/aliasi/chunk/ChunkingEvaluation.html">
+<code>com.aliasi.chunk.ChunkingEvaluation</code></a> object,
+which evaluates the sentences qua chunkings.
+The <code>SentenceEvaluation</code> also evaluates the sentence model solely
+in terms of the sentence end boundaries.
+As we saw in the first part of this tutorial,
+the <code>SentenceModel</code> doesn't identify sentence initial tokens,
+only the sentence-final tokens.
+Implicit in this model is the assumption that all tokens belong to a sentence,
+therefore once we have found the end token in a sentence, we know that the start
+token of the next sentence must be the following token.
+Evaluations which score chunking errors and evaluations which score sentence end boundary errors
+yield different counts of the errors made by the sentence model.
+Consider the case where the sentence model fails to identify a sentence boundary in a sentence:
+</p>
+
+<pre class="code">
+ref:  ------------X-------------+------
+text: See Spot run. Run spot run. (...)
+resp: --------------------------+------
+pos:            11111111112222222222
+pos:  012345668901234567890123456789
+</pre>
+
+<p>
+The reference chunking will contain two <code>Chunk</code> objects,
+with start and end values of (0,13), (14,27) respectively.  The
+response chunking will contain one <code>Chunk</code> object, which
+start and end values (0,27).  The <code>ChunkingEvaluation</code> will
+add the two reference chunking chunks to the set of false negatives,
+and one response chunking chunk to the set of false positives.  The
+<code>SentenceEvaluation</code> will compare sets of end boundaries.
+The reference chunking end boundaries set contains the values 13 and
+27, while the response chunking contains only 27, therefore the
+<code>SentenceEvaluation</code> counts the missed sentence boundary at
+position 13 as a single false negative.  This approach to counting
+errors has two advantages: the statistics returned by counting only
+end boundary errors are better, since the overall number of false
+positives and false negatives is lower; and the sets of false
+positives and negatives contain only examples where the sentence-final
+boundary was incorrect.  This latter point is relevant for the
+developer who is building or tuning the sentence model and will be
+covered in detail in the third part of this tutorial.
+</p>
+
+<p>
+The <a
+href="src/SentenceModelEvaluator.java"><code>SentenceModelEvaluator.java</code></a>
+program shows how to construct and run an evaluator, and report the
+results of the evaluation.  This program runs the
+<code>GeniaSentenceParser</code> over the GENIA XML corpus, and prints
+out the result of the evaluation.
+</p>
+
+<p>
+To run this program execute the Ant target <code>evaluate</code>.
+</p>
+
+<pre class="code">
+&gt; ant evaluate
+
+evaluate:
+ Chunking Evaluation statistics
+   Total=16623
+   True Positive=16350
+   False Negative=134
+   False Positive=139
+   True Negative=0
+   Positive Reference=16484
+   Positive Response=16489
+   Negative Reference=139
+   Negative Response=134
+   Accuracy=0.9835769716657643
+   Recall=0.9918709051201164
+   Precision=0.9915701376675359
+   Rejection Recall=0.0
+   Rejection Precision=0.0
+   F(1)=0.9917204985897552
+     (...)
+
+ Sentence Evaluation end boundary statistics
+   Total=16542
+   True Positive=16431
+   False Negative=53
+   False Positive=58
+   True Negative=0
+   Positive Reference=16484
+   Positive Response=16489
+   Negative Reference=58
+   Negative Response=53
+   Accuracy=0.9932898077620602
+   Recall=0.9967847609803446
+   Precision=0.9964825034871733
+   Rejection Recall=0.0
+   Rejection Precision=0.0
+   F(1)=0.9966336093167136
+     (...)
+</pre>
+
+<p>
+The accuracy, precision, and recall statistics are
+derived from the counts of True Positive (TP),
+False Negative (FP), False Positive (FP),
+and True Negative (TN) sentences as follows:
+</p>
+
+<ul>
+<li>
+Precision is TP/(TP+FP).
+</li>
+<li>Recall is TP/(TP+FN).
+</li>
+<li>Accuracy is just (TP+TN)/(TP+FP+FN+TN).
+Because there are no TNs, accuracy reduces to the
+Jaccard measure TP/(TP+FP+FN).</li>
+</ul>
+
+<p>
+<i>Note:</i> The <code>evalaute</code> ant task assumes that the GENIA corpus
+has been dowloaded per instructions above, and that the files
+&quot;GENIAcorpus3.02.xml&quot; and &quot;gpml.dtd&quot; are in the
+lingpipe/demos/data directory.
+If either of these files are missing, the task will fail with a <code>java.io.FileNotFoundException</code>.
+</p>
+
+<p>
+The <code>SentenceModelEvaluator</code> program is straightforward.
+First we create a <code>SentenceChunker</code> (as we did in the
+<code>SentenceChunkerDemo.java</code> program in section 1.2, above),
+and pass it in to the <code>SentenceEvaluator</code> constructor:
+</p>
+
+<pre class="code">
+TokenizerFactory tokenizerFactory
+    = IndoEuropeanTokenizerFactory.INSTANCE;
+SentenceModel sentenceModel
+    = new MedlineSentenceModel();
+SentenceChunker sentenceChunker
+    = new SentenceChunker(tokenizerFactory,sentenceModel);
+SentenceEvaluator sentenceEvaluator
+    = new SentenceEvaluator(sentenceChunker);
+</pre>
+
+<p>
+Then we create a <code>GeniaSentenceParser</code>, and set the
+<code>SentenceEvaluator</code> as its handler:
+</p>
+
+<pre class="code">
+GeniaSentenceParser parser
+    = new GeniaSentenceParser(sentenceEvaluator);
+parser.setHandler(sentenceEvaluator);
+</pre>
+
+<p>
+The name of GENIA XML corpus file is passed in as a command line argument
+to the program.
+As the parser parses the corpus, <code>SentenceEvaluator</code>
+adds pairs of reference, response chunkings to the evaluation,
+therefore the only call that we need to carry out evaluation
+is the call to the parser's <code>parse</code> method:
+</p>
+
+<pre class="code">
+File inFile = new File(args[0]);
+parser.parse(inFile);
+</pre>
+
+<p>
+Once the file has been parsed, we obtain the results of the evaluation
+from the
+<a href="../../../docs/api/com/aliasi/sentences/SentenceEvaluation.html">
+<code>com.aliasi.sentences.SentenceEvaluation</code></a>
+object that the <code>SentenceEvaluator</code> contains.
+Both the chunking evaluation and the sentence end boundary evaluation
+use a
+<a href="../../../docs/api/com/aliasi/classify/PrecisionRecallEvaluation.html">
+<code>com.aliasi.classify.PrecisionRecallEvaluation</code></a> object
+to tally their results.
+This class
+contains suite of descriptive statistics for binary classification
+tasks.
+The <code>toString</code> method returns a formatted representation
+of these statistics.
+</p>
+
+<pre class="code">
+SentenceEvaluation sentenceEvaluation
+    = sentenceEvaluator.evaluation();
+
+PrecisionRecallEvaluation chunkingStats =
+    sentenceEvaluation.chunkingEvaluation()
+                      .precisionRecallEvaluation();
+System.out.println("Chunking Evaluation statistics");
+System.out.println(chunkingStats.toString());
+
+PrecisionRecallEvaluation endBoundaryStats =
+    sentenceEvaluation.endBoundaryEvaluation();
+System.out.println("Sentence Evaluation end boundary statistics");
+System.out.println(endBoundaryStats.toString());
+</pre>
+
+<p>
+The errors made by the sentence model are written to two files:
+<code>EvaluatorFalseNegatives.txt</code>
+and
+<code>EvaluatorFalsePositives.txt</code>.
+</p>
+
+<p>
+<code>EvaluatorFalseNegatives.txt</code> contains
+a listing of sentences in the reference set (GENIA corpus) which
+are not in the response set (the sentence chunking returned
+by the MEDLINE sentence model), i.e. these are the sentences where
+the sentence model missed an end boundary.
+Here is an excerpt from this output file:
+</p>
+
+<pre class="code">
+17. n has been termed "A/R tolerance." Exposing HUVECs to A/R induces an
+18. d by electromobility shift assays. alpha 4 beta 1 ligation alone had
+19. oetic cell lines containing Oct2,. CRISP-3 is pre-B cell-specific, N
+20. ated by [3H]dexamethasone binding. Serum cortisol and urinary free c
+21. ed lower calcemic effects in vivo. Large or polar substitutions on C
+22. pha B, encoding the alpha subunit. alpha B is the mouse homologue of
+</pre>
+
+<p>
+<code>EvaluatorFalsePositives.txt</code> contains sentences in the
+response chunking which are not in the reference chunking, i.e.
+these are chunks that the sentence model incorrectly identified
+a token as a sentence-final token.
+Here is an excerpt from this output file:
+</p>
+
+<pre class="code">
+20. ited neutrophil influx into the E. histolytica-infected intestinal x
+21. d demonstrate a lower effect of C. Sub. on Ca2+ transport. Finally,
+22. tous bioinactivation mechanism. 4. Fluorescence HPLC showed that SMX
+23. d upstream of Cp resulted in a ca. two- to fivefold reduction in Cp
+24.  p65, prompt rapid apoptosis of T. parva-transformed T cells. Our fi
+25. of exposure to MTBE or benzene. 3. Peripheral blood lymphocytes (PBL
+26. signal transduction pathways in C. pneumoniae-infected endothelial c
+</pre>
+
+<p>
+This output is generated by iterating over the set of false negatives and false positives
+returned by the <code>SentenceEvaluation</code> object.
+The members of this set are
+<a href="../../../docs/api/com/aliasi/chunk/ChunkAndCharSeq.html">
+<code>com.aliasi.chunk.ChunkAndCharSeq</code></a> objects.
+A <code>ChunkAndCharSeq</code> object is a composite, containing
+a <code>Chunk</code> and the character sequence that contains it.
+This allows us to examine the start and end points of the sentence in context,
+using the <code>spanStartContext</code> and <code>spanEndContext</code> methods:
+</p>
+
+<pre class="code">
+int i = 0;
+Set falseNegatives
+    = sentenceEvaluation.falseNegativeEndBoundaries();
+OutputStream fnFileOut
+    = new FileOutputStream("EvaluatorFalseNegatives.txt");
+PrintStream falseNegOut =
+    new PrintStream(fnFileOut);
+for (Iterator&lt;ChunkAndCharSeq&gt; it = falseNegatives.iterator();
+     it.hasNext(); ++i ) {
+
+    ChunkAndCharSeq sentence = it.next();
+    falseNegOut.println(i + ". "
+                        + sentence.spanEndContext(34));
+}
+falseNegOut.close();
+int j = 0;
+Set&lt;Integer&gt; falsePositives
+    = sentenceEvaluation.falsePositiveEndBoundaries();
+OuptutStream fpFileOut
+    = new FileOutputStream("EvaluatorFalsePositives.txt"));
+PrintStream falsePosOut =
+    new PrintStream(fpFileOut);
+for (Iterator&lt;ChunkAndCharSeq&gt; it = falsePositives.iterator();
+     it.hasNext(); ++j ) {
+
+    ChunkAndCharSeq sentence = it.next();
+    falsePosOut.println(j + ". "
+                        + sentence.spanEndContext(34));
+}
+falsePosOut.close();
+</pre>
+
+<p>
+These files are mainly of interest to the model developer who wishes to
+identify the kinds of errors made by the sentence model.
+</p>
+
+<h2>Developing and Tuning Sentence Models</h2>
+
+<p>
+In this section we show how to develop and tune a sentence model,
+again using the GENIA corpus as a gold standard.  The source code for
+this demo contains a class <a
+href="src/DemoSentenceModel.java"><code>DemoSentenceModel.java</code></a>.
+The reader is encouraged to try successive modifications to the
+<code>DemoSentenceModel</code> program, and to use the
+<code>SentenceModelEvaluator.java</code> program to assess the impact
+of these changes on the model's performance.
+</p>
+
+<p>
+Like the <code>MedlineSentenceModel</code>, the <code>DemoSentenceModel</code> extends the
+<a href="../../../docs/api/com/aliasi/sentences/HeuristicSentenceModel.html">
+<code>com.aliasi.sentences.HeuristicSentenceModel</code></a> class.
+A <code>HeuristicSentenceModel</code> determines sentence
+boundaries based on sets of tokens, a pair of flags, and an
+overridable method describing boundary conditions, the
+<a href="../../../docs/api/com/aliasi/sentences/HeuristicSentenceModel.html#boundaryIndices(java.lang.String[], java.lang.String[], int, int, java.util.Collection)"><code>bounaryIndices</code></a> method.  The gist of the
+<code>HeuristicSentenceModel.bounaryIndices</code> algorithm is
+that sentence boundaries are identified by looking at a token together
+with the tokens which precede and follow it.  If a token is a
+sentence-final token, then the sentence boundary is the index of the
+character one past the last character in that token.  In order for a
+token to be a sentence-final token, it must be a member of the set of
+sentence-final punctutation tokens, such as periods (<code>.</code>)
+and question marks (<code>?</code>).  Furthermore, it must be followed
+by whitespace, and the following token (if any) must be a legal start
+token for a sentence.  Sentences containing abbreviations such as
+&quot;Mr. Smith&quot; are problematic because a simplistic sentence
+model will treat the period following &quot;Mr.&quot; as a
+sentence-final token.  Therefore it is necessary to check the
+penultimate token in the sentence, and disallow common abbreviations.
+</p>
+
+<p>
+The heuristic sentence model uses three sets of tokens:
+</p>
+
+<ul>
+ <li> <b>Possible Stops</b>: These are tokens that are allowed
+ to be the final token in a sentence.
+</li>
+
+ <li> <b>Impossible Penultimates</b>: These are tokens that may
+ <i>not</i> be the penultimate (second-to-last) token in a sentence.
+ This set is typically made up of abbreviations or acronyms such as
+ <code>&quot;Mr&quot;</code>.
+</li>
+
+ <li> <b>Impossible Starts</b>: These are tokens that may <i>not</i>
+ be the first token in a sentence.  This set typically includes
+ punctuation characters that should be attached to the previous
+ sentence such as end quotes (<code>''</code>).
+</li>
+</ul>
+
+<p>
+A further condition is imposed on sentence initial tokens by method
+<code>possibleStart(String[],String[],int,int)</code>.  This method
+checks a given token in sequence of tokens and whitespaces to
+determine if it is a possible sentence start.
+</p>
+
+<p>
+There are also two flags in the constructor that determine aspects of sentence boundary detection:
+</p>
+
+<ul>
+ <li> <b>Force Final Boundary</b>: If this flag is set to
+ <code>true</code>, the final token in any input is taken to be a
+ sentence terminator, whether or not is a possible stop token.  This
+ is useful for dealing with truncated inputs, such as those in
+ MEDLINE abstracts.
+</li>
+
+ <li> <b>Balance Parentheses</b>: If parentheses are being balanced,
+ then as long as there are open parentheses that have not been
+ closed, the current sentence may not end.
+Square brackets
+ (<code>"[", "]"</code>) and round brackets (<code>"(", ")"</code>),
+ are balanced separately, so that a close square bracket doesn't close an open paren,
+ and visa versa.
+The heuristic sentence model doesn't keep track of nested parenthesis, and the first
+close paren following any number of open parens closes all parens, and
+any  extra close parentheses (<code>")"</code>) and brackets
+(<code>"]"</code>) are ignored.
+This approach avoids the pitfall of missing all sentence boundaries past a
+missing close paren if only one close paren is used to close multpile open parens.
+</li>
+</ul>
+
+<p>
+The initial version of the <code>DemoSentenceModel</code>
+defines minimal sets of penultimate stops, impossible penultimates,
+and impossible starts, and
+doesn't override any methods in <code>HeuristicSentenceModel</code>.
+Here is its constructor:
+</p>
+
+<pre class="code">
+public DemoSentenceModel() {
+   super(POSSIBLE_STOPS,
+         IMPOSSIBLE_PENULTIMATES,
+         IMPOSSIBLE_SENTENCE_STARTS,
+         false,  // force final stop
+         false); // balance parens
+}
+</pre>
+
+<p>
+To evaluate the prefomance of the <code>DemoSentenceModel</code>
+we change the <code>SentenceModelEvaluator</code>
+to use the <code>DemoSentenceModel</code> instead (at line 36):
+</p>
+
+<pre class="code">
+SentenceModel sentenceModel  = new DemoSentenceModel();
+</pre>
+
+<p>
+Then we once again execute the Ant target <code>evaluate</code>:
+</p>
+
+<pre class="code">
+&gt; ant evaluate
+
+evaluate:
+     (...)
+ Sentence Evaluation end boundary statistics
+   Total=16620
+   True Positive=16344
+   False Negative=140
+   False Positive=136
+   True Negative=0
+   Positive Reference=16484
+   Positive Response=16480
+   Negative Reference=136
+   Negative Response=140
+   Accuracy=0.9833935018050541
+   Recall=0.9915069157971366
+   Precision=0.9917475728155339
+   Rejection Recall=0.0
+   Rejection Precision=0.0
+   F(1)=0.9916272297051328
+     (...)
+</pre>
+
+<p>
+This model preforms quite well, with overall accuracy and F-measures above 99%.
+The number of false positives and false negatives is markedly higher than the
+corresponding numbers for the MEDLINE sentence model, therefore we examine
+the <code>EvaluatorFalseNegatives.txt</code>
+and <code>EvaluatorFalsePositives.txt</code> output files.
+Here are the first 20 false negatives (sentence boundaries that the
+<code>DemoSentenceModel</code> failed to identify:
+</p>
+
+<pre class="code">
+ 0.  but not IL-5-nonproducing clones. pIL-5(-511)Luc was transcribed by
+ 1.  stages of B-cell differentiation. mBob1 interacts with the octamer
+ 2. omains of phospholipase C gamma 1. p38 also forms a complex with the
+ 3. f this positive regulatory element
+ 4. h PKC-dependent signaling systems. gamma B*CaM-K and delta CaM-AI, k
+ 5. (c))-like molecule, IL-13R alpha1. mRNA levels for IL-13R alpha1, bu
+ 6. -jun expression was not modulated. c-myc mRNA expression, constituti
+ 7. the nuclear translocation signals. mNFATc complexed with AP-1 bound
+ 8. regulating cell-cycle progression. p27Kip1 directly inhibits the cat
+ 9.  aberrant retinoic acid metabolism
+10. f the lytic regulatory gene BZLF 1
+11. nally differentiated myeloid cells
+12. merized with phosphorylated c-Jun. c-Jun protein isolated from phorb
+13. es integration of opposing signals
+14. c.beta differs from that of NFATc. alpha in the first NH2-terminal 2
+15. ted, regardless of disease status. hLH-2 was mapped to chromosome 9Q
+16.  (ABSTRACT TRUNCATED AT 250 WORDS)
+17.  (ABSTRACT TRUNCATED AT 250 WORDS)
+18.  (ABSTRACT TRUNCATED AT 250 WORDS)
+19. o cortisol resistance in monocytes
+20. th premature aging syndromes (Down
+</pre>
+
+<p>
+Roughly have of the above entries are because the MEDLINE abstracts
+are sometimes truncated, and these truncated abstracts don't end with
+proper punctuation.  In the GENIA corpus, these are labeled as
+sentences.  To handle this, we change the constructor setting the
+<code>forceFinalStop</code> argument in the superclass's constructor
+to true:
+</p>
+
+<pre class="code">
+public DemoSentenceModel() {
+   super(POSSIBLE_STOPS,
+         IMPOSSIBLE_PENULTIMATES,
+         IMPOSSIBLE_SENTENCE_STARTS,
+         true,  // force final stop
+         false); // balance parens
+}
+</pre>
+
+<p>
+Then we once again execute the Ant target <code>evaluate</code>:
+</p>
+
+<pre class="code">
+&gt; ant evaluate
+
+evaluate:
+     (...)
+ Sentence Evaluation end boundary statistics
+   Total=16620
+   True Positive=16409
+   False Negative=75
+   False Positive=136
+   True Negative=0
+   Positive Reference=16484
+   Positive Response=16545
+   Negative Reference=136
+   Negative Response=75
+   Accuracy=0.9873044524669073
+   Recall=0.9954501334627518
+   Precision=0.9917799939558779
+   Rejection Recall=0.0
+   Rejection Precision=0.0
+   F(1)=0.9936116745889976
+     (...)
+</pre>
+
+<p>
+This change cuts the number of false negatives from 140 to 75.
+The number of false positives remains unchanged.
+Now we look at the entries in the file
+<code>EvaluatorFalsePositives.txt</code>.
+These are places where the <code>DemoSentenceBoundary</code>
+mistakenly identified punctuation as a sentence boundary.
+Here are the first 20 entries:
+</p>
+
+<pre class="code">
+ 0.  J., Hinrichs, S. H., Reynolds, R. K., Luciw, P. A., and Jay, G. (19
+ 1. These suggest that prolonged, i.e. 28 day, glucocorticoid therapy ma
+ 2. 20%, respectively in monocytes. 2. Danazol did not alter the degrada
+ 3. of exposure to MTBE or benzene. 3. Peripheral blood lymphocytes (PBL
+ 4. cocorticoids (Cushing's syndrome). Type II corticosteroid receptors
+ 5. .-M.Chen, and D.G.Tenen, Mol.Cell. Biol.14:373-381, 1994). Here we r
+ 6. on of inflammatory cytokine genes. Several other transcription facto
+ 7. f CD19 cross-linking in 1E8 cells. Supershift experiments revealed t
+ 8.  4.0 +/- 0.31 and 4.1 +/- 0.34 vs. 2.9 +/- 0.29 nmol/L, p &lt; .001) an
+ 9. zed an epitope mapping within E1B. When inoculated twice with Ad vec
+10. 0.5 (0.2-1.6) fmol/10(7) cells vs. 2.3 +/- 0.9 (1.1-4.4) fmol/10(7)
+11. lated at the S-G2/M boundaries. 5. One of the signaling molecules wh
+12. ation of GABP factors (E.Flory, A. Hoffmeyer, U.Smola, U.R.Rapp, and
+13. 1. Administration of danazol for ove
+14. d significantly (1.73 +/- 0.08 vs. 1.16 +/- 0.09 arbitrary units, P
+15. the pol gene (E. Verdin, J. Virol. 65:6790-6799, 1991). In the prese
+16. genome [Noteborn et al., J. Virol. 65 (1991) 3131-3139] of chicken a
+17. y recognized in vitro by donor (D. E.) CD4 T cells in a HLA class II
+18. d with the pol gene (E. Verdin, J. Virol. 65:6790-6799, 1991). In th
+19. formed cell line from the patient. These observations indicate that
+20.  S. H., Reynolds, R. K., Luciw, P. A., and Jay, G. (1988) Nature 335
+</pre>
+
+<p>
+Entry #15 is typical of many of these errors.  MEDLINE abstracts frequently contain
+citations to other journal articles.
+These citations contain many abbreviations,
+both of names and journal titles, and the periods are mistakenly identified as
+end of sentence markers.
+Since these citations are almost always offset by parentheses or brackets,
+using the parenthesis balancing feature of the <code>HeuristicSentenceModel</code>
+will eliminate this error.
+Therefore we change the <code>DemoSentenceModel</code>
+constructor again, this time to:
+</p>
+
+<pre class="code">
+public DemoSentenceModel() {
+   super(POSSIBLE_STOPS,
+         IMPOSSIBLE_PENULTIMATES,
+         IMPOSSIBLE_SENTENCE_STARTS,
+         true,  // force final stop
+         true); // balance parens
+}
+</pre>
+
+<p>
+Then we once again execute the Ant target <code>evaluate</code>:
+</p>
+
+<pre class="code">
+&gt; ant evaluate
+
+evaluate:
+     (...)
+ Sentence Evaluation end boundary statistics
+   Total=16538
+   True Positive=16407
+   False Negative=77
+   False Positive=54
+   True Negative=0
+   Positive Reference=16484
+   Positive Response=16461
+   Negative Reference=54
+   Negative Response=77
+   Accuracy=0.9920788487120571
+   Recall=0.9953288036884251
+   Precision=0.9967195188627666
+   Rejection Recall=0.0
+   Rejection Precision=0.0
+   F(1)=0.9960236758233421
+     (...)
+</pre>
+
+<p>
+This change cuts the number of false positives from 136 to 54.
+The number of false negatives increases from 75 to 77.
+Overall the accuracy of the model is improved, so we keep this change in place.
+</p>
+
+<p>
+Once again we consider the remaining false negatives in
+<code>EvaluatorFalseNegatives.txt</code>.
+Here are the first 20 entries:
+</p>
+
+<pre class="code">
+ 0. he specific 'pre-activation', i.e. constitutive nuclear translocatio
+ 1. cal use of steroid receptor drugs. --Vegeto, E., Pollio, G., Pellicc
+ 2. n has been termed "A/R tolerance." Exposing HUVECs to A/R induces an
+ 3. rotein expression in FDC clusters. p65 was detected in the cytoplasm
+ 4. -jun expression was not modulated. c-myc mRNA expression, constituti
+ 5. n 2 (IL-2) stimulates IL-2R alpha. transcription, thereby amplifying
+ 6.  stages of B-cell differentiation. mBob1 interacts with the octamer
+ 7. ly independent of LEF/TCF factors. beta-Catenin and LEF-1 complexes
+ 8.  of the heme biosynthetic pathway. cDNA clones for the human erythro
+ 9.  57.1 dpm mg-1 cytosol protein vs. 227.0 +/- 90.8 dpm mg-1 cytosol p
+10. (c))-like molecule, IL-13R alpha1. mRNA levels for IL-13R alpha1, bu
+11.  distinct genes of the Rel family. p50 is translated as a precursor
+12. media has been sustained for 3 mo. with culture doubling times of ab
+13. o nephrotoxicity and fibrogenesis? How important are the anti-inflam
+14. to the full-length protein as p97. p50B is able to form heteromeric
+15. d by alpha-interferon (alpha-IFN). alpha-IFN causes dephosphorylatio
+16.  in collagen-stimulated platelets. p38 and p63 may provide a docking
+17. HLA-Cw*0702, while FCS reduced it. beta 2-m increased the binding to
+18. lls (macrophages and neutrophils). mRNA for c-fes has been detected
+19. p50.p65 heterodimers was observed. p50.c-rel heterodimers were also
+20. inase-associated lipocalin (NGAL). ngal gene expression was found at
+</pre>
+
+<p>
+Entry #3 shows a remaining problem for this model: there are
+biological names which are never capitalized, such as &quot;p65&quot;,
+&quot;mRNA&quot;, &quot;alpha-IFN&quot;, or beta-Catenin&quot;,
+therefore determining a possible sentence start cannot be done on the
+basis of initial capitalization.  Examination of these names shows
+that most of them contain digits or uppercase letters.  Many names
+contain hyphens, such as &quot;alpha-IFN&quot; and &quot;c-FOS&quot;.
+These names are problematic since the Indo-European tokenizer will
+break them into a sequence of three tokens: &quot;c&quot;,
+&quot;-&quot;, &quot;FOS&quot;, therefore is it necessary to look
+through the next several tokens following a the possible sentence
+boundary token to determine whether or not what follows is a good
+sentence start.
+</p>
+
+<p>
+The MEDLINE sentence model class overrides the method
+<code>possibleStart</code> to allow for names like these.  The
+<a href="../../../docs/api/com/aliasi/sentences/MedlineSentenceModel.html#possibleStart(java.lang.String[], java.lang.String[], int, int)">
+<code>MedlineSentenceModel.possibleStart</code></a>
+method allows any sequence of contiguous tokens
+containing a non-lowercase character to be a good sentence start.
+The arguments to this methods are the arrays of tokens and whitespace
+that the tokenizer produces from the text of the abstract, along with
+indices into these arrays that give the region of the tokenization that
+needs to be checked for a possible start.
+Here is a (slightly simplified) version of this method:
+</p>
+
+<pre class="code">
+protected boolean possibleStart(String[] tokens,
+                                String[] whitespaces,
+                                int start, int end) {
+    for (int i = start; i &lt; end; i++) {
+        if (containsDigitOrUpper(tokens[i]))
+            return true;
+        if (whitespaces[i+1].length() > 0)
+            return false;
+    }
+    return false;
+}
+
+private boolean containsDigitOrUpper(String token) {
+    int len = token.length();
+    for (int i=0; i &lt; len; i++) {
+        if (Character.isUpperCase(token.charAt(i)))
+            return true;
+        if (Character.isDigit(token.charAt(i)))
+            return true;
+    }
+    return false;
+}
+</pre>
+
+<p>
+If we cut and paste these two methods into the <code>DemoSentenceModel</code>
+and re-run the evaluation, we get the following results:
+</p>
+
+<pre class="code">
+&gt; ant evaluate
+
+evaluate:
+     (...)
+ Sentence Evaluation end boundary statistics
+   Total=16539
+   True Positive=16452
+   False Negative=32
+   False Positive=55
+   True Negative=0
+   Positive Reference=16484
+   Positive Response=16507
+   Negative Reference=55
+   Negative Response=32
+   Accuracy=0.9947397061491021
+   Recall=0.9980587236107741
+   Precision=0.9966680802083965
+   Rejection Recall=0.0
+   Rejection Precision=0.0
+   F(1)=0.9973629171592253
+     (...)
+</pre>
+
+<p>
+Once again we have reduced the number of false negatives by half.
+This performance is almost as good as that of the LingPipe MEDLINE sentence model
+(reported in section 2 of this tutorial).
+The interested reader is encourged to examine the code of the <code>MedlineSentenceModel</code> class
+to see further possible refinements.
+</p>
+
+<p>
+At this point we have acheived very high accuracy against the GENIA corpus.
+It is not clear how much futher tuning of the model will be useful for the general
+task of processing the MEDLINE citation index.
+The GENIA corpus contains only 2000 MEDLINE abstracts, while the number of abstracts
+in the MEDINE citation index stands at around 10 million.  Continuing to tune and
+evaluate the <code>DemoSentenceModel</code> model against the GENIA corpus runs the
+risk of overfitting the model to the data, and might actually detract from overall
+accuracy when processing new data.
+Therefore we conclude this tutorial here.
+</p>
+
+<h2>References</h2>
+
+<ul>
+<li> <a href="http://www-tsujii.is.s.u-tokyo.ac.jp/GENIA/">GENIA
+Project Home Page</a>
+</li>
+<li> <a href="http://www.nlm.nih.gov/databases/leased.html">How to
+License MEDLINE Data</a>; it's free for research and most commercial
+purposes.
+</li>
+</ul>
+
+
+
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+
+
+
+
+
+
+
+

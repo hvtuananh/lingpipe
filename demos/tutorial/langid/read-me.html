@@ -1,0 +1,1104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Language Identification Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">Language ID Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a class="current" href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+
+<h2>What is Language Identification?</h2>
+
+<p>
+Language identification is the problem of classifying a sample of
+characters based on its language.  This is a critical pre-processing
+stage in many applications that apply language-specific modeling.
+For instance, a search engine might use different tokenizers based
+on the language being stored.
+</p>
+
+<h2>How does LingPipe Perform Language ID?</h2>
+
+<div class="sidebar">
+<h2>My First Statistical NLP Problem</h2> <p>I (Bob Carpenter)
+was hooked on statistical language processing in 1994.  I
+was a professor at Carnegie Mellon, sitting in on
+<a href="http://nlp.stanford.edu/~manning/">Chris Manning</a>'s first stat
+NLP class.
+</p>
+<p>
+The first assignment was language ID.
+I submitted a Perl program using
+character n-grams and a TF/IDF comparison weighted
+by length of the n-gram.
+</p>
+</div>
+
+<p>
+LingPipe's text classifiers learn by example.  For each language being
+classified, a sample of text is used as training data.  LingPipe
+learns the distribution of characters per language using character
+language models.  Character language models provide state-of-the-art
+accuracy for text classification.  Character-level models are
+particularly well-suited to language ID because they do not require
+tokenized input; tokenizers are often language-specific.
+</p>
+
+<h2>How Many Languages are there?</h2>
+<p>
+The short answer is <i>a whole lot of them</i>.  The more complex
+answer is that it depends how you count dialect variation, etc.  A
+rough estimate is between 5000 and 10,000.  Not all of these languages
+even have written forms.  For more information, check out:
+</p>
+<ul>
+<li><a href="http://www.ethnologue.com/language_index.asp">Ethnologue Language Index</a></li>
+</ul>
+
+
+
+
+<h2>Running Language ID</h2>
+<p>
+We start with an example of running language identification from a
+pre-built model.  This can be carried out from the command-line using
+the following command (for Windows: replace colons in classpath with semicolons, and remove backslashes and put the command all on one line).
+</p>
+
+<pre class="code">
+&gt; cd demos/tutorial/langid
+&gt; java \
+  -cp languageId.jar:../../../lingpipe-4.1.0.jar \
+  RunLanguageId ../../models/langid-leipzig.classifier \
+  "<i>TextToClassify1</i>" \
+  ...
+  "<i>TextToClassifyN</i>"
+</pre>
+
+<p>
+This uses a small model distributed in the <code>$LINGPIPE/demos/models</code>
+directory.  Later, we describe how to build larger and more accurate models.
+</p>
+
+<p>
+Language ID may also be run from Ant, with target <code>run</code>:
+</p>
+
+<pre class="code">
+&gt; ant run
+Reading classifier from C:\mycvs\lingpipe\demos\models\langid-leipzig.classifier
+
+Input=Per poder jutjar l'efectivitat d'una novetat Acs imprescindible deixar
+Rank  Category  Score  P(Category|Input)   log2 P(Category,Input)
+0=cat -2.023136071289025 1.0 -145.6657971328098
+1=fr -4.321846555117093 1.504464337461871E-50 -311.17295196843065
+2=it -4.581659915472809 3.516783524040892E-56 -329.87951391404226
+3=nl -4.696851550631136 1.1206338610900442E-58 -338.1733116454418
+4=en -4.766148642045668 3.52782891712393E-60 -343.16270222728804
+5=no -4.958001178925975 2.4505580508882693E-64 -356.9760848826702
+6=se -4.987497723277155 5.622794125159236E-65 -359.0998360759552
+7=dk -5.104818791491201 1.6110781779891577E-67 -367.54695298736647
+8=tr -5.219139511312786 5.361805775146849E-70 -375.7780448145206
+9=de -5.265340898319162 5.344841592730491E-71 -379.10454467897966
+10=sorb -5.518926633655108 1.704814443523678E-76 -397.3627176231678
+11=ee -5.579930924219301 8.118211859258627E-78 -401.75502654378965
+12=fi -6.07538483408664 1.4822218818370195E-88 -437.4277080542381
+13=jp -10.067560120929357 4.404215405114351E-175 -724.8643287069137
+14=kr -10.728373897912512 2.0954882281132754E-189 -772.4429206497009
+
+Input=Michael
+Rank  Category  Score  P(Category|Input)   log2 P(Category,Input)
+0=de -2.4763103634840435 0.7510836287966632 -22.28679327135639
+1=cat -2.7980617047077603 0.10091995592652597 -25.18255534236984
+2=fr -2.922969589040629 0.04629860154204275 -26.30672630136566
+3=en -2.937075498441145 0.042398564875480625 -26.433679485970305
+4=it -3.033600088032701 0.023218811490292642 -27.30240079229431
+5=ee -3.137058174682278 0.012177106355447293 -28.233523572140502
+6=se -3.141665660082584 0.01183208218028833 -28.274990940743255
+7=dk -3.2402194566918268 0.006398119344121462 -29.16197511022644
+8=nl -3.2940283974733138 0.0045737180617331724 -29.646255577259826
+9=sorb -3.525396435862732 0.0010800178006085642 -31.728567922764586
+10=fi -4.202790233233854 1.5782952392567225E-5 -37.825112099104686
+11=no -4.439911553666941 3.5955271788398965E-6 -39.95920398300247
+12=tr -5.316690003944057 1.514722435945023E-8 -47.85021003549652
+13=jp -8.529346597929084 2.9948774318501194E-17 -76.76411938136177
+14=kr -9.181964473001777 5.108119495312997E-19 -82.63768025701599
+
+Input=Maria
+Rank  Category  Score  P(Category|Input)   log2 P(Category,Input)
+0=cat -3.052651519527544 0.34111151235773624 -21.36856063669281
+1=dk -3.19525946387983 0.17076210305468095 -22.366816247158813
+2=se -3.212108777343314 0.15735713996594727 -22.484761441403197
+3=it -3.212646751837158 0.15694693118670108 -22.488527262860107
+4=no -3.4648140448407854 0.046172500475394666 -24.253698313885497
+5=fr -3.4922600806686943 0.040415581714115904 -24.44582056468086
+6=fi -3.511941223577881 0.03673470305405576 -24.583588565045165
+7=en -3.6670872518921986 0.017304190037373053 -25.66961076324539
+8=de -3.709920120332009 0.014057025366728032 -25.969440842324065
+9=ee -3.8734110543633595 0.006358924994944445 -27.113877380543517
+10=nl -3.8744412865885054 0.006327217836117602 -27.121089006119536
+11=sorb -3.8749770727403914 0.00631079064205628 -27.12483950918274
+12=tr -4.657859758912603 1.4137921681172042E-4 -32.605018312388225
+13=kr -7.645064681009673 7.173276613510208E-11 -53.515452767067714
+14=jp -7.857388955447441 2.5603878072330347E-11 -55.00172268813209
+</pre>
+
+
+<p>
+After reading the classifier from the <code>demos/models</code>
+directory, there are a series of test cases and their output.  The
+first test case is a sentence fragment from Catalan.  The output is
+presented as a rank-ordered of predicted categories plus statistics.
+The language predicted by the classifier is <code>cat</code>
+(Catalan); the second-best match is <code>fr</code> (French).  After
+the ranks and categories, there are three numbers per line.  The
+second is perhaps the most useful, as it is a conditional probability
+estimate of the category given the input.  For the input given, the
+conditional estimate is that (within rounding error), the choice of
+Catalan is 100% certain.  The chance of the input being French,
+according to the classifier's estimate, is very very very low (roughly
+1/10<sup><sup>50</sup></sup>).  The last column is the log (base 2)
+joint probability estimate of the category and the input.  The first
+column is the score, which is a kind of entropy rate, which is roughly
+the log joint probability estimate divided by the length of the input.
+</p>
+
+<p>For the short inputs, consisting of single first names, the
+classifier is far less certain about its categorization.  Although
+it's 75% sure that <i>Michael</i> is German, it holds out a 10% chance
+that it's Catalan, a 4.2% chance it's English, and so on.  The name
+<i>Maria</i>, in the third example, is even more confusible, with
+Catalan being the most likely guess, but with a confidence estimate of
+only 34%.
+</p>
+
+
+<h2>The Leipzig Corpora Collection</h2>
+
+<p>
+The example model in the last section was derived from training
+data provided as part of the Leipzig Corpora Collection, which
+is available from:
+</p>
+
+<ul>
+<li><a href="http://corpora.uni-leipzig.de">Leipzig Corpora Home Page</a></li>
+</ul>
+
+<h3>Languages</h3>
+<p>
+The collection consists of a corpus of texts collected from the web
+for 15 different languages: Catalan (cat), Danish (dk), English (en),
+Estonian (ee), Finnish (fi), French (fr), German (de), Italian (it),
+Japanese (jp), Korean (kr), Norwegian (no), Sorbian (sorb), Swedish
+(se), and Turkish (tr).
+</p>
+
+<p>If you are not able to acquire the Leipzig corpus, this demo can
+be carried out with any available language samples by simply putting
+them into the same format to which we will convert the Leipzig corpora.
+</p>
+
+
+<h3>Downloading and Unpacking</h3>
+<p>
+Make a place to put the Leipzig files.  We'll call it:
+</p>
+
+<pre class="code">
+&gt; mkdir leipzig
+&gt; mkdir leipzig/dist
+</pre>
+
+<p>
+Download the relevant text zip files to <code>leipzig/dist</code>.  After download,
+these should look as follows:
+</p>
+
+<pre class="code">
+&gt; cd leipzig
+&gt; ls dist
+cat300k.zip  ee300k.zip  fr100k.zip  kr300k.zip  se100k.zip
+de1M.zip     en300k.zip  it300k.zip  nl100k.zip  sorb100k.zip
+dk100k.zip   fi100k.zip  jp100k.zip  no300k.zip  tr100k.zip
+</pre>
+
+<p>
+The numbers in the suffixes indicate how many sentences are provided
+for the specified language; e.g. one million German sentences, one
+hundred thousand Turkish, etc.  First, these files need to be unzipped
+and placed in a second directory.  This can be done by hand or scripted.
+We provide an ant target to do the job in the <a
+href="build.xml"><code>build.xml</code></a> file.  This can be called, from within the <code> langid/</code> directory, as follows:
+</p>
+
+<pre class="code">
+ant -Ddir.dist=leipzig/dist -Ddir.unpacked=leipzig/unpacked unpack
+</pre>
+
+<p>Here's what the run should look like.  Note that it takes several minutes to unzip this much data.</p>
+
+<pre class="code">
+&gt; ant -Ddir.dist=leipzig/dist -Ddir.unpacked=leipzig/unpacked unpack
+Buildfile: build.xml
+
+unpack:
+    [unzip] Expanding: C:\mycvs\data\leipzig\dist\cat300k.zip into C:\mycvs\data\leipzig\unpacked
+    [unzip] Expanding: C:\mycvs\data\leipzig\dist\de1M.zip into C:\mycvs\data\leipzig\unpacked
+  ...
+</pre>
+
+<h3>Data Format</h3>
+
+<p>
+Each zipped corpus unpacks into a directory with the same
+name as the zip file.  These directories mostly contain derived data.
+The raw text data is provided in a single file named
+<code>sentences.txt</code> in each directory.  Furthermore, there are
+meta-information files <code>meta.txt</code> in each directory, which
+we will use to extract the character encoding, which varies by
+corpus.
+</p>
+
+<pre class="code">
+C:\mycvs\lingpipe\demos\tutorial\langid>cat c:\mycvs\data\leipzig\unpacked\en300k\meta.txt
+1       number of sentences     300000
+1       average sentence length in characters   128.5906
+...
+1       content encoding        iso-8859-1
+...
+</pre>
+
+<p>Each <code>meta.txt</code> file contains a line with the content
+encoding, as shown above (as well as a number of statistics derived
+from the corpus).
+</p>
+
+<p>The raw data itself is organized with one sentence per line,
+starting with a sentence number, a tab character, and then the
+sentence text.
+</p>
+
+<pre class="code">
+&gt; less c:\mycvs\data\leipzig\unpacked\en300k\sentences.txt
+1       A rebel statement sent to Lisbon from Jamba said 86 government soldiers and 13 guerrillas were killed in the fighting that ended Jan. 3. It said the rebel forces sill held Mavinga.
+2       Authorities last week issued a vacate order for a club in Manhattan and closed another in the Bronx.
+3       At the first Pan Am bankruptcy hearing, for example, at least five airlines were represented.
+4       Mr. Neigum, poker-faced during the difficult task, manages a 46-second showing.
+...
+</pre>
+
+<h3>Munging</h3>
+
+<p>
+We provide a program <a
+href="src/Munge.java"><code>src/Munge.java</code></a> that extracts
+the character encoding from the <code>meta.txt</code> files, uses it
+to read the <code>sentences.txt</code> files, removing the line
+numbers, tabs and replacing line breaks with single space characters.
+The output is uniformly written using the <code>UTF-8</code> unicode
+encoding.  This program may be run from Ant using target
+<code>munge</code>.
+</p>
+
+<pre class="code">
+&gt; ant -Ddir.unpacked=leipzig\unpacked -Ddir.munged=leipzig\munged munge
+munge:
+
+cat
+reading from=leipzig\unpacked\cat300k\sentences.txt charset=iso-8859-1
+writing to=leipzig\munged\cat\cat.txt charset=utf-8
+total length=37055486
+
+de
+reading from=leipzig\unpacked\de1M\sentences.txt charset=iso-8859-1
+writing to=leipzig\munged\de\de.txt charset=utf-8
+total length=110907216
+
+...
+</pre>
+
+<h3>Final Data Format</h3>
+
+<p>The final result is a single directory <code>leipzig/munged</code>
+which contains one subdirectory per language, with one sample file per
+language of the same name with suffix <code>.txt</code>.</p>
+
+<pre class="code">
+&gt; ls leipzig\munged
+cat  de  dk  ee  en  fi  fr  it  jp  kr  nl  no  se  sorb  tr
+
+&gt; ls leipzig\munged\en
+en.txt
+</pre>
+
+
+<h2>Training Language ID</h2>
+
+<p>
+Now that the corpora are in a uniform format, it's easy to train
+them.
+</p>
+
+
+<h3>Training Code</h3>
+
+<p>
+We provide a training program in the form of a single
+<code>main()</code> method in <a href="src/TrainLanguageId.java"><code>src/TrainLanguageId.java</code></a>.  We repeat the code here.
+</p>
+
+
+<pre class="code">
+public static void main(String[] args) throws Exception {
+    File dataDir = new File(args[0]);
+    File modelFile = new File(args[1]);
+    int nGram = Integer.parseInt(args[2]);
+    int numChars = Integer.parseInt(args[3]);
+
+    String[] categories = dataDir.list();
+
+    DynamicLMClassifier classifier
+        = DynamicLMClassifier
+          .createNGramProcess(categories,nGram);
+
+    char[] csBuf = new char[numChars];
+    for (int i = 0; i &lt; categories.length; ++i) {
+        String category = categories[i];
+        File trainingFile = new File(new File(dataDir,category),
+                                     category + ".txt");
+        FileInputStream fileIn
+            = new FileInputStream(trainingFile);
+        InputStreamReader reader
+            = new InputStreamReader(fileIn,Strings.UTF8);
+        reader.read(csBuf);
+        String text = new String(csBuf,0,numChars);
+        Classification c = new Classification(category);
+        Classified&lt;CharSequence&gt; classified
+            = new Classified&lt;CharSequence&gt;(text,c);
+        classifier.handle(classified);
+        reader.close();
+    }
+    AbstractExternalizable.compileTo(classifier,modelFile);
+}
+</pre>
+
+<p>
+The command takes five arguments, the name of the directory in which to
+find the data (in our case, <code>leipzig/munged</code>), the name of
+the file to which we will write the compiled model, the n-gram order
+to use for training, and the number of characters to use for training
+each language.  The first few lines of code simply read in the
+command-line parameters.
+</p>
+
+<p>
+Next, the names of the directories in the data directory are used to
+provide the categories.  These are used to create a dynamic
+(trainable) classifier, along with the n-gram length.  The flag is set
+to false, meaning that the language models used for classification
+will be process models rather than boundary models.
+</p>
+
+<p>
+The character array <code>csBuf</code> is used to hold the training
+data.  It is allocated to be the same size as the number of
+characters used for training.  The program then just creates
+a reader to read the training characters from the specified
+file into the buffer.  Once the characters are in hand, they're
+passed to the classifier for training.  All that is necessary
+is the category and the character slice for training.
+</p>
+
+<h3>Calling the Training Command</h3>
+
+<p>
+After training the classifier on each category, the classifier is
+written to the specified model file using the utility method
+<code>compileTo</code> in
+<code>com.aliasi.util.AbstractExternalizable</code>.
+</p>
+
+
+
+<p>
+We supply an ant target <code>train</code> for calling the training
+command (in Windows DOS, remove the backslashes and put the command
+all on one line).
+</p>
+
+<pre class="code">
+&gt; ant -Dcorpus.dir=leipzig/munged \
+      -Dmodel.file=../../models/langid-leipzig.classifier \
+      -Dtraining.size=100000 \
+      -DnGram=5 \
+      train
+
+nGram=5 numChars=100000
+Training category=cat
+...
+Training category=tr
+
+Compiling model to file=..\..\models\langid-leipzig.classifier
+</pre>
+
+
+<h2>Evaluating Language ID</h2>
+
+<p>
+With a model in hand, evaluating a classifier is straightforward.  In
+this case, we'll evaluate a specified number of samples of a specified
+length from the portions of the corpora outside of the training set.
+</p>
+
+<h3>Evaluation Code</h3>
+
+<p>
+The code for evaluation is provided in <a
+href="src/EvalLanguageId.java"><code>src/EvalLanguageId.java</code></a>.
+We repeat that code here, with the sections cut-and-pasted from the
+training code greyed out.
+</p>
+
+<pre class="code">
+<span class="greycode">public static void main(String[] args) throws Exception {
+    File dataDir = new File(args[0]);
+    File modelFile = new File(args[1]);
+    int numChars = Integer.parseInt(args[2]);</span>
+    int testSize = Integer.parseInt(args[3]);
+    int numTests = Integer.parseInt(args[4]);
+
+<span class="greycode">    String[] categories = dataDir.list();</span>
+
+    BaseClassifier&lt;CharSequence&gt; classifier
+                = (BaseClassifier&lt;CharSequence&gt;) AbstractExternalizable.readObject(modelFile);
+    BaseClassifierEvaluator&lt;CharSequence&gt; evaluator
+        = new BaseClassifierEvaluator&lt;CharSequence&gt;(classifier,categories);
+
+    char[] csBuf = new char[testSize];
+<span class="greycode">    for (int i = 0; i &lt; categories.length; ++i) {
+        String category = categories[i];
+        File trainingFile = new File(new File(dataDir,category),
+                                         category + ".txt");
+        FileInputStream fileIn
+            = new FileInputStream(trainingFile);
+        InputStreamReader reader
+            = new InputStreamReader(fileIn,Strings.UTF8);</span>
+
+        reader.skip(numChars); // skip training data
+
+        for (int k = 0; k &lt; numTests; ++k) {
+            reader.read(csBuf);
+            Classification c = new Classification(category);
+            Classified&lt;CharSequence&gt; cl
+                = new Classified&lt;CharSequence&gt;(new String(csBuf),c);
+            evaluator.handle(cl);
+        }
+
+        reader.close();
+    }
+    System.out.println(evaluator.toString());
+}
+</pre>
+
+<p>The first step is reading in five command line arguments.  These
+specify the directory in which to find the data, the file in which to
+find the model, the number of characters used for training (so they
+are not used for testing), the size of each test in characters, and
+the number of test samples to run per language.</p>
+
+<p>Next, the classifier is reconstituted using the utility method
+<code>readObject</code> in
+<code>com.aliasi.util.AbstractExternalizable</code>.  This
+classifier is then used to construct the evaluator.
+</p>
+
+<p>For each category, we first skip the number of characters
+used for training.  Then for each test, we read the appropriate number
+of characters into the character buffer <code>csBuf</code>.  Note that
+the buffer is now sized to fit a single test instance.  The critical
+code is where we add the test case to the evaluator using the
+<code>addCase</code> method.  This method simply requires the
+reference (true) category and the text.
+</p>
+
+<p>Finally, the results are printed by simply converting the
+evaluator to a string.
+</p>
+
+<h3>Running the Evaluation</h3>
+
+<p>
+There is an ant target <code>eval</code> which runs an evaluation.
+The command-line arguments are specified on the command-line using the
+<code>-D</code> arguments.
+</p>
+<pre class="code">
+&gt; ant -Dcorpus.dir=leipzig/munged -Dmodel.file=../../models/langid-leipzig.classifier -Dtraining.size=100000 -Dtest.size=50 -Dtest.num=1000 eval
+
+Reading classifier from file=..\..\models\langid-leipzig.classifier
+Evaluating category=cat
+...
+Evaluating category=tr
+TEST RESULTS
+CLASSIFIER EVALUATION
+Categories=[cat, de, dk, ee, en, fi, fr, it, jp, kr, nl, no, se, sorb, tr]
+Total Count=15000
+Total Correct=14797
+Total Accuracy=0.9864666666666667
+95% Confidence Interval=0.9864666666666667 +/- 0.001849072921311086
+Confusion Matrix
+reference \ response
+  ,cat,de,dk,ee,en,fi,fr,it,jp,kr,nl,no,se,sorb,tr
+  cat,991,0,1,0,5,0,1,0,0,0,0,0,0,0,2
+  de,1,996,0,0,1,0,1,1,0,0,0,0,0,0,0
+  dk,0,0,920,0,2,0,0,0,0,0,0,74,4,0,0
+  ee,0,0,0,999,1,0,0,0,0,0,0,0,0,0,0
+  en,1,1,0,0,997,0,0,0,0,0,1,0,0,0,0
+  fi,0,0,0,3,0,996,0,0,0,0,0,0,1,0,0
+  fr,0,0,0,0,0,0,1000,0,0,0,0,0,0,0,0
+  it,0,0,1,0,2,0,0,997,0,0,0,0,0,0,0
+  jp,0,0,0,0,0,0,0,0,1000,0,0,0,0,0,0
+  kr,0,0,0,0,0,0,0,0,0,1000,0,0,0,0,0
+  nl,0,2,0,0,7,0,1,0,0,0,989,0,0,0,1
+  no,0,1,58,0,4,0,0,0,0,0,0,932,5,0,0
+  se,0,1,4,0,0,0,0,0,0,0,0,7,988,0,0
+  sorb,0,8,0,0,0,0,0,0,0,0,0,0,0,992,0
+  tr,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1000
+</pre>
+
+<p>This provides accuracy statistics for a run of 1000 tests per
+category, with test lengths fixed at 50 characters.  The overall
+accuracy is 14797/15000, or 98.647%.  The 95% confidence interval
+reported is +/- 0.185%.
+The confidence interval is determined by a normal approximation to a
+binomial, and the 95% confidence interval is +/- 0.18%.  If we run
+fewer tests, the confidence interval will be broader (98.733% +/-
+0.566% or so at 100 tests), and if we run more, it will be tighter
+(98.472% +/- 0.062% at 10,000 tests).
+</p>
+
+<p>Perhaps the most interesting report for classification is
+first-best confusion, reported in matrix form.  What this shows is the
+number of times a given language was misidentified as another.
+Reading the first line, Catalan (cat), was correctly identified
+991/1000 times, with 1 error identifying it as Danish, 5 errors
+confusing it as English, 1 error confusing it with French, and 2
+confusing it with Turkish.  Reading the last line, Turkish was
+correctly identified 1000/1000 times.  That is, of 1000 Turkish
+examples, all of them were classified as Turkish.  Japanese, Korean
+and French also had perfect scores.  The worst performer was Danish at
+92%, followed by Norwegian at 93%, with the two languages very often
+being confused for one another (58 Norwegian cases were mistakenly
+classifed as Danish; 74 Danish cases were mistakenly classified as Norwegian)
+</p>
+
+<p>
+These global reports are followed with a variety of other global
+statistics, all of which are explained in the class documentation to
+the classifier evaluator, <a
+href="../../../docs/api/com/aliasi/classify/ClassifierEvaluator.html"><code>com.aliasi.classify.ClassifierEvaluator</code></a>, and in the
+documentation to which it points.
+</p>
+
+<p>
+After the global reports, there are per-category reports.  These
+reports begin with a one-versus all report, the performance of which
+is often substantially superior to n-way classification results.  An
+interesting report is the rank histogram, which provides the number of
+times the correct answer was at a specified rank.  For instance, for
+Catalan, this is reported as:
+</p>
+
+<pre class="code">
+ CATEGORY[0]=cat
+ ...
+ Rank Histogram=
+   991,6,2,0,1,0,0,0,0,0,0,0,0,0,0
+</pre>
+
+<p>
+This only looks at cases which should've been classified as Catalan.
+991/1000 of these had Catalan as their first-best category.  In 6/1000
+cases, Catalan was the second guess.  2/1000 times it was 3rd-best,
+and 1/1000 times 5th-best.
+</p>
+
+
+<h2>Tuning and Evaluation Parameters</h2>
+
+<h3>Input Length Sensitivity</h3>
+
+<div class="sidebar">
+<h2>Cross-Validation</h2>
+<p>
+Cross-validation provides a way of reducing the variance of
+performance estimates, thus reducing the size of the confidence
+interval around the results.  Under a cross-validation
+scheme, several subsamples of the data are used for training
+and testing and their results combined.
+</p>
+<p>
+Typically, a 10-fold cross-validation is used.  Under this scheme, the
+data is divided into 10 equal sized parts.  Then, 10 evaluations
+are run.  Each evaluation uses a different part for
+testing and the other parts for training.  The final result is presented
+as a cumulative result of the 10 runs.
+</p>
+</div>
+
+<p>Language identification is highly sensitive to length.  While this
+is to some degree true of topic identification, the effect is dramatic
+for language identification.  The following table reports accuracies
+of the model for different test lengths.
+</p>
+
+<table>
+<tr><th class="title" colspan="2">5-grams, 100K training</th></tr>
+<tr><th align="right">Test Size (characters)</th><th align="right">Accuracy</th></tr>
+<tr><td align="right">1</td><td align="right">22.59%</td></tr>
+<tr><td align="right">2</td><td align="right">34.82%</td></tr>
+<tr><td align="right">4</td><td align="right">58.55%</td></tr>
+<tr><td align="right">8</td><td align="right">81.17%</td></tr>
+<tr><td align="right">16</td><td align="right">92.45%</td></tr>
+<tr><td align="right">32</td><td align="right">97.33%</td></tr>
+<tr><td align="right">64</td><td align="right">98.99%</td></tr>
+<tr><td align="right">128</td><td align="right">99.67%</td></tr>
+<tr><td align="right">256</td><td align="right">99.86%</td></tr>
+<tr><td align="right">512</td><td align="right">99.97%</td></tr>
+<tr><td align="right">1024</td><td align="right">99.99%</td></tr>
+<tr><td align="right">2048</td><td align="right">100.00%</td></tr>
+</table>
+
+
+<h3>N-gram Length Sensitivity</h3>
+
+<p>Language identification performance varies based on the n-gram
+length used.</p>
+
+<table>
+<tr><th class="title" colspan="4">32 char test, 100K training</th></tr>
+<tr><th align="right">N-gram Order</th>
+    <th align="right">Unpruned Model Size</th>
+    <th align="right">Train/Compile Time</th>
+    <th align="right">Accuracy</th></tr>
+<tr><td>1</td><td>28K</td><td>2s</td><td>76.97%</td></tr>
+<tr><td>2</td><td>365K</td><td>3s</td><td>93.21%</td></tr>
+<tr><td>3</td><td>1.9M</td><td>5s</td><td>96.32%</td></tr>
+<tr><td>4</td><td>6.0M</td><td>11s</td><td>97.13%</td></tr>
+<tr><td>5</td><td>13.7M</td><td>22s</td><td>97.33%</td></tr>
+<tr><td>6</td><td>25.1M</td><td>39s</td><td>97.23%</td></tr>
+<tr><td>7</td><td>39.6M</td><td>64s</td><td>97.22%</td></tr>
+</table>
+
+
+<h3>Training Data Sensitivity</h3>
+
+<p>Language identification performance varies based on the size
+of the training data used.</p>
+
+<table>
+<tr><th class="title" colspan="4">5-gram, 32 char test</th></tr>
+<tr><th align="right">Training Data</th>
+    <th align="right">Unpruned Model Size</th>
+    <th align="right">Train/Compile Time</th>
+    <th align="right">Accuracy</th></tr>
+<tr><td>100</td><td>70K</td><td>1s</td><td>50.56%</td></tr>
+<tr><td>1K</td><td>508K</td><td>1s</td><td>80.47%</td></tr>
+<tr><td>10K</td><td>3.0M</td><td>4s</td><td>93.34%</td></tr>
+<tr><td>100K</td><td>13.7M</td><td>22s</td><td>97.33%</td></tr>
+<tr><td>1M</td><td>54.4M</td><td>126s</td><td>98.23%</td></tr>
+<tr><td>2M</td><td>80.9M</td><td>228s</td><td>98.62%</td></tr>
+<tr><td>4M</td><td>119M</td><td>454s</td><td>98.70%</td></tr>
+</table>
+
+<p>LingPipe could scale beyond 10M characters/language without
+pruning, but Sorbian only provides 9.325M characters of training data.
+It would also be interesting to see if these learning curves would
+be shaped differently for different length n-grams.
+</p>
+
+
+
+<h3>Pruning</h3>
+
+<p>
+The most effective models of any given size are constructed by
+building larger models and then pruning them.  Much smaller models
+than the unpruned ones reported above could be used effectively.
+Pruning can be carried out by either specifying the language models in
+the classifier constructor, or by retrieving the models using
+<code>lmForCategory(String)</code> method of
+<code>DynamicLMClassifier</code>, casting the result to the
+appropriate class (<code>NGramProcessLM</code> in this case).  For
+instance, the following code will prune all substring counts
+below 5 from the models underlying the classifier.
+</p>
+
+<pre class="code">
+String[] categories = ...;
+DynamicLMClassifier classifier = ...;
+for (int i = 0; i &lt; categories.length; ++i) {
+  NGramProcessLM lm
+    = (NGramProcessLM) classifier.lmForCategory(categories[i]);
+  TrieCharSequenceCounter counter
+    = lm.substringCounter();
+  counter.prune(5);
+}
+</pre>
+
+<h3>Language Set Selection</h3>
+
+<p>
+Another important consideration in language identification is the set
+of languages.  As we saw above, some languages are simply more
+confusible than others.  This approach would probably not even work
+at all for separating dialect variation (British versus American
+English, for instance).
+</p>
+
+<h3>Tuning Cross-Entropy per Language</h3>
+
+<p>
+Different languages have different per-character entropy rates.
+For instance, Chinese packs much more information into a character
+than Catalan.  It would be possible using the finer-grained
+constructor for dynamic language model classifiers to allocate
+different n-gram lengths to different languages.
+</p>
+
+
+<h2>Language ID in the Wild</h2>
+
+<p>
+Language identification in realist applications is made much more
+difficult by a number of factors.  In the ideal case, each language
+would use a completely distinct set of characters.  Unfortunately, this isn't even true of very distant pairs such as English/Japanese.
+</p>
+
+<h3>Borrowing</h3>
+
+<p>In addition to underlying character set overlaps, trouble is
+caused by the borrowing of words, phrases or names.
+</p>
+
+
+
+<h3>Non-linguistic Noise</h3>
+
+<p>
+In realistic applications of language identification, matters
+are made even more difficult by non-language characters such
+as spaces, line-breaks, hyphens used as separators, tables in
+running text, HTML, scripts, etc.  All of these may confound
+a language identifier if not carefully accomodated.  One approach
+is to simply strip all non-language characters and normalize all
+whitespace sequences to single space characters.
+</p>
+
+<h3>Genre Mismatch</h3>
+<p>
+Yet another problem may be caused by mismatches between training and
+test data.  If the training data comes from newswire and the test data
+is technical manuals, blog entries, etc., the genre mismatch may cause
+confusion by increasing cross-entropy against the model.  For
+instance, highly technical medical reports might not resemble newswire
+English very closely.
+</p>
+
+
+<h3>Unknown Encodings</h3>
+
+<p>
+Perhaps the most difficult challenge is faced when the character
+encoding of the underlying text is not known.  This is often the case
+for plain text documents or HTML documents without character
+set specifications.
+</p>
+<p>
+We can use LingPipe to build classifiers that figure out encoding as
+well as language.  LingPipe's classifiers are over character
+sequences, not byte sequences.  Luckily, we can cast a byte to a
+character without loss of information.  This means we can simply
+convert arrays of bytes to equal-length arrays of characters by
+casting each byte.  Now all that is required is examples of the
+various character sets.  In some cases, it's not possible to determine
+the character set.  For instance, text that only contains ASCII
+characters is also valid Latin1 and UTF-8.
+</p>
+
+
+
+<h3>Multilingual Documents</h3>
+
+<p>Multilingual texts pose special difficulties.  The assumption
+underlying the classifiers is that each text being classified has a
+unique language.  The best way to handle multi-lingual documents is to
+segment them into sections containing a single language.
+Although building a segmenter is not difficult, it is not yet
+built into LingPipe.
+</p>
+
+<h2>References</h2>
+
+<p>
+Language identification has been a fairly widely studied problem.  In fact,
+there's a vast literature.  It's almost impossible to compare approaches
+because everyone's using different languages and different kinds of
+data.
+</p>
+
+<h3>Language ID on the Web</h3>
+<ul>
+
+<!--
+<li>
+<a href="http://languid.cantbedone.org/">Languid: a statistical language identifier</a>, by <a href="http://www.idlewords.com/about.htm">Maciej Ceglowski</a>. (74 languages)
+</li>
+-->
+
+<li><a href="http://legacy.xrce.xerox.com/competencies/content-analysis/tools/guesser.en.html">CA : Language Identifier</a> by
+<a href="http://www.xrce.xerox.com/">Xerox Research Centre Europe</a>,
+based on <a href="http://www.xrce.xerox.com/Research-Development/Publications/1995-012">work by Gregory Grefenstette</a> (47 languages)
+</li>
+<li>
+<a href="http://odur.let.rug.nl/~vannoord/TextCat/Demo/">TextCat</a>
+by <a href="http://odur.let.rug.nl/~vannoord/">Gertjan van Noord</a>,
+who reimplemented Cavnar and Trenkle's approach; see citation below.
+(77 languages)
+</li>
+<li>
+<a href="http://www.lextek.com/langid/li/onlineidentifier.html">Language Idenitfier</a> by <a href="http://www.lextek.com">Lextex</a>. (260 languages)
+<span class="smallnote">The demo was broken when this was written.</span>
+</li>
+<li>
+<a href="http://rali.iro.umontreal.ca/Silc/index.jsp">Système d'Identification de la Langue et du Codage</a> is Uni. Montreal's system which handles encoding
+and language at once.
+</li>
+</ul>
+
+<h3>Language ID Papers</h3>
+<ul>
+
+<li>Beesley, K.  1988.  Language identifier: a computer program for automatic natural-language identification of on-line text.  In <i>Proceedings of the 29th Annual Conference of the American Translators Association</i>.
+<br />
+<span class="smallnote">First reference I could find to using character n-grams for language identification.</span>
+</li>
+
+<li>
+Cavnar, W. B. and J. M. Trenkle.  1994. N-gram based text categorization.
+In <i>Proceedings of the Third Annual Symposium on
+Document Analysis and Information Retrieval</i>.
+<br />
+<span class="smallnote">A more widely cited paper using character n-grams for language identification.</span>
+</li>
+
+<li>
+Damashek, M. 1995. Gauging similarity with n-grams: language-independent
+categorization of text. <i>Science</i> <b>267</b>.
+<br />
+<span class="smallnote">Who knew <i>Science</i> published this
+kind of thing?</span>
+</li>
+
+<li>
+Gold, M. E. (1967). Language identification in the limit. <i>Information
+and Control</i> 10(5), 447--474.
+<br />
+<span class="smallnote">The original language ID paper.</span>
+</li>
+
+
+<li>
+Grefenstette, G. 1995. <a href="http://www.xrce.xerox.com/Publications/Attachments/1995-012/Gref---Comparing-two-language-identification-schemes.pdf">Comparing two language identification schemes</a>.  In <i>JADT 1995</i>.
+<br />
+
+<span class="smallnote">The two schemes are short words and character
+trigrams.  This approach is behind the <a
+href="http://www.xrce.xerox.com/competencies/content-analysis/tools/guesser">Xerox
+language identifier</a>.</span>
+</li>
+
+
+<li>
+Hughes, Baden and Baldwin, Timothy and Bird, Steven and Nicholson,
+Jeremy and MacKinlay, Andrew.  2006.  Reconsidering
+Language Identification for Written Language Resources.
+In
+<i>LREC2006</i>.
+<br />
+<span class="smallnote">Up-to-date, short meta-overview.</span>
+</li>
+
+
+
+<li>
+Kikui, G.-I. 1996.
+Identifying the coding system and language of on-line documents on the internet.
+In <i>COLING '96</i>.
+<br />
+<span class="smallnote">A classifier over language and character set
+at the same time.</span>
+</li>
+
+<li>
+Sibun, P. and J. C. Reynar.
+1996.
+Language identification: examining the issues.
+In <i>Fifth Annual Symposium on Document Analysis and Information Retrieval</i>.
+<br />
+<span class="smallnote">A very nice survey article.</span>
+</li>
+
+<li>
+Teahan, W. 2000. <a href="http://citeseer.ist.psu.edu/teahan00text.html">Text classification and segmentation using
+minimum cross entropy.</a>  In <i>RIAO 2000</i>.
+<br />
+<span class="smallnote">As usual, Bill got there first; this article
+was hugely influential in the LingPipe approach to classification,
+and basically takes the same approach with a slightly different
+character langauge model.</span>
+</li>
+
+</ul>
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+
+
+
+
+
+
+

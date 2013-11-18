@@ -1,0 +1,1280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Database Mining Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">DB Mining Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a class="current" href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<div class="author">
+By <a href="http://www.panix.com/~mitzi/MitziMorrisResume.html"><b>Mitzi Morris</b></a>
+</div>
+
+<h2>What's Database Text Mining?</h2>
+<p>
+This tutorial shows how to use a relational database management system
+(RDBMS) to store documents and LingPipe analyses.  It uses MEDLINE data as
+the example data, and MySQL as the example RDBMS.  As in the <a
+href="../medline/read-me.html">MEDLINE Parsing and Indexing Demo</a>,
+the LingPipe <code>MedlineParser</code> is used to parse the data from
+an XML file.  Scripts are provided to create the database and database
+tables.  This tutorial is aimed at the novice database programmer, and
+therefore the database design and the way that the program interacts
+with the database have been kept as simple as possible.
+</p>
+
+<p>
+For expository purposes, we break this task into three parts:
+</p>
+
+<div class="sidebar">
+<h2>LingMed MEDLINE Parser</h2>
+<p>As of LingPipe 4.0, the MEDLINE parser has moved
+from LingPipe proper to the LingMed sandbox project.
+</p>
+<p>
+The jar <code>lingmed-1.3.jar</code> is
+included in the <code>$LINGPIPE/demos/lib</code> directory
+as part of the LingPipe distribution and linked by this
+demo in the ant <code>build.xml</code> file.
+</p>
+<p>See the <a href="../../../web/sandbox.html">LingPipe Sandbox</a>
+page for information on how to download the LingMed source
+and documentation.
+</p>
+</div>
+
+<ul>
+<li><a href="#part1">Loading MEDLINE data</a> into the database, using
+the LingMed MEDLINE parser and the JDBC API to access a RDBMS.</li>
+<li><a href="#part2">Using the LingPipe API</a> to annotate text data
+in the database, and to store the annotations back into the database.</li>
+<li><a href="#part3">SQL database queries</a> over the annotated data.</li>
+
+</ul>
+
+<p>
+Completing part 1 results in a simple database containing a table
+containing the titles and abstracts of MEDLINE citations.  In part 2
+we add two more tables into the database, one for sentence
+information and one for mentions of named entities found in each
+sentence.  Then we present a program which retrieves text data from
+the MEDLINE citation table, runs it through the LingPipe sentence and
+named-entity analyzers, and stores the results into the sentence and
+mention tables.  Once the database has been created and populated, we
+present a few example queries which can be run against it.  Finally,
+we discuss ways in which this task can be optimized.
+</p>
+
+
+<h2>MySQL</h2>
+
+<p>
+MySQL runs on most operating systems, including Linux, Unix, Windows,
+and MacOS, and is available under both a commercial and GPL license.
+This demo uses MySQL version 5.0, which is available from:
+</p>
+
+<ul>
+<li>
+<a href="http://dev.mysql.com/downloads/mysql/5.0.html">MySQL 5.0 Download Page</a>.
+</li>
+</ul>
+
+<p>
+You will only need the &quot;essentials&quot; version for Windows x86
+or AMD64.  This demo can run in what the installer calls a
+&quot;typical&quot; install run with the non-custom configuration.
+</p>
+
+<h2>JDBC</h2>
+
+<p>
+The Java Database Connectivity (JDBC) API allows Java programs to access data stored in relational
+databases which support the standard SQL query language.  For
+information on the JDBC API, see Sun's <a
+href="http://java.sun.com/docs/books/tutorial/jdbc/">JDBC Database
+Access tutorial</a>.
+</p>
+
+<p>
+The official JDBC driver for MySQL is available from the
+</p>
+
+<ul>
+<li>
+<a href="http://dev.mysql.com/downloads/connector/j/3.1.html">MySQL Connector/J Download Page</a>.
+</li>
+</ul>
+
+<p>
+We ran this demo with <code>mysql-connector-java-3.1.13-bin.jar</code>.
+The jar file containing the MySQL Connector/J driver must be on the
+runtime classpath.  The Ant <a href="build.xml">build.xml</a> file is
+configured to find the 3.1 Connector/J jar if you put it in the lingpipe/demos/lib directory.
+</p>
+<p>
+The connector is licensed under the <a href="http://www.gnu.org/licenses/gpl.html">Gnu General Public License</a>.
+</p>
+
+<a name="part1"></a>
+<h2>Part 1: Loading MEDLINE data into a database</h2>
+
+<h3>Creating the database</h3>
+
+<p>
+We define a very simple database which contains one table of MEDLINE citation data.
+The name of the database is <code>medline</code>
+and the name of the table is <code>citation</code>.
+Each <code>citation</code> record contains the MEDLINE citation PubMed identifier,
+title, and abstract (if any).
+</p>
+
+<table>
+<tr>
+<th class="title" colspan="3">Table: <code>citation</code></th>
+</tr>
+<tr>
+<th rowspan='4'>Columns</th>
+<td><code>citation_id</code></td>
+<td>database id, automatically generated via the MySQL
+<a href="http://dev.mysql.com/doc/mysql/en/example-auto-increment.html"><code>AUTO_INCREMENT</code></a> attribute
+</td>
+</tr>
+<tr>
+<td><code>pubmed_id</code></td>
+<td>PubMed id</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td>article title, character encoding is unicode-16</td>
+</tr>
+<tr>
+<td><code>abstract</code></td>
+<td>abstract, if any, character encoding is unicode-16</td>
+</tr>
+</table>
+
+<p>
+The script <a
+href="sql/medline_citations.sql">sql/medline_citations.sql</a> contains
+the SQL commands to create the database, and can be executed via the
+MySQL command-line client:
+</p>
+
+<pre class="code">
+$ mysql -u root -p  -v &lt; sql/medline_citations.sql
+</pre>
+
+<p>
+The system prompts for the password interactively, then executes the commands
+in <code>medline_citations.sql</code>, as seen in the following transcript:
+</p>
+
+<pre class="code">
+Enter password: ****
+--------------
+CREATE DATABASE IF NOT EXISTS medline
+--------------
+
+--------------
+CREATE TABLE IF NOT EXISTS citation (
+        citation_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+        pubmed_id       VARCHAR(10) UNIQUE NOT NULL,
+        title   VARCHAR(500) CHARSET utf8 NOT NULL,
+        abstract VARCHAR(10000) CHARSET utf8 NULL
+)
+--------------
+</pre>
+
+
+<h3>Loading MEDLINE citations</h3>
+
+
+<p>
+Once the database and table have been created, we are ready to run the program <a href="src/LoadMedlineDb.java"><code>LoadMedlineDb.java</code></a>
+which loads MEDLINE data into the database.
+<code>LoadMedlineDb.java</code> parses out MEDLINE citation instances from an XML file.
+</p>
+
+<p>
+<code>LoadMedlineDb</code> requires an input file which contains
+the database server name, port, username, and password.
+This information is needed to connect to the database using JDBC.
+This demo uses the file <a href="etc/db.properties">db.properties</a>, a java properties
+file which contains installation-specific database settings, stored
+as a set of key-value pairs.
+This file is the first command-line argument to the program.
+Remaining arguments are treated as names of XML files containing MEDLINE data.
+</p>
+
+<p>
+As in the MEDLINE parsing demo, we define a static class that implements
+<a href="../../../docs/api/com/aliasi/medline/MedlineHandler.html">
+<code>com.aliasi.medline.MedlineHandler</code></a>.
+This class is called <code>MedlineDbLoader</code>.
+This class maintains a connection to the database via the instance variable:
+</p>
+
+<pre class="code">
+Connection mCon;
+</pre>
+
+<p>
+The method <code>openDb</code> is used to set this variable to an
+actual connection to the database, as follows:
+</p>
+
+<pre class="code">
+Class.forName("com.mysql.jdbc.Driver").newInstance();
+mCon = DriverManager.getConnection(dbUrl,username,password);
+</pre>
+
+<p>
+The first line loads the MySQL implementation of the DriverManager
+class.  (See the Sun <a
+href="http://java.sun.com/j2se/1.4.2/docs/guide/jdbc/getstart/drivermanager.html#998348">
+DriverManager Overview</a> for more information on loading and
+registering drivers.)  The second line uses the information from the
+<code>db.properties</code> file to open a connection to the database.
+</p>
+
+<p>
+The <code>handle</code> method takes a MedlineCitation object, and stores
+the PubMed id, article title, and abstract (if any) as a record int the
+<code>citation</code> table.
+The SQL statement which inserts a record into the <code>citation</code> table
+looks like this:
+</p>
+
+<pre class="code">
+INSERT INTO citation (pubmed_id, title, abstract)
+  VALUES ('123456789','some title text','some abstract text')
+</pre>
+
+<p>
+In order to efficiently execute such a query, the JDBC API provides
+the PreparedStatement object, which precompiles the database query so
+that it can be run multiple times.  Precompilation is performed on a
+schematic query, using the question mark (<code>?</code>) to indicate
+parameters.  In this case, each time we execute the query we will be
+passing in values for pubmed_id, title, and abstract, therefore we
+write the query as follows:
+</p>
+
+<pre class="code">
+static final String INSERT_CITATION_SQL =
+    "INSERT INTO citation (pubmed_id, title, abstract) VALUES (?,?,?)";
+</pre>
+
+<p>
+It is not necessary to specify a value for the
+<code>citation_id</code> column, since it will be automatically
+populated by MySQL.
+</p>
+
+<p>
+The <code>Connection</code> <code>prepareStatement</code> method takes
+the query string and returns a <code>PreparedStatement</code> object:
+</p>
+
+<pre class="code">
+pstmt = mCon.prepareStatement(INSERT_CITATION_SQL);
+</pre>
+
+<p>
+Each question mark (<code>?</code>) in the query string designates a
+parameter which must be set using the correct setter method.  Failing
+to set a parameter, or setting the a parameter to the wrong type will
+throw a <code>SQLException</code>.  Here is the code which sets these
+parameters and executes the query:
+</p>
+
+<pre class="code">
+pstmt.setString(1,citation.pmid());
+pstmt.setString(2,citation.article().articleTitleText());
+Abstract abstr = citation.article().abstrct();
+if (abstr != null)
+    pstmt.setString(3,abstr.text());
+else
+    pstmt.setNull(3,Types.VARCHAR);
+pstmt.executeUpdate();
+</pre>
+
+<p>
+The above code is embedded in a <code>try/catch/finally</code>
+construction in order to catch exceptions thrown by the database.
+In the <code>finally</code> block we call the <code>close</code>
+method on the prepared statement and swallow any SQL exception thrown:
+</p>
+
+<pre class="code">
+try { pstmt.close(); } catch (SQLException se) {}
+</pre>
+
+<p>
+When all of the citations have been processed the <code>main</code>
+method calls the <code>LoadMedlineHandlerDb</code> <code>close</code>
+method, which closes the connection to the database.
+</p>
+
+<p>
+To run part 1 of this demo:
+</p>
+
+<ul>
+<li>
+Install MySQL, (if you don't already have an installation available).
+</li>
+<li>
+Run the script
+<a href="sql/medline_citations.sql">medline_citations.sql</a> to create the database and table.
+</li>
+<li>
+Edit the file
+<a href="etc/db.properties">db.properties</a>, setting the database configuration appropriately.
+</li>
+<li>
+Execute the Ant target <code>loadmedline</code>
+</li>
+</ul>
+
+<p>
+The results for the <code>loadmedline</code> target are:
+</p>
+<pre class="code">
+$ ant loadmedline
+Buildfile: build.xml
+
+compile:
+
+loadmedline:
+     [java] Indexing file=../../data/medsamp2006.xml
+     [java] Handling PMID=10540283
+     [java] Handling PMID=10854512
+     [java] Handling PMID=10972993
+     [java] Handling PMID=11056631
+     [java] Handling PMID=11034741
+     [java] Handling PMID=11406024
+...
+     [java] Handling PMID=15611661
+     [java] Handling PMID=15611667
+     [java] Handling PMID=15968009
+
+BUILD SUCCESSFUL
+Total time: 3 seconds
+</pre>
+
+<h3>Clearing the Database</h3>
+<p>
+Once the Ant target <code>loadmedline</code> has run successfully,
+attempts to run it again will result in a series of errors,
+because every record that the program is trying to insert into
+the database already exists:
+</p>
+
+<pre class="code">
+$ant loadmedline
+Buildfile: build.xml
+
+compile:
+
+loadmedline:
+     [java] Indexing file=../../data/medsamp2006.xml
+     [java] Handling PMID=10540283
+     [java] EXCEPTION HANDLING CITATION=10540283 java.sql.SQLException: Duplicate entry '10540283' for key 2
+     [java] Handling PMID=10854512
+     [java] EXCEPTION HANDLING CITATION=10854512 java.sql.SQLException: Duplicate entry '10854512' for key 2
+...
+     [java] Handling PMID=15968009
+     [java] EXCEPTION HANDLING CITATION=15968009 java.sql.SQLException: Duplicate entry '15968009' for key 2
+
+BUILD SUCCESSFUL
+Total time: 3 seconds
+</pre>
+<p>
+If you wish to run this part of the demo again, then the existing set of
+citations must be deleted from the database.
+We have provided a script
+<a href="sql/medline_clear_citations.sql">sql/medline_clear_citations.sql</a>
+which deletes all records from the <code>citation</code>
+table, and can be executed via the
+MySQL command-line client:
+</p>
+
+<pre class="code">
+$ mysql -u root -p  -v &lt; sql/medline_clear_citations.sql
+</pre>
+
+<p>
+The system prompts for the password interactively, then executes the commands
+in <code>medline_clear_citations.sql</code>, as seen in the following transcript:
+</p>
+
+<pre class="code">
+C:\mycvs\lingpipe\demos\tutorial\db>mysql -u root -p  -v &lt; sql/medline_clear_citations.sql
+Enter password: *****
+--------------
+SELECT COUNT(*) FROM citation
+--------------
+
+COUNT(*)
+88
+--------------
+DELETE FROM citation
+--------------
+
+--------------
+SELECT COUNT(*) FROM citation
+--------------
+
+COUNT(*)
+0
+</pre>
+<p>
+Now the Ant target <code>loadmedline</code> can be run again.
+</p>
+
+<a name="part2"></a>
+<h2>Part 2: Using LingPipe to annotate data in the database</h2>
+
+<p>
+Part 2 of this demo builds on the database created and populated in
+part 1.  Now that we have a database of text data, we show how to use
+the LingPipe API to annotate this data, and store the results back
+into the database.
+</p>
+
+<p>
+Annotation consists of indentifying sentences and mentions of named
+entities in each sentence.  To do this we add two tables:
+</p>
+
+<table>
+<tr>
+<th class="title" colspan="3">Table: <code>sentence</code></th>
+</tr>
+<tr>
+<th rowspan="5">Columns</th>
+<td><code>sentence_id</code></td>
+<td>database id, automatically generated via the MySQL
+<a href="http://dev.mysql.com/doc/mysql/en/example-auto-increment.html"><code>AUTO_INCREMENT</code></a> attribute
+</td>
+</tr>
+<tr>
+<td><code>citation_id</code></td>
+<td>database id of citation containing this sentence.
+</td>
+</tr>
+<tr>
+<td><code>offset</code></td>
+<td>sentence start point (offset from start of text)</td>
+</tr>
+<tr>
+<td><code>length</code></td>
+<td>sentence length</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>either "title" or "abstract"</td>
+</tr>
+</table>
+
+
+<table>
+<tr>
+<th class="title" colspan="3">Table: <code>mention</code></th>
+</tr>
+<tr>
+<th rowspan="6">Columns</th>
+<td><code>mention_id</code></td>
+<td>database id, automatically generated via the MySQL
+<a href="http://dev.mysql.com/doc/mysql/en/example-auto-increment.html"><code>AUTO_INCREMENT</code></a> attribute
+</td>
+</tr>
+<tr>
+<td><code>sentence_id</code></td>
+<td>database id of sentence containing this mention.
+</td>
+</tr>
+<tr>
+<td><code>offset</code></td>
+<td>mention start point (offset from start of sentence)</td>
+</tr>
+<tr>
+<td><code>length</code></td>
+<td>mention length</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>type assigned to this mention by the language model</td>
+</tr>
+<tr>
+<td><code>text</code></td>
+<td>the mention text itself</td>
+</tr>
+</table>
+
+<p>
+Because the <code>title</code> and <code>abstract</code> field in the
+<code>citation</code> record already contain the citation text, the
+<code>sentence</code> record only stores information pointing back
+into the citation entry.  Since we want to be able to query the
+database looking for particular mentions, we need to store the mention
+text in its own column.  Given that we store the start index of the
+mention, and the mention text itself, storing the length of the
+mention is not strictly necessary.  This is a design decision, as is
+the choice of storing the start and length of the sentence and
+mention, as opposed to the start and end indices.  Databse design is a
+<a href="http://en.wikipedia.org/wiki/Dark_Arts">dark art</a>, and as
+such, is outside the scope of this tutorial.
+</p>
+
+<p>
+The script <a
+href="sql/medline_annotations.sql">medline_annotations.sql</a>
+contains the SQL commands to add these two tables to the <code>medline</code>
+database, and can be executed via the command-line client:
+</p>
+
+<pre class="code">
+$ mysql -u root -p  -v &lt; sql/medline_annotations.sql
+</pre>
+
+<p>This command produces the following output (waiting for the
+password).</p>
+
+<pre class="code">
+Enter password: *****
+--------------
+CREATE TABLE IF NOT EXISTS sentence (
+        sentence_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+        citation_id INT UNSIGNED NOT NULL REFERENCES citation,
+        offset INT UNSIGNED NOT NULL,
+        length INT UNSIGNED NOT NULL,
+        type VARCHAR(10) NOT NULL
+)
+--------------
+
+--------------
+CREATE TABLE IF NOT EXISTS mention (
+        mention_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+        sentence_id INT UNSIGNED NOT NULL REFERENCES sentence,
+        offset INT UNSIGNED NOT NULL,
+        length INT UNSIGNED NOT NULL,
+        type VARCHAR(40) NOT NULL,
+        text VARCHAR(500) CHARSET utf8 NOT NULL
+)
+--------------
+</pre>
+
+<p>
+Once we have added these tables to the database, we are ready to run
+the program <a
+href="src/AnnotateMedlineDb.java"><code>AnnotateMedlineDb.java</code></a>.
+</p>
+
+<p>
+<code>AnnotateMedlineDb.java</code> connects to the database in the
+same way that <code>LoadMedlineDb.java</code> does, and therefore we
+reuse the <code>openDB</code> and <code>closeDb</code> methods, along
+with the strategy of storing database information in a properties file
+which is passed in as a command-line argument to the program.
+</p>
+
+<p>
+<code>AnnotateMedlineDb.java</code> creates an instance of <a
+href="../../../docs/api/com/aliasi/sentences/SentenceChunker.html"><code>com.aliasi.sentences.SentenceChunker</code></a>
+to identify sentences in the citation text fields.  It reconstitutes
+a serialized instance of <a
+href="../../../docs/api/com/aliasi/chunk/Chunker.html"><code>com.aliasi.chunk.Chunker</code></a>
+to extract named entities from the sentences.
+These are instantiated in the <code>AnnotateMedlineDb</code>
+constructor:
+</p>
+
+<pre class="code">
+tokenizerFactory = IndoEuropeanTokenizerFactory.INSTANCE;
+sentenceModel  = new IndoEuropeanSentenceModel();
+sentenceChunker
+    = new SentenceChunker(tokenizerFactory,
+                          sentenceModel);
+genomicsModelfile
+  = new File("../../models/ne-en-bio-genia.TokenShapeChunker");
+neChunker
+  = (Chunker) AbstractExternalizable
+              .readObject(genomicsModelfile);
+</pre>
+
+<p>
+The <code>SentenceChunker</code> constructor requires a tokenizer and
+model, and in this example we use the standard Indo-European tokenizer
+and sentence model that are part of the LingPipe distribution.  The
+<code>Chunker</code> is deserialized using a helper method in
+<code>util.AbstractExternalizable</code> from the specified file using
+the <code>ne-en-bio-genia.TokenShapeChunker</code> model that is
+distributed with the LingPipe demos.
+</p>
+
+<p>
+To annotate a citation, we first retrieve the title and abstract
+columns from the database.  As in part 1 of this demo, we use a
+prepared statement object.
+</p>
+
+<pre class="code">
+static final String GET_CITATION_TEXT_SQL =
+    = "SELECT title, abstract FROM citation where citation_id = ?";
+    ...
+
+protected void annotateCitation(int citationId) {
+    ...
+    pstmt = mCon.prepareStatement(GET_CITATION_TEXT_SQL);
+    pstmt.setInt(1,citationId);
+    rs = pstmt.executeQuery();
+    if (rs.next()) {
+        title = rs.getString("title");
+        abstr = rs.getString("abstract");
+    }
+    rs.close();
+    pstmt.close();
+</pre>
+
+<p>
+Then we pass the title and abstract text into
+<code>annotateSentences</code>.  The
+<code>com.aliasi.sentences.SentenceChunker.chunk</code> method is used
+to break the text into a set of sentences.  As each sentence is
+stored, the database returns a unique identifier for it.  We then annotate
+the text of the sentence with the following method:
+</p>
+
+<pre class="code">
+protected void annotateMentions(int sentenceId,
+                                String text)
+    throws SQLException {
+
+    Chunking chunking
+        = neChunker.chunk(text.toCharArray(),
+                          0, text.length());
+    Set mentions = chunking.chunkSet();
+    for (Iterator it = mentions.iterator();
+         it.hasNext(); ) {
+
+        Chunk mention = (Chunk)it.next();
+        int start = mention.start();
+        int end = mention.end();
+        storeMention(sentenceId,start,mention.type(),
+                     text.substring(start,end));
+    }
+}
+</pre>
+
+<p>
+The <code>chunk</code> method of <code>Chunker</code> is used
+to find all named entities in the sentence.  It returns a
+<a href="../../../docs/api/com/aliasi/chunk/Chunk.html"><code>com.aliasi.chunk.Chunking</code></a>,
+which is a set of chunks over a shared underlying character sequence
+(in this example, the <code>text</code>).
+The <code>com.aliasi.chunk.Chunking.chunkSet</code> method returns the set of
+<a href="../../../docs/api/com/aliasi/chunk/Chunk.html"><code>com.aliasi.chunk.Chunk</code></a>
+objects.
+We store the mention start, type, and the text spanned by this chunk in the database.
+</p>
+
+<p>
+To run part 2 of this demo:
+</p>
+
+<ul>
+<li>
+(run part 1 of this demo)
+</li>
+<li>
+Run the script <a
+href="sql/medline_annotations.sql">medline_annotations.sql</a> to
+create the sentence and mention tables.
+</li>
+<li>
+Run the Ant target <code>annotatemedline</code>
+</li>
+</ul>
+
+<p>Running the final target produces the following output.</p>
+
+<pre class="code">
+$ ant annotatemedline
+
+annotatemedline:
+    [java] Annotating citation_id=89
+    [java] Annotating citation_id=90
+    [java] Annotating citation_id=91
+...
+    [java] Annotating citation_id=174
+    [java] Annotating citation_id=175
+    [java] Annotating citation_id=176
+</pre>
+
+<p>Note that the identifiers may vary depending on the state of
+the database.</p>
+
+<h3>Clearing the Database</h3>
+<p>
+Executing the Ant target <code>annotatemedline</code> for a second time
+will result in duplicate annotations for each citation, (since for demo
+purposes we have created an extremely simple database).
+If you run this part of the demo again, then the existing set of
+annotations should be deleted from the database first.
+Run the script <a
+href="sql/medline_clear_annotations.sql">medline_clear_annotations.sql</a> to
+delete the existing records from the sentence and mention tables.
+Now you can run the Ant target <code>annotatemedline</code> again.
+</p>
+
+<a name="part3"></a>
+<h2>Part 3: Querying the Database</h2>
+
+<p>
+With the <code>medline</code> database in place, we can begin running
+queries.  In the following examples we show the transcript of a
+session using the MySQL command-line client, which is started without
+passing in a file argument:
+</p>
+
+<pre class="code">
+$ mysql -u root -p -v
+</pre>
+
+<p>
+To check that the data loading process was successful, we run simple queries
+to get rows counts on tables, and do spot checks on the data.
+First we check the number of records in the
+<code>citation</code>, <code>sentence</code>, and <code>mention</code> tables,
+using the query: &quot;<code>select count(*) from table</code>.&quot;
+</p>
+
+<pre class="code">
+$ mysql -u root -p -v
+Enter password: *****
+
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 18 to server version: 5.0.22-community-nt
+
+mysql> use medline
+Database changed
+mysql> select count(*) from citation;
+--------------
+select count(*) from citation
+--------------
+
++----------+
+| count(*) |
++----------+
+|       88 |
++----------+
+1 row in set (0.02 sec)
+
+mysql> select count(*) from sentence;
+--------------
+select count(*) from sentence
+--------------
+
++----------+
+| count(*) |
++----------+
+|      555 |
++----------+
+1 row in set (0.00 sec)
+
+mysql> select count(*) from mention;
+--------------
+select count(*) from mention
+--------------
+
++----------+
+| count(*) |
++----------+
+|     1570 |
++----------+
+1 row in set (0.00 sec)
+</pre>
+
+
+<p>
+To check the data we select a few rows from each table, via the query:
+</p>
+
+<pre class="code">
+&quot;<code>select * from table limit N</code>.&quot;
+</pre>
+
+<p>
+To see the
+data in each column on a separate line, we terminate the query with
+&quot;\G&quot; instead of &quot;;&quot;.
+</p>
+
+<pre class="code">
+mysql> select * from mention limit 5 \G
+--------------
+select * from mention limit 5
+--------------
+
+*************************** 1. row ***************************
+ mention_id: 1571
+sentence_id: 556
+     offset: 0
+     length: 24
+       type: other_name
+       text: Transcription regulation
+*************************** 2. row ***************************
+ mention_id: 1572
+sentence_id: 556
+     offset: 32
+     length: 16
+       type: DNA_domain_or_region
+       text: nir gene cluster
+*************************** 3. row ***************************
+ mention_id: 1573
+sentence_id: 556
+     offset: 58
+     length: 17
+       type: protein_family_or_group
+       text: nitrite reductase
+*************************** 4. row ***************************
+ mention_id: 1574
+sentence_id: 556
+     offset: 79
+     length: 24
+       type: mono_cell
+       text: Paracoccus denitrificans
+*************************** 5. row ***************************
+ mention_id: 1575
+sentence_id: 556
+     offset: 113
+     length: 3
+       type: other_name
+       text: NNR
+5 rows in set (0.00 sec)
+</pre>
+
+<p>Citations are listed in the same way.</p>
+
+<pre class="code">
+mysql> select * from citation limit 1 \G
+--------------
+select * from citation limit 1
+--------------
+
+*************************** 1. row ***************************
+citation_id: 89
+  pubmed_id: 10540283
+
+  title: Transcription regulation of the nir gene cluster encoding
+  nitrite reductase of Paracoccus denitrificans involves NNR and NirI,
+  a novel type of membrane protein.
+
+  abstract: The nirIX gene cluster of Paracoccus denitrificans is
+  located between the nir and nor gene clusters encoding nitrite and
+  nitric oxide reductases respectively. The NirI sequence corresponds
+  to that of a membrane-bound protein with six transmembrane helices,
+  a large periplasmic domain and cysteine-rich cytoplasmic domains
+  that resemble the binding sites of [4Fe-4S] clusters in many
+  ferredoxin-like proteins. NirX is soluble and apparently located in
+  the periplasm, as judged by the predicted signal sequence. NirI and
+  NirX are homologues of NosR and NosX, proteins involved in
+  regulation of the expression of the nos gene cluster encoding
+  nitrous oxide reductase in Pseudomonas stutzeri and Sinorhizobium
+  meliloti. Analysis of a NirI-deficient mutant strain revealed that
+  NirI is involved in transcription activation of the nir gene cluster
+  in response to oxygen limitation and the presence of N-oxides. The
+  NirX-deficient mutant transiently accumulated nitrite in the growth
+  medium, but it had a final growth yield similar to that of the wild
+  type. Transcription of the nirIX gene cluster itself was controlled
+  by NNR, a member of the family of FNR-like transcriptional
+  activators. An NNR binding sequence is located in the middle of the
+  intergenic region between the nirI and nirS genes with its centre
+  located at position -41.5 relative to the transcription start sites
+  of both genes. Attempts to complement the NirI mutation via cloning
+  of the nirIX gene cluster on a broad-host-range vector were
+  unsuccessful, the ability to express nitrite reductase being
+  restored only when the nirIX gene cluster was reintegrated into the
+  chromosome of the NirI-deficient mutant via homologous recombination
+  in such a way that the wild-type nirI gene was present directly
+  upstream of the nir operon.
+
+1 row in set (0.00 sec)
+</pre>
+
+<p>
+The NEChunker assigned types to mentions using a model trained on the
+GENIA corpus. GENIA labels dozens of categories in the genomics and
+proteomics domain.  For more infomation on this corpus, see the <a
+href="http://www-tsujii.is.s.u-tokyo.ac.jp/GENIA/">GENIA Project Home
+Page</a>.  To see the distribution of mention types in the <code>medline</code>
+database, we run the following query:
+</p>
+
+<pre class="code">
+mysql> select distinct type, count(*)
+    -> from mention group by type;
+--------------
+select distinct type, count(*)
+from mention group by type
+--------------
+
++--------------------------+----------+
+| type                     | count(*) |
++--------------------------+----------+
+| amino_acid_monomer       |        9 |
+| atom                     |       10 |
+| body_part                |       26 |
+| carbohydrate             |        3 |
+| cell_component           |       15 |
+| cell_line                |       31 |
+| cell_type                |       42 |
+| DNA_domain_or_region     |       72 |
+| DNA_family_or_group      |       16 |
+| DNA_molecule             |        5 |
+| DNA_N                    |        1 |
+| DNA_substructure         |        2 |
+| inorganic                |       15 |
+| lipid                    |       14 |
+| mono_cell                |       14 |
+| multi_cell               |      148 |
+| nucleotide               |        8 |
+| other_artificial_source  |        4 |
+| other_name               |      773 |
+| other_organic_compound   |      123 |
+| peptide                  |        8 |
+| polynucleotide           |        6 |
+| protein_domain_or_region |       13 |
+| protein_family_or_group  |       42 |
+| protein_molecule         |      112 |
+| protein_N                |        8 |
+| protein_substructure     |        5 |
+| RNA_domain_or_region     |        3 |
+| RNA_family_or_group      |        4 |
+| RNA_molecule             |        4 |
+| RNA_N                    |        1 |
+| RNA_substructure         |        1 |
+| tissue                   |       27 |
+| virus                    |        5 |
++--------------------------+----------+
+34 rows in set (0.00 sec)
+</pre>
+
+<p>
+To find the 10 most frequently mentioned proteins (regardless
+of subtype) we use the query:
+</p>
+
+<pre class="code">
+mysql> select text, count(*) from mention
+    -> where type like 'protein%'
+    -> group by 1 order by 2
+    -> desc limit 10;
+--------------
+select text, count(*) from mention
+where type like 'protein%'
+group by 1 order by 2
+desc limit 10
+--------------
+
++-------------------+----------+
+| text              | count(*) |
++-------------------+----------+
+| 201Tl             |        5 |
+| PASG              |        4 |
+| prostate          |        3 |
+| Raf-1             |        3 |
+| MAPK              |        3 |
+| PKC-alpha         |        3 |
+| PKC-delta         |        3 |
+| nitrite reductase |        2 |
+| NirI              |        2 |
+| surgical          |        2 |
++-------------------+----------+
+10 rows in set (0.00 sec)
+</pre>
+
+<p>
+To find sentences which mention a particular named entity, we use the query:
+</p>
+
+
+<pre class="code">
+mysql> select sentence_id from mention
+    -> where text = 'MAPK';
+--------------
+select sentence_id from mention
+where text = 'MAPK'
+--------------
+
++-------------+
+| sentence_id |
++-------------+
+|         942 |
+|         947 |
+|         951 |
++-------------+
+3 rows in set (0.01 sec)
+</pre>
+
+<p>
+Finally, we present a slightly more complex query, which finds all
+pairs of protein names which co-occur in a sentence.
+To do this we join the mention table to itself, and restrict our selection
+to protiens which co-occur in the same sentence.
+Because this query returns a table containing columns for name1, name2,
+each pair of names will occur twice in the result, once as the pair {A,B}
+and once as the pair {B,A}.  To remove this duplication, we require the
+names to occur in alphabetical order - this selects {A,B} and discards {B,A}.
+The full query is:
+</p>
+
+<pre class="code">
+mysql> select m1.text, m2.text
+    -> from mention m1, mention m2
+    -> where m1.sentence_id = m2.sentence_id
+    -> and m1.type like 'protein%'
+    -> and m2.type like 'protein%'
+    -> and m1.text &lt; m2.text
+    -> limit 10;
+--------------
+select m1.text, m2.text
+from mention m1, mention m2
+where m1.sentence_id = m2.sentence_id
+and m1.type like 'protein%'
+and m2.type like 'protein%'
+and m1.text &lt; m2.text
+limit 10
+--------------
+
++-----------------------------------+------------------------+
+| text                              | text                   |
++-----------------------------------+------------------------+
+| NirI                              | nitrite reductase      |
+| membrane protein                  | nitrite reductase      |
+| membrane protein                  | NirI                   |
+| membrane-bound protein            | NirI sequence          |
+| cysteine-rich cytoplasmic domains | NirI sequence          |
+| ferredoxin-like proteins          | NirI sequence          |
+| cysteine-rich cytoplasmic domains | membrane-bound protein |
+| ferredoxin-like proteins          | membrane-bound protein |
+| NirI sequence                     | transmembrane helices  |
+| membrane-bound protein            | transmembrane helices  |
++-----------------------------------+------------------------+
+10 rows in set (0.00 sec)
+</pre>
+
+<p>
+Finally, the client may be exited as follows:
+</p>
+
+<pre class="code">
+mysql> quit
+Bye
+</pre>
+
+<h2>Discussion</h2>
+
+<p>
+Because we chose to present the JDBC API first and the LingPipe
+annotation API second, we have two separate programs, where one
+program would be more efficient.  It is left as an excercise to the
+reader to write a program which uses LingPipe to parse and annotate
+MEDLINE data in one pass.
+</p>
+
+<p>
+The <code>medline</code> database developed in this example, and the
+code that accesses it have been kept as simple as possible, without
+any attempt to optimize database performance.  The data loading
+process is extremely inefficient - as each new piece of information is
+identified, it is inserted into the database.  For very large data
+sets, moving to a bulk-loading strategy would be advised.  The
+database tables haven't been tuned with respect to the expected set of
+queries that will be run against them.  For example, if the mention
+table contains 5 million rows, a query like:
+</p>
+
+<pre class="code">
+select * from mention where text = 'foobar'
+</pre>
+
+<p>
+could be quite slow, and if so, adding an index on the
+<code>text</code> column would be in order.
+</p>
+
+<p>
+Database otpimization depends on the performance goals and/or constraints
+of the application(s) that the database supports.
+For a good introduction to this subject, we recommend the book
+<a href="http://www.amazon.com/exec/obidos/tg/detail/-/0201791692/002-6607731-5712868?v=glance">
+SQL Performance Tuning </a>.
+</p>
+
+
+<h2>References</h2>
+
+<ul>
+
+<li>
+<a href="http://dev.mysql.com/doc/mysql/en/index.html">MySQL Reference Manual</a>, (searchable, with user comments)
+</li>
+
+<li>
+<a href="http://dev.mysql.com/downloads/administrator/index.html">MySQL Administrator GUI client</a>
+</li>
+
+<li>
+<a href="http://dev.mysql.com/downloads/query-browser/1.1.html">MySQL Query Browser</a>
+</li>
+
+
+<li>
+<a href="http://java.sun.com/docs/books/tutorial/jdbc/">Sun's JDBC Tutorial</a>
+</li>
+
+<li>
+<a href="http://www.amazon.com/exec/obidos/tg/detail/-/0201791692/002-6607731-5712868?v=glance">
+SQL Performance Tuning Book</a>
+</li>
+</ul>
+
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+
+

@@ -1,0 +1,1680 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Sentiment Analysis Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">Sentiment Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a class="current" href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+
+
+
+<h2>What is Sentiment Analysis?</h2>
+
+<p>
+
+Sentiment analysis involves classifying opinions in text into
+categories like "positive" or "negative" often with an implicit category of
+"neutral". A classic sentiment application would be tracking what bloggers
+are saying about a brand like Toyota. Sentiment analysis is also called
+opinion mining or voice of the customer. There are lots of startups
+in this area and conferences. 
+</p>
+
+<p>
+This tutorial covers assigning sentiment to movie reviews using language
+models. There are many other approaches to sentiment. One we use fairly
+often is <a href="../sentences/read-me.html">sentence</a> based sentiment with a <a href="../logistic-regression/read-me.html">logistic regression classifier</a>. 
+Contact us if you need more information. For movie reviews we focus on two types of classification problem:
+</p>
+
+<ul>
+<li>Subjective (opinion) vs. Objective (fact) sentences</li>
+<li>Positive (favorable) vs. Negative (unfavorable) movie reviews</li>
+</ul>
+
+<h3>How is it Done?</h3>
+
+<p>
+The high-level idea is to use LingPipe's language
+classification framework to do two classification tasks: separating
+subjective from objective sentences, and separating positive
+from negative movie reviews.  In the third section, we show how to
+build a hierarchical classifier by composing these models.
+</p>
+
+<h3>Who's Idea was This?</h3>
+
+<p>
+This tutorial essentially reimplements the basic classifiers and then
+the hierarchical classification technique described in Bo Pang and
+Lillian Lee's 2004 ACL paper &quot;<a
+href="http://www.cs.cornell.edu/home/llee/papers/cutsent.home.html">A
+sentimental education</a>.&quot;
+</p>
+
+
+<h2>Downloading Training Corpora</h2>
+
+<p>
+Luckily for us, <a href="http://www.cs.cornell.edu/home/llee">Lillian
+Lee</a> and <a href="http://www.cs.cornell.edu/people/pabo">Bo
+Pang</a> have provided annotated slices of movie review data for
+polarity (both boolean and scalar), and subjectivity.  These three
+datasets are described at:
+</p>
+
+<ul>
+<li>
+<a href="http://www.cs.cornell.edu/people/pabo/movie-review-data/"
+  >Movie Review Data Home Page</a>
+</li>
+</ul>
+
+<p>
+We will be using the subjectivity and boolean polarity data:
+</p>
+
+<table>
+<tr><th class="title" colspan="4">Pang and Lee's Data</th></tr>
+<tr><th>Data Set</th> <th>Data</th> <th>Read Me</th>
+    <th>Description</th></tr>
+
+<tr><td>Polarity v2.0</td>
+    <td><a href="http://www.cs.cornell.edu/people/pabo/movie-review-data/review_polarity.tar.gz">Data</a> <small>(3.1MB)</small></td>
+    <td><a href="http://www.cs.cornell.edu/people/pabo/movie-review-data/poldata.README.2.0.txt">README</a></td>
+    <td>1000 positive, 1000 negative full text movie reviews.
+        Drawn from IMDB's archive of <a href="http://www.imdb.com/Reviews/">rec.arts.movies.reviews</a>.
+        Heuristic scripts used to extract first review score from text.</td></tr>
+
+<tr><td>Subjectivity v1.0</td>
+    <td><a href="http://www.cs.cornell.edu/people/pabo/movie-review-data/rotten_imdb.tar.gz">Data</a> <small>(508KB)</small></td>
+    <td><a href="http://www.cs.cornell.edu/people/pabo/movie-review-data/subjdata.README.1.0.txt">README</a></td>
+    <td>5000 &quot;objective&quot;, 5000 &quot;subjective&quot; sentences.
+        Objective from <a href="http://www.imdb.com">Internet Movie Database</a> (IMDB) plot summaries, subjective from <a href="http://www.rottentomatoes.com">Rotten Tomatoes</a>
+        customer review &quot;snippets&quot;.</td></tr>
+</table>
+
+<p>
+Each data file should be downloaded and then unpacked.  They are
+distributed in tarred/gzipped format.  For instance, here's the
+result of unpacking the review polarity data which was downloaded to
+the directory in which untarring is performed:
+</p>
+
+<pre class="code">
+&gt; tar -xzf review_polarity.tar.gz
+
+&gt; tar -xzf rotten_imdb.tar.gz
+
+&gt; ls
+plot.tok.gt9.5000         subjdata.README.1.0
+poldata.README.2.0        rotten_imdb.tar.gz
+quote.tok.gt9.5000        txt_sentoken
+review_polarity.tar.gz
+</pre>
+
+<p>
+We will use <code class="var">POLARITY_DIR</code> to refer to the directory
+where the reviews were unpacked.
+</p>
+
+
+
+<h2>2. Basic Polarity Analysis</h2>
+
+<p>
+We begin with a simple classification exercise, amounting to training
+and testing our basic classifiers on (different slices of) the boolean
+polarity data.  The resulting classifier is able to judge whether a
+whole movie review is essentially positive or negative (as defined by
+the data set curators).
+</p>
+
+
+<h3>Running the Polarity Classifier</h3>
+
+<p> Assuming the data is in the directory <code
+class="var">POLARITY_DIR</code> and the <code>sentimentDemo.jar</code>
+file exists (if the jar doesn't exist, compile it), the demo may be
+run from the command line (all one line, with colon (<code>:</code>)
+classpath separators replacing the semicolons (<code>;</code>) for
+linux): </p>
+
+<pre class="code">
+java
+-cp &quot;sentimentDemo.jar;
+     ../../../lingpipe-4.1.0.jar&quot;
+PolarityBasic <code class="var">POLARITY_DIR</code>
+</pre>
+
+<p>
+or through Ant with the target <code>polarity</code> and a system
+property determining the polarity directory's location:
+</p>
+
+<pre class="code">
+ant -DpolarityDir=<code class="var">POLARITY_DIR</code> polarity
+</pre>
+
+<p>
+This produces the following output after running for about a minute
+and a quarter on my desktop machine:
+</p>
+
+<pre class="code">
+BASIC POLARITY DEMO
+
+Data Directory=e:\data\pang-lee-polarity\txt_sentoken
+
+Training.
+  # Training Cases=1800
+  # Training Chars=6989652
+
+Evaluating.
+  # Test Cases=200
+  # Correct=163
+  % Correct=0.815
+</pre>
+
+<p>
+This result is very encouraging.  We've set LingPipe up with its
+default recommended n-gram length, 8, and the resulting classification
+accuracy is within .014 of the best accuracy reported in Pang, Lee and
+Vaithyanathan's Lee's 2002 <a
+href="http://www.cs.cornell.edu/home/llee/papers/sentiment.home.html">Thumbs
+up?</a> paper from EMNLP.
+</p>
+
+<p>
+In <a href="#app-conf">Appendix 1: Confidence Intervals</a>, we
+show how to compute confidence intervals for these results.
+</p>
+
+
+
+<h3>Stepping through the Code</h3>
+
+<p>
+In this section, we step through the source found in the file <a
+href="src/PolarityBasic.java">src/PolarityBasic.java</a>.  The program
+reads the training directory location from the command line, trains a
+classifier on the training data, then evaluates the classifier on the
+test data.
+</p>
+
+<h4>Main to run</h4>
+
+<p>
+As usual, our <code>main</code> method constructs an instance using
+the command-line arguments, then runs it.  If any errors are thrown, it
+prints their stack traces.
+</p>
+
+<pre class="code">
+public static void main(String[] args) {
+    try {
+        new PolarityBasic(args).run();
+    } catch (Throwable t) {
+        System.out.println("Thrown: " + t);
+        t.printStackTrace(System.out);
+    }
+}
+</pre>
+
+
+<h4>Constructor to Marshal Arguments</h4>
+
+<p>
+Also following our standard operating procedure (SOP), the constructor
+sets up the member variables using the command-line arguments:
+</p>
+
+<pre class="code">
+File mPolarityDir;
+String[] mCategories;
+DynamicLMClassifier&lt;NGramProcessLM&gt; mClassifier;
+
+PolarityBasic(String[] args) {
+    mPolarityDir = new File(args[0],"txt_sentoken");
+    mCategories = mPolarityDir.list();
+    int nGram = 8;
+    mClassifier
+        = DynamicLMClassifier
+          .createNGramProcess(mClassifier,nGram);
+}
+</pre>
+
+<p>
+First, the directory is just set to be the directory named
+<code>txt_sentoken</code> relative to the top-level polarity data
+directory given as the first command-line argument.  The category
+array is initialized using the directory names under
+<code>txt_sentoken</code>, which in this case are
+<code>&quot;pos&quot;</code> and <code>&quot;neg&quot;</code>.  We set
+the n-gram length to the constant 8; this could obviously be set with
+a command-line argument if desired.  We use the factory to construct
+a bounded n-gram classifier with the specified categories and n-gram
+size.  Recall that the process models are normalized for a given
+input length and do not model boundaries of strings differently
+than other positions.
+</p>
+
+<h3>Training</h3>
+
+<p>
+The run method simply calls training then evaluation:
+</p>
+
+<pre class="code">
+void run() throws ClassNotFoundException,
+                  IOException {
+    train();
+    evaluate();
+}
+</pre>
+
+<p>
+We consider training in this section and evaluation in the next.
+Here's the training method without the code to count the number
+of cases and characters or the code to print results:
+</p>
+
+<pre class="code">
+void train() throws IOException {
+    for (int i = 0; i &lt; mCategories.length; ++i) {
+        String category = mCategories[i];
+        Classification classification
+            = new Classification(category);
+        File dir = new File(mPolarityDir,mCategories[i]);
+        File[] trainFiles = dir.listFiles();
+        for (int j = 0; j &lt; trainFiles.length; ++j) {
+            File trainFile = trainFiles[j];
+            if (isTrainingFile(trainFile)) {
+                String review
+                    = Files.readFromFile(trainFile,&quot;ISO-8859-1&quot;);
+                Classified&lt;CharSequence&gt; classified
+                    = new Classified&lt;CharSequence&gt;(review,classification);
+                mClassifier.handle(classified);
+             }
+        }
+    }
+}
+</pre>
+
+<p>
+This method runs through the categories, of which there are two in
+this demo.  It then creates a directory using the polarity data
+directory and the name of the category.  This only works for this demo
+because the data is organized into directories by category.  Then, the
+potential training files are listed and iterated.  For each training
+file, a test is done to see if it is a training file.  If it is, then
+the text is read from the file using the LingPipe utility method
+<code>Files.readFromFile</code>, and then used to train the classifier
+for the specified category.
+</p>
+
+<p>
+The only mystery is how we determine if a file is a training
+file.  Lee and Pang were generous enough to pre-slice the files
+into ten equally-sized slices which are distinguished by the
+third character of the file name.  For instance, the file
+<code>pos/cv362_15341.txt</code> is a positive training instance
+in block 3, whereas <code>pos/cv532_6522.txt</code> is a positive
+training instance in block 5.  We just decided to train on blocks
+0 through 8 and test on block 9, so the method is just:
+</p>
+
+<pre class="code">
+boolean isTrainingFile(File file) {
+    return file.getName().charAt(2) != '9';  // test on fold 9
+}
+</pre>
+
+<p>
+If you want to see results for other slices, just swap out the
+<code>9</code> for any digit between <code>0</code> and
+<code>8</code>.
+</p>
+
+
+<h3>Evaluation</h3>
+
+<p>
+The evaluation code follows the same structure as the training code:
+</p>
+
+<pre class="code">
+void evaluate() throws IOException {
+    int numTests = 0;
+    int numCorrect = 0;
+    <span class="greycode">for (int i = 0; i &lt; mCategories.length; ++i) {
+        String category = mCategories[i];
+        File file = new File(mPolarityDir,mCategories[i]);
+        File[] testFiles = file.listFiles();
+        for (int j = 0; j &lt; testFiles.length; ++j) {
+            File testFile = testFiles[j];</span>
+            if (!isTrainingFile(testFile)) {
+                <span class="greycode">String review
+                    = Files.readFromFile(testFile,&quot;ISO-8859-1&quot;);</span>
+                ++numTests;
+                Classification classification
+                    = mClassifier.classify(review);
+                String resultCategory
+                    = classification.bestCategory();
+                if (resultCategory.equals(category))
+                    ++numCorrect;
+            }
+        }
+    }
+}
+</pre>
+
+<p>
+The code rendered in grey is the same as in the training loop
+described in the last section.  The remaining code begins by setting
+the number of tests and number of correct answer counters to zero.
+Then, as each review is processed, the number of tests is incremented.
+Then the classifier is used to produce a classification for a review
+string in a single line.  Next, the classification's best category is
+extracted as the result category of classification.  If the result
+category matches the test category, the number of correct
+classifications is incremented.
+</p>
+
+<p>The final results are then printed with this code:
+</p>
+
+<pre class="code">
+    System.out.println("  # Test Cases="
+                       + numTests);
+    System.out.println("  # Correct="
+                       + numCorrect);
+    System.out.println("  % Correct="
+                       + ((double)numCorrect)
+                          /(double)numTests);
+</pre>
+
+<p>
+There are, of course, more efficient ways to write this code, and ways
+to refactor so that the cut-and-pasted code is also shared, but we
+leave those improvements as exercises to the reader.
+</p>
+
+
+<h2>Basic Subjectivity Analysis</h2>
+
+<p>
+This section covers a second form of sentiment analysis, namely
+determining if a sentence is &quot;objective&quot; or
+&quot;subjective&quot; (again, as defined by the database curators).
+It follows pretty much the same pattern as the last example, with a
+slightly different data format, the addition of the classifier
+evaluation framework from <code>com.aliasi.classify</code>, and a step
+to compile the model to a file for later use.  The advantage of the
+evaluation framework is that it can not only tell right from wrong,
+but also distinguish several shades of grey.
+</p>
+
+
+<h3>Running the Subjectivity Classifier</h3>
+
+<p>Assuming the data is in the directory
+<code class="var">POLARITY_DIR</code> and the 
+<code>sentimentDemo.jar</code> file
+exists (if it doesn't, run <code>ant jar</code> to create it), the
+demo may be run from the command line:
+</p>
+
+<pre class="code">
+java
+-cp &quot;sentimentDemo.jar;
+     ../../../lingpipe-4.1.0.jar"
+SubjectivityBasic
+<code class="var">POLARITY_DIR</code>
+</pre>
+
+<p>
+or through Ant with the target <code>subjectivity</code> and a system
+property determining the polarity directory's location:
+</p>
+
+<pre class="code">
+ant -DpolarityDir=<code class="var">POLARITY_DIR</code> subjectivity
+</pre>
+
+<p>
+This produces the following output after about 45 seconds of chugging
+away on my desktop:
+</p>
+
+<pre class="code">
+BASIC SUBJECTIVITY DEMO
+
+Data Directory=e:\data\pang-lee-polarity
+
+Training.
+# Sentences plot=5000
+# Sentences quote=5000
+
+Compiling.
+  Model file=subjectivity.model
+  # Training Cases=9000
+  # Training Chars=1160539
+
+Evaluating.
+
+CLASSIFIER EVALUATION
+Categories=[plot, quote]
+Total Count=1000
+Total Correct=921
+Total Accuracy=0.921
+...
+</pre>
+
+<p>
+We'll step through the output (which runs to more than a page) a
+bite-sized chunk at a time; the ellipses (<code>...</code>) indicate
+that the report is continued.  The first line of the report indicates
+the name of the categories.  In this case, it's <code>plot</code> for
+&quot;objective&quot; sentences (drawn from plot summaries) and
+<code>quote</code> for &quot;subjective&quot; sentences (drawn from
+user-review snippets).  Next comes the same accuracy report as we
+computed by hand in the last demo. This performance is much better at
+92% accuracy than the polarity classification results we saw in the
+last section.
+</p>
+
+<p>
+After the basic accuracy report, the confusion matrix is presented in
+a format to provide easy inclusion into a <a
+href="http://www.openoffice.org/">spreadsheet</a> or other graphing
+package such as <a href="http://www.gnuplot.info/">gnuplot</a>.
+</p>
+
+<a name="left-off"></a>
+<pre class="code">
+...
+Confusion Matrix
+reference \ response
+  ,plot,quote
+  plot,458,42
+  quote,37,463
+...
+</pre>
+
+<p>
+This matrix represents the count of all reference/response pairs.  The
+reference categories are read down the left and the response
+categories along the top.  For this demo, the reference is the
+&quot;gold standard&quot; defined by the database curators and the
+response is the first-best category produced by the classifier we just
+trained.  Reading the results, there are 458 test cases that were
+classified as plots by the reference and plots by the response.  There
+are 42 cases that were labeled as plots in the gold standard, but were
+misclassified as quotes by the classifier.  On the next row, there
+are 463 cases that were labeled quotes in the gold standard that were
+correctly classified as quotes by our classifier.  In addition, there
+were 37 cases labeled as quotes in the gold standard that our classifier
+mislabeled as plots.
+</p>
+
+<p>The remainder of the output is discussed in <a
+href="#app-report">Appendix 2: Extended Classifier Evaluation</a>.
+</p>
+
+
+<h3>Stepping through the Code</h3>
+
+<p>
+The code for the subjectivity classifier in <a
+href="src/SubjectivityBasic.java">src/SubjectivityBasic.java</a> is
+almost identical to that of the polarity classifier, so we only focus
+on a few differences in this section.
+</p>
+
+<h4>Splitting the Training File</h4>
+
+<p>
+Unlike in the polarity demo, where every case was included in a
+separate file, here every case is on a single line within a file,
+so the code's a bit different:
+</p>
+
+<pre class="code">
+for (int i = 0; i &lt; mCategories.length; ++i) {
+    String category = mCategories[i];
+    Classification classification
+        = new Classification(category);
+    File file = new File(mPolarityDir,
+                         mCategories[i] + ".tok.gt9.5000");
+    String data = Files.readFromFile(file);
+    String[] sentences = data.split("\n");
+    int numTraining = (sentences.length * 9) / 10;
+    for (int j = 0; j &lt; numTraining; ++j) {
+        String sentence = sentences[j];
+        Classified&lt;CharSequence&gt; classified
+            = new Classified&lt;CharSequence&gt;(sentence,classification);
+        mClassifier.handle(classified); 	
+    }
+}
+</pre>
+
+<p>
+Here, we construct a file using the specified pattern and then read
+all of the data from the file.  We then split on newlines to derive
+the sentences.  The number of training instances is set to 90% of the
+input data.  We then just loop over the training data instances and
+train as before.
+</p>
+
+<h4>Writing the Model to a File</h4>
+
+<p>
+The remaining code in the <code>train()</code> method simply compiles
+the model to a file:
+</p>
+
+<pre class="code">
+FileOutputStream fileOut = new FileOutputStream("subjectivity.model");
+ObjectOutputStream objOut = new ObjectOutputStream(fileOut);
+mClassifier.compileTo(objOut);
+objOut.close();
+</pre>
+
+<p>
+This actually transforms the format, with the resulting model being
+much faster at runtime.  A more robust implementation would handle the
+close in a <code>finally</code> block that made sure the file
+output stream was closed to ensure no dangling file pointers were
+held.
+</p>
+
+
+<h4>Evaluation</h4>
+
+<p>
+The evaluation code this time is even simpler with the use of the
+evaluator.
+</p>
+
+<pre class="code">
+void evaluate() throws IOException {
+    BaseClassifierEvaluator&lt;String&gt; evaluator
+        = new BaseClassifierEvaluator&lt;String&gt;(mClassifier,
+                                                         mCategories);
+    <span class="greycode">for (int i = 0;
+         i &lt; mCategories.length; ++i) {
+        String category = mCategories[i];
+        Classification classification
+            = new Classification(category);
+        File file = new File(mPolarityDir,
+                             mCategories[i]
+                             + &quot;.tok.gt9.5000&quot;);
+        String data = Files.readFromFile(file,&quot;ISO-8859-1&quot;);
+        String[] sentences = data.split(&quot;\n&quot;);
+        int numTraining = (sentences.length * 9) / 10;
+        for (int j = numTraining;
+             j &lt; sentences.length; ++j) {</span>
+            Classified&lt;CharSequence&gt; classified
+                = new Classified&lt;CharSequence&gt;(sentences[j],classification);
+            evaluator.handle(classified);
+        }
+    }
+    System.out.println(evaluator.toString());
+}
+</pre>
+
+<p>
+The first line simply creates an evaluator from the classifier and the
+array of categories.  The greyed out parts of the code are identical
+to that in the training method.  In particular, note that it
+calculates the 10 percent of the data on which to test and then as
+each sentence is encountered, it is added as a case to the evaluator
+using the <a href="../../../docs/api/com/aliasi/classify/BaseClassifierEvaluator.html#handle(Classified)"><code>BaseClassifierEvaluator.handle(Classified)</code></a>.
+Evaluation cases consist of the reference result, in this case
+<code>category</code>, and the input, in this case
+<code>sentences[j]</code>.  Because the evaluator has a handle on the
+classifier, it just runs the classifier over the input and records the
+results.  When the evaluation loop is done, we just call the
+<code>toString()</code> method on the evaluator to print out the
+results.  Note that the category supplied to the evaluator is only
+used for evaluation purposes; the classifier will be used to perform
+classification on the input sentence without reference to the
+reference category.  The resulting scored classification is then
+added as an evaluation case with the specified reference category
+for computing results.
+</p>
+
+
+<h2>Hierarchical Polarity Analysis</h2>
+
+<p>
+<a
+href="http://www.cs.cornell.edu/home/llee/papers/cutsent.home.html">Pang
+and Lee (2004)</a> introduce a hierarchical approach to classification.
+Specifically, they use the subjectivity classifier to extract
+subjective sentences from reviews to be used for polarity
+classification.  Hierarchical models are quite common in the
+classification and general statistics and machine learning
+literatures.
+</p>
+
+<h3>Running the Hierarchical Classifier</h3>
+
+<p>
+<i>Note: The basic subjectivity demo must be run
+first to create the model file that will be used by the hierarchical
+model.</i>
+</p>
+
+<p>
+The hierarchical classifier is run just like the other demos,
+either through the Ant target <code>hierarchical</code> (with the same
+system property setting the data directory), or by
+the command:
+</p>
+
+<pre class="code">
+java
+-cp &quot;sentimentDemo.jar;
+     ../../../lingpipe-4.1.0.jar&quot;
+PolarityHierarchical
+<code class="var">POLARITY_DIR</code>
+</pre>
+
+<p>
+This produces the following output after a minute or so on my desktop:
+</p>
+
+<pre class="code">
+HIERARCHICAL POLARITY DEMO
+
+Data Directory=E:\data\pang-lee-polarity\txt_sentoken
+
+Reading Compiled Model
+
+Training.
+  # Training Cases=1800
+  # Training Chars=6989652
+
+CLASSIFIER EVALUATION
+Categories=[neg, pos]
+Total Count=200
+Total Correct=170
+Total Accuracy=0.85
+Confusion Matrix
+reference \ response
+  ,neg,pos
+  neg,82,18
+  pos,12,88
+...
+</pre>
+
+<p>
+A later line in the report is very telling (see <a
+href="#app-report">Appendix 2: Extended Classifier Evaluation</a> for
+more information on these reports):
+</p>
+
+<pre class="code">
+...
+Average Conditional Probability Reference=0.5088414431366002
+...
+</pre>
+
+<p>
+What this is telling us is that the classifier was not at
+all confident about most of its decisions.  When this is the
+case, classifiers tend to have a very high variance with
+respect to parameter settings.
+</p>
+
+<p>Although the classifier isn't very confident on average,
+what happens when we sort the output by confidence and return
+answers we are most confident in first?  That's the report
+that we find in the conditional one-versus-all report (this time
+for the positive category):
+</p>
+
+<pre class="code">
+...
+Conditional One Versus All
+  Area Under PR Curve (interpolated)=0.9161714425673629
+  ...
+  Average Precision=0.913313371341476
+  Maximum F(1) Measure=0.864321608040201
+...
+</pre>
+
+<div class="sidebar">
+<h2>Warning: Oracle Evaluation</h2>
+<p>
+We set the tuning parameter <i>ex post facto</i> (after the fact).
+This is sometimes called an <i>oracle</i> parameter setting.  Only
+rarely does a research paper make its tuning and evaluation
+methodology clear.
+</p>
+<p>
+Experiment with our results sensitivity by changing
+the minimum or maximum number of sentences in the summary or the
+subjectivty threshold.
+</p>
+</div>
+
+<p>
+This is telling us that even though we're not particularly confident
+about our decisions on average, the ranking is in fact useful.  In
+fact, this tells us that by setting a threshold other than 0.50 for
+classification, we could achieve an 86.4% f-measure on this task.
+This looks substantially better than the 85% reported above, but is
+not very significant as we indicate in the <a
+href="#app-conf">Appendix 1: Confidence Intervals</a>.  Even so, 85%
+is higher than our standalone simple classifier, and 86.4% is
+the best hierarchical performance reported by Pang and Lee using SVMs
+to classify polarity stacked on top of a naive Bayes subjectivity
+classifier.
+</p>
+
+
+<h3>Inspecting the Code</h3>
+
+<p>
+The source for this demo is in the file <a
+href="src/PolarityHierarchical.java">src/PolarityHierarchical.java</a>.
+It's identical to the first demo in the way that it steps through data,
+so we don't repeat that code here.
+</p>
+
+<h4>Construction: Reading in the Model</h4>
+
+<p>
+The constructor in this implementation does all of the work of the one
+in the basic polarity demo in setting up member variables (indicated
+by ellipses (<code>...</code>)).  It also reads in the subjectivity
+model from a hardwired file named <code>subjectivity.model</code>:
+</p>
+
+<pre class="code">
+...
+Classifier&lt;CharSequence,JointClassification&gt; mSubjectivityClassifier;
+
+PolarityHierarchical(String[] args)
+    throws ClassNotFoundException, IOException {
+    ...
+    File modelFile = new File("subjectivity.model&quot;);
+    System.out.println(&quot;\nReading model from file=&quot;
+                       + modelFile);
+    FileInputStream fileIn
+        = new FileInputStream(modelFile);
+    ObjectInputStream objIn
+        = new ObjectInputStream(fileIn);
+    mSubjectivityClassifier
+        = (JointClassifier&lt;CharSequence&gt;) objIn.readObject();
+    objIn.close();
+}
+</pre>
+
+<p>
+This code raises the possibility of either an <code>IOException</code>
+from the I/O or a <code>ClassNotFoundException</code> from reading in
+the actual classifier from the object intput stream.
+</p>
+
+
+<h4>Training</h4>
+
+<p>The next step is to train the polarity classifier.  It does this in
+exactly the same way as in the basic polarity demo using the method
+<code>train()</code>.  This brings up the possibility of only training
+on the subjective sentences of the training data, but when we did
+this, we found it hurt rather than helped performance, so we do not
+include that technique here.  This does illustrate another aspect of
+the nearly limitless fiddling that's possible with these kinds of
+models.
+</p>
+
+<h4>Evaluation</h4>
+
+<p>
+The evaluation is set up similarly to the subjectivity demo with a
+slight twist:
+</p>
+
+<pre class="code">
+<span class="greycode">
+void evaluate() throws IOException {
+     BaseClassifierEvaluator&lt;CharSequence&gt; evaluator</span>
+        = new BaseClassifierEvaluator&lt;CharSequence&gt;(null,mCategories,false);
+    <span class="greycode">for (int i = 0; i &lt; mCategories.length; ++i) {
+        String category = mCategories[i];
+        File file = new File(mPolarityDir,mCategories[i]);
+        File[] trainFiles = file.listFiles();
+        for (int j = 0; j &lt; trainFiles.length; ++j) {
+            File trainFile = trainFiles[j];
+            if (!isTrainingFile(trainFile)) {
+                String review
+                    = Files.readFromFile(trainFile);</span>
+                String subjReview
+                    = subjectiveSentences(review);
+                Classification classification
+                    = mClassifier.classify(subjReview);
+                evaluator.addClassification(category,
+                                            classification);
+            <span class="greycode">}
+        }
+    }
+    System.out.println();
+    System.out.println(evaluator.toString());
+}</span>
+</pre>
+
+<p>
+As in previous examples, the code that remains the same is greyed out.
+The new code creates a classifier evaluator with a <code>null</code>
+classifier.  This is because we don't actually have an implementation
+of the <code>BaseClassifier</code> interface (see the next section for an
+illustration of how to create one).  Instead, we'll create
+classifications on our own and add them to the evaluation.  This is
+illustrated in the remaining new code.  Here, a string
+<code>subjReview</code> is the result of applying the method
+<code>subjectiveSentences</code> to the review.  This extracts the
+subjective sentences and returns them as a string.  We then create a
+classification using the filtered intput <code>subjReview</code>.
+Finally, we add it as a case to the evaluator.  This illustrates how
+the evaluator may be used without an embedded classifier -- cases are
+just added in terms of the first-best answer and the response
+classification.
+</p>
+
+<p>The meat of this implementation is in pulling out the subjective
+sentences.  There are many ways this can be configured to run.  We
+implement a technique that reduces a review to 5 to 25 sentences.
+This will be the five most subjective sentences as ranked by
+conditional probability of the subjectivity model, as well as up to 20
+more sentences if they are 50% or more likely to be subjective
+according to the subjectivity model.
+</p>
+
+<pre class="code">
+static int MIN_SENTS = 5;
+static int MAX_SENTS = 25;
+
+String subjectiveSentences(String review) {
+    String[] sentences = review.split("\n");
+    BoundedPriorityQueue&lt;ScoredObject&lt;String&gt;&gt; pQueue
+        = new BoundedPriorityQueue&lt;ScoredObject&lt;String&gt;&gt;(ScoredObject.comparator(),
+                                                         MAX_SENTS);
+    for (int i = 0; i &lt; sentences.length; ++i) {
+        String sentence = sentences[i];
+        ConditionalClassification subjClassification
+            = (ConditionalClassification)
+            mSubjectivityClassifier
+            .classify(sentences[i]);
+        double subjProb;
+        if (subjClassification.category(0)
+            .equals("quote"))
+            subjProb = subjClassification
+                       .conditionalProbability(0);
+        else
+            subjProb = subjClassification
+                       .conditionalProbability(1);
+        pQueue.add(new ScoredObject(sentence,
+                                    subjProb));
+    }
+
+    StringBuilder reviewBuf = new StringBuilder();
+    Iterator&lt;ScoredObject&lt;String&gt;&gt; it = pQueue.iterator();
+    for (int i = 0; it.hasNext(); ++i) {
+        ScoredObject&lt;String&gt; so = it.next();
+        if (so.score() &lt; 0.5 &amp;&amp; i &gt;= MIN_SENTS) break;
+        reviewBuf.append(so.getObject() + &quot;\n&quot;);
+    }
+    String result = reviewBuf.toString().trim();
+    return result;
+}
+</pre>
+
+<p>
+The first line simply breaks the review into sentences.  We then
+create a priority queue of objects ordered by score with a maximum
+size of the maximum number of sentences returned.  Then we just
+iterate over the sentences and classify them with the subjectivity
+classifier we created in the constructor.  The result is cast to a
+conditional classification, which allows us to extract conditional
+probabilities.  The probability that the sentence is subjective is
+then set into the variable <code>subjProb</code>.  This is a bit
+tricky because we have to determine if the category <code>quote</code>
+(meaning &quot;subjective&quot;) is the first-best or second-best
+response and pull out the correct probability.  We then add a scored
+object to the queue with its object set to be the current sentence and
+its score the conditional probability of that sentence being
+subjective.  The priority queue keeps the items in ranked order up
+to the specified maximum.
+</p>
+
+<p>The next batch of code creates a buffer into which to append the
+subjective sentences.  We create an iterator over the elements in the
+priority queue, which returns the item in order of highest estimated
+probability of being subjective.  If we already have five sentences
+and the probability of being subjective is less than half
+(<code>0.5</code>), we break out of the loop.  Otherwise, we append the
+next sentence.  Finally, we return the result after trimming any
+residual whitespace (probably just the final newline; not a very
+efficient way to do this at all, but these data sets are miniscule).
+</p>
+
+<h2>Building a <code>JointClassifier</code> Implementation</h2>
+
+<p>
+In order to play nicely with the rest of LingPipe, we should really
+define our hierarchical classifier to implement the interface
+<code>classify.Classifier</code>.  This is actually very straightfoward,
+but we didn't want to confuse the earlier code with tricky Java
+particulars like inner class interface implementations.
+</p>
+
+<p>
+We could either create a class, or we can just create one inline, as
+if we were <code>javax.swing</code> programmers writing GUI event
+handlers:
+</p>
+
+<pre class="code">
+JointClassifier&lt;CharSequence&gt; hierClassifier
+    = new JointClassifier&lt;CharSequence&gt;() {
+        public JointClassification classify(CharSequence input) {
+            String review = input.toString();
+            String subjReview
+                = subjectiveSentences(review);
+            return mClassifier.classify(subjReview);
+        }
+};
+</pre>
+
+<p>
+We could also build a class that reads both models in from a file, or
+takes both classifiers as parameters, or any number of other solutions
+in-between.  By constructing a hierarchical classifier in any of these
+ways, it may be supplied to an evaluator.
+</p>
+
+
+<h2>Plug-and-Play Classifiers</h2>
+
+<p>
+Although we've used 8-gram character language model classifiers, it's
+easy to plug-and-play any of LingPipe's other classifiers.
+</p>
+
+<h3>Modifying the Existing Classes</h3>
+
+<p>
+Naive Bayes can be evaluated by importing the relevant classes and
+setting the classifier in the constructor:
+</p>
+
+<pre class="code">
+    import com.aliasi.classify.NaiveBayesClassifier;
+    import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
+    ...
+    PolarityHierarchical() {
+      ...
+      TokenizerFactory factory
+          = new IndoEuropeanTokenizerFactory();
+      int charNGramLength = 0;
+      int numChars = 128;
+      mClassifier
+          = new NaiveBayesClassifier(mCategories,
+                                     factory,
+                                     charNGramLength,
+                                     numChars);
+      ...
+</pre>
+
+<p>
+Run this way, the subjectivity classifier still uses character
+8-grams, but the polarity classifier uses naive Bayes with no
+character language model smoothing.  The number of characters (here
+set to 128), determines the amount of penalty per character for
+unknown words.
+</p>
+
+<p>It's also possible to experiment with token n-grams.  And, of
+course, each of these classifiers has a few parameters to tweak.  Each
+model may also be pruned, for further control.  Just don't be fooled
+by overtrained <i>a posteriori</i> results on a test set.  You're
+unlikely to be called out on this in an <i>ACL</i> paper, but the
+results are rarely achievable in practice.
+</p>
+
+<p>We'll end with some words of warning on efficiency and performance.  If
+you use naive Bayes or token n-gram models, you should probably
+compile them first.  Uncompiled naive Bayes takes almost ten minutes
+to complete the classification demo.  The act of compiling them to a
+file actually precomputes almost all of the probabilities; reading
+them back in computes the suffix tree backoffs.  The compiled
+classifiers should work in exactly the same way as the classifier from
+which they were compiled.
+</p>
+
+<p>The second word of warning is that naive Bayes as implemented here
+isn't accurate for this task.  Typically, naive Bayes as used in
+classifiers is smoothed using something like add-one (Laplace)
+smoothing.  This is what Pang and Lee do for their naive Bayes
+baseline.  The way to implement add-one smoothing over LingPipe's
+naive Bayes implementation is to collect all of the tokens during the
+first training pass in a set.  Then they may be added as training data
+for both categories.  This approach may also be helpful for the basic
+character-level models, but they're usually more robust with respect
+to smoothing than token models, which is just another reason why we
+prefer them for most applications.
+</p>
+
+<h2>Cross-Validating Factory Implementation</h2>
+
+<p>For those who are comfortable reading Java code based on factory
+interfaces, there's an implementation of cross-validation that
+evaluates several different kinds of models in the file <a
+href="src/PolarityWhole.java">src/PolarityWhole.java</a>.
+Cross-validation performs multiple divisions of the data into training
+and test sets and then averages the results in order to bring down
+evaluation variance in order to tighten confidence intervals.  It can
+be run just like the other methods either from the command line using
+class <code>PolarityWhole</code> or from Ant using the target
+<code>whole</code>.
+</p>
+
+<pre class="code">
+&gt; java -cp "sentimentDemo.jar:../../../lingpipe-4.1.0.jar" PolarityWhole POLARITY_DIR/txt_sentoken
+</pre>
+
+<p>
+Or...
+</p>
+
+<pre class="code">
+&gt; ant whole
+</pre>
+
+
+<a name="app-conf"></a>
+<h2>Appendix 1: Confidence Intervals</h2>
+
+<p>As usual, we compute 95% confidence intervals for a given accuracy
+of <code>p</code> over <code>N</code> trials using the binomial
+distribution <code>bionmial(p,N)</code>, which is just the
+distribution corresponding to <code>N</code> independent trials each
+with a <code>p</code> chance of success.  The deviation of the binomial
+distribution is:
+</p>
+
+<pre class="code">
+dev(binomial(p,N)) = sqrt(p*(1-p)/N)
+</pre>
+
+<p>
+Consider the basic polarity evaluation, for which accuracy is
+81.5%, or 0.815 over 200 cases.  This leads to a deviation of
+</p>
+
+<pre class="code">
+dev(binomial(0.815,200))
+= sqrt(0.815&nbsp;*&nbsp;(1.0&nbsp;-&nbsp;0.815)/200
+= 0.0275
+</pre>
+
+<p>
+This is a huge deviation, primarily because there are only 200 test
+cases.  A 95% confidence interval is roughly plus or minus 1.6
+deviations, or about <code>+/-&nbsp;0.044</code>.
+In interval terms, we're 95% confident our true performance is in
+the interval <code>(77.1,&nbsp;85.9)</code>.  In layman's terms, we're
+not particularly confident about our results for the basic polarity
+evaluation.
+If we had 2000
+tests rather than 200 (ten times as much data), that number would be
+<code>+/-&nbsp;0.014</code>, a factor of <code>sqrt(10)</code> less
+due to 10 times the amount of data.
+</p>
+
+<p>We have a much tighter bound for our basic subjectivity
+demo.  There there are 1000 test cases and a 92.1% accuracy,
+leading to:
+</p>
+
+<pre class="code">
+dev(binomial(0.921,1000))
+= sqrt(0.815&nbsp;*&nbsp;(1.0&nbsp;-&nbsp;0.815)/200
+= 0.00853
+</pre>
+
+<p>
+So for those results, our 95% confidence interval is the
+narrower <code>(90.7,&nbsp;93.5)</code>.
+</p>
+
+<p>
+Pang and Lee used paired t-tests over cross-validated slices of data
+for significance, but we can't use that tighter technique to compare
+our results to theirs because we don't have access to their results
+for the requisite pairing.
+</p>
+
+
+<a name="app-report"></a>
+<h2>Appendix 2: Extended Classifier Evaluation</h2>
+
+<p>
+This appendix dives more deeply into the statistical analysis of the
+results.  It picks up <a href="#left-off">where the previous
+discussion left off</a> in section 2.
+</p>
+
+
+<h3>Traditional Classification Statistics</h3>
+
+<p>
+The report continues with a range of standard statistics that
+have been applied to classification problems:
+</p>
+
+<pre class="code">
+...
+Random Accuracy=0.5
+Random Accuracy Unbiased=0.5000125
+kappa=0.8420000000000001
+kappa Unbiased=0.8419960499012477
+kappa No Prevalence =0.8420000000000001
+...
+</pre>
+
+<p>
+The most popular statistic here is the kappa statistic, which we
+present in all three forms: &quot;standard&quot;, adjusted for
+&quot;bias&quot;, and adjusted for &quot;prevalence&quot;.  See the
+class documentation for more information about these statistics.
+Suffice it to say here that this kappa value is well within the
+rule-of-thumb range expected for &quot;reliable&quot; classification.
+</p>
+
+<p>The next basic statistics report on information-theoretic
+measures about the marginal and conditional distributions produced
+by the training data and the results:
+</p>
+
+<pre class="code">
+...
+Reference Entropy=1.0
+Response Entropy=0.9999278640456615
+Cross Entropy=1.0000721383590225
+Joint Entropy=1.3983977819792184
+Conditional Entropy=0.39839778197921816
+Mutual Information=0.6015300820664435
+Kullback-Liebler Divergence=7.213835902255758E-5
+...
+</pre>
+
+<p>
+The conditional entropy and mutual information statistics are the
+most informative.  The conditional entropy statistic tells us how
+many additional bits we'd need on average to encode the classification
+result given the reference category.  This number will be 0.0 if there
+is perfect classification.  The mutual information statistic just
+presents the response entropy minus the conditional entropy.
+</p>
+
+<p>
+These are then followed by some statistical measures,
+including a chi-squared independence test (Pearson's
+<code>C<sub><sub>2</sub></sub></code> statistic) and a few-other
+fairly widely used statistics, which are explained in the
+class documentation:
+</p>
+
+<pre class="code">
+...
+chi Squared=709.034903490349
+chi-Squared Degrees of Freedom=1
+phi Squared=0.709034903490349
+Cramer's V=0.8420421031577632
+lambda A=0.842
+lambda B=0.8404040404040404
+...
+</pre>
+
+<p>
+The final bit of this section of the report includes results about
+average performance from a ranked, scored, conditional and joint
+probability perspective.  The average reference rank indicates the
+average position on the n-best list provided by a ranked classifier of
+the gold standard answer.  The average score of the reference is just
+that -- the average score returned by the scored classifier for the
+reference category; note that because language model classification
+uses a joint probability classification scheme, the log2 joint
+probability of the reference is the same as the score (although
+it is expressed as a cross-entropy rate).  The average conditional
+probabilty says that on average, the classifier was only 55.8%
+confident in its answer.
+</p>
+
+<pre class="code">
+...
+Average Reference Rank=0.079
+Average Score Reference=-1.9029423566865242
+Average Conditional Probability Reference=0.5575955442436352
+Average Log2 Joint Probability Reference=-1.9029423566865242
+...
+</pre>
+
+
+<h3>One-Versus-All Evaluations</h3>
+
+<p>
+Next up are one-versus-all evaluations for each category.  These
+indicate performance on a category-by-category basis.  This isn't
+so interesting in our case, because both categories perform about
+equally well, which is typical in two-category problems with roughly
+balanced false positives and false negatives.
+</p>
+
+<p>A one-versus-all evaluation is created by reducing an n-way
+confusion matrix to a two-way confusion matrix between a given
+category and everything else.  (Like the other statistics, this is
+thoroughly explained in the class documentation.)  Even for a two-way
+classification problem, these reports provide some interesting insight
+into the classificatioin problem.  Here's the initial piece of the
+report for the category of objective sentences, <code>plot</code>:
+</p>
+
+<pre class="code">
+...
+ONE VERSUS ALL EVALUATIONS BY CATEGORY
+
+CATEGORY[0]=plot
+First-Best Precision/Recall Evaluation
+  Total=1000
+  True Positive=458
+  False Negative=42
+  False Positive=37
+  True Negative=463
+  Positive Reference=500
+  Positive Response=495
+  Negative Reference=500
+  Negative Response=505
+  Accuracy=0.921
+  Recall=0.916
+  Precision=0.9252525252525252
+  Rejection Recall=0.926
+  Rejection Precision=0.9168316831683169
+  F(1)=0.9206030150753768
+  Fowlkes-Mallows=497.49371855331003
+  Jaccard Coefficient=0.8528864059590316
+  Yule's Q=0.9854499831466986
+  Yule's Y=0.8422896535427215
+  Reference Likelihood=0.5
+  Response Likelihood=0.495
+  Random Accuracy=0.5
+  Random Accuracy Unbiased=0.5000125
+  kappa=0.8420000000000001
+  kappa Unbiased=0.8419960499012477
+  kappa No Prevalence=0.8420000000000001
+  chi Squared=709.034903490349
+  phi Squared=0.709034903490349
+  Accuracy Deviation=0.008529888627643386
+...
+</pre>
+
+<p>
+This is just a confusion matrix report based on the number
+of true positives, false negatives, false positives and
+true negatives.  For the <code>plot</code> category, recall
+was slightly lower than precision.
+</p>
+
+<p>The one-versus-all report for the <code>plot</code> category
+continues with histograms of rank, average rank, conditional
+and joint probabilities, just as before, but broken out one-versus-all:
+</p>
+
+<pre class="code">
+...
+Rank Histogram=
+  plot,quote
+  458,42
+Average Rank Histogram=
+  plot,quote
+  0.084,0.916
+Average Score Histogram=
+  plot,quote
+  -1.9181814022265598,-2.256328242824601
+Average Conditional Probability Histogram=
+  plot,quote
+  0.5579020517702641,0.442097948229736
+Average Joint Probability Histogram=
+  plot,quote
+  -1.9181814022265598,-2.256328242824601
+...
+</pre>
+
+<p>
+The report concludes with two scored precision recall evaluations.
+These are the kinds of reports produced for information retrieval
+tasks as used, for example, in the <a href="http://trec.nist.gov/">Text Retrieval Conference (TREC)</a>.
+</p>
+
+<pre class="code">
+...
+Scored One Versus All
+  Area Under PR Curve (interpolated)=0.7906839673018342
+  Area Under PR Curve (uninterpolated)=0.7878864243381857
+  Area Under ROC Curve (interpolated)=0.7840919999999995
+  Area Under ROC Curve (uninterpolated)=0.7840920000000003
+  Average Precision=0.7878864243381849
+  Maximum F(1) Measure=0.7386569872958257
+  BEP (Precision-Recall break even point)=0.7069943289224953
+...
+</pre>
+
+<p>
+These include cumulative statistics from the interpolated and
+uninterpolated precision-recall (PR) and receiver operating
+characteristic (ROC) curves determined as described in the
+scored precision-recall evaluation documentation.  After
+the area under the curves, there is average precision, which
+is very similar, but only includes points which were correct
+in the average.  The maximum F(1)-measure indicates the best
+possible operating point achievable by setting a threshold.
+The BEP indicates the best score possible when precision is
+equal to recall.
+</p>
+
+<p>
+Note that the first set of results compares cases using their score,
+which is just their joint log probabilities (divided by the number of
+characters, and thus expressed as negative cross-entropy rates).
+These results are not very good.  What this means is that the joint
+probabilities assigned to cases perform very well at ranking plots
+versus quotes (92% accuracy), but not very good at ranking confidence
+overall.  For instance, in one case, there might be a score of -1.2
+for <code>plot</code> and -1.4 for <code>quote</code>, whereas in
+another there might be a score of -1.9 for <code>plot</code> and -2.1
+for <code>quote</code>.  Ranking these provides case 1 plot, then case
+1 quote, then case 2 plot then case 2 quote.  Even if both decisions
+were right (both were indeed plots), the ranked scores suffer.
+</p>
+
+<p>
+Usually, the conditional one-versus-all scores will be much better.
+These use the conditional probabilities assigned to answers to rank
+output.  This is likely to be the better approach to setting overall
+thresholds in one-versus all cases, because the scores are true
+conditional probabilities after the traditional Bayesian
+normalization.
+</p>
+
+<pre class="code">
+...
+Conditional One Versus All
+  Area Under PR Curve (interpolated)=0.9796868652411705
+  Area Under PR Curve (uninterpolated)=0.9792351050063459
+  Area Under ROC Curve (interpolated)=0.9786800000000003
+  Area Under ROC Curve (uninterpolated)=0.9786799999999973
+  Average Precision=0.9792351050063466
+  Maximum F(1) Measure=0.9216867469879518
+  BEP (Precision-Recall break even point)=0.9126984126984127
+...
+</pre>
+
+<p>
+The average precision being much higher than the accuracy tells us
+that we are doing a good job ranking by confidence in that we
+tend to be more correct when we are more confident.
+</p>
+
+
+<h3>Macro- and Micro-Averaged Results</h3>
+
+<p>
+The final section of the report provides macro- and micro-averaged
+results.  These averages are over the one-versus-all results, which
+are broken out category-by-category at the end of the report (see
+below).  The thing to remember is that the macro-averaged results
+average the one-versus-all results with each category weighted
+equally:
+</p>
+
+<pre class="code">
+...
+Macro-averaged Precision=0.9210421042104211
+Macro-averaged Recall=0.921
+Macro-averaged F=0.9209980249506238
+...
+</pre>
+
+<p>
+In general, these can diverge widely from the accuracy figures if
+either the test data or classification results are skewed toward more
+populous categories (as is often the case with unbalanced training
+data).
+</p>
+
+<p>
+The micro-averaged results weight by case, not by category, treating
+all cases as equal.  This is calculated by summing the one-versus-all
+matrices and presenting the result as a precision-recall evaluation.
+As noted in the classifier evaluation documentation and again in the
+report, micro-averaging leads to multiplying the number of cases by
+the number of categories and it results in a number of symmetries in
+counts.
+</p>
+
+<pre class="code">
+...
+Micro-averaged Results
+         the following symmetries are expected:
+           TP=TN, FN=FP
+           PosRef=PosResp=NegRef=NegResp
+           Acc=Prec=Rec=F
+  Total=2000
+  True Positive=921
+  False Negative=79
+  False Positive=79
+  True Negative=921
+  Positive Reference=1000
+  Positive Response=1000
+  Negative Reference=1000
+  Negative Response=1000
+  Accuracy=0.921
+  Recall=0.921
+  Precision=0.921
+  Rejection Recall=0.921
+  Rejection Precision=0.921
+  F(1)=0.9209999999999999
+  Fowlkes-Mallows=1000.0
+  Jaccard Coefficient=0.8535681186283596
+  Yule's Q=0.9853923195573459
+  Yule's Y=0.842
+  Reference Likelihood=0.5
+  Response Likelihood=0.5
+  Random Accuracy=0.5
+  Random Accuracy Unbiased=0.5
+  kappa=0.8420000000000001
+  kappa Unbiased=0.8420000000000001
+  kappa No Prevalence=0.8420000000000001
+  chi Squared=1417.928
+  phi Squared=0.708964
+  Accuracy Deviation=0.006031542091372652
+</pre>
+
+<p>
+Basically, this is just another precision-recall evaluation over
+aggregate data.
+</p>
+
+
+
+<h2>References</h2>
+
+
+
+<ul>
+
+<li> <a href="http://www.cs.cornell.edu/people/pabo">Bo Pang</a>, <a
+href="http://www.cs.cornell.edu/home/llee">Lillian Lee</a>, and
+Shivakumar Vaithyanathan. 2002. <a
+href="http://www.cs.cornell.edu/home/llee/papers/sentiment.home.html">Thumbs
+up? Sentiment Classification using Machine Learning Techniques</a>.
+<i>EMNLP Proceedings.</i>
+</li>
+
+<li><a href="http://www.cs.cornell.edu/people/pabo">Bo Pang</a> and <a
+href="http://www.cs.cornell.edu/home/llee">Lillian Lee</a>. 2004. <a
+href="http://www.cs.cornell.edu/home/llee/papers/cutsent.home.html">A
+Sentimental Education: Sentiment Analysis Using Subjectivity
+Summarization Based on Minimum Cuts</a>. <i>ACL Proceedings</i>.
+</li>
+
+<li><a href="http://www.cs.cornell.edu/people/pabo">Bo Pang</a> and <a
+href="http://www.cs.cornell.edu/home/llee">Lillian Lee</a>. 2005. <a
+href="http://www.cs.cornell.edu/home/llee/papers/pang-lee-stars.home.html">Seeing
+stars: Exploiting class relationships for sentiment categorization
+with respect to rating scales</a>. <i>ACL Proceedings</i>.
+</li>
+
+</ul>
+
+
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+

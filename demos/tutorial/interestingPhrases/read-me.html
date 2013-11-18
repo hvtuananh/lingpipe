@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Signicant Phrases Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">Phrases Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a class="current" href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<h2>What are Significant Phrases?</h2>
+
+<p>
+LingPipe provides a simple way find statistically significant phrases
+in a document collection.  There are two types of significance
+of interest.
+</p>
+
+<h3>Collocations</h3>
+
+<p>
+Collocations are phrases which are seen together more than you would
+expect given an estimate of how frequent each token is and how often
+they are seen together. For example in 600 posts from
+the <code>rec.sport.hockey</code> newsgroup, the collocations
+of length two found by LingPipe are:
+</p>
+
+<pre class="code">
+Collocations in Order of Significance:
+Score: 260391.00000000006 with : Evan Pritchard
+Score: 260391.00000000006 with : Rachel Holme
+Score: 260391.00000000006 with : Durham Wasps
+Score: 260391.00000000006 with : Abo Akademi
+Score: 260391.00000000006 with : Solar Terresterial
+Score: 260391.00000000003 with : Los Angeles
+Score: 260391.0 with : Petteri Kortelainen
+Score: 260391.0 with : Anna Matyas
+Score: 260391.0 with : Keyword Description
+Score: 260391.0 with : Milton Keynes
+Score: 260391.0 with : Marcus Lindroos
+.
+.
+.
+Score: 156230.99987556748 with : Roman Era
+Score: 145516.46723953017 with : Tampa Bay
+Score: 142432.13662060775 with : Simon Fraser
+Score: 142432.13662060772 with : Capital District
+Score: 142028.72720988328 with : Rex Wang
+Score: 140207.30760545374 with : Lori Iannamico
+Score: 138871.46655196382 with : Tie Breaker
+</pre>
+
+<p>
+These are two token phrases which are ranked by how often they are
+seen together as opposed to how often each is seen alone. For example,
+'Los Angeles' has a higher score than 'Tie Breaker' because we see
+'Los' 67 times, 'Angeles' 67 times and 'Los Angeles' 67 times. So
+'Los' and 'Angeles' always occurs with the larger phrase--a high
+correlation. On the other hand 'Tie' occurs 15 times, 'Breaker' 8
+times and 'Tie Breaker' 8 times, so Tie only occurs with the larger
+phrase half the time, less of a correlation.
+</p>
+
+
+<h3>Relatively New Terms</h3>
+
+<p>
+This technique evaluates the significance of phrases in one collection
+versus another, finding phrases that occur significantly more often in
+the foreground corpus than they would be expected to from the
+background corpus.  The interesting phrases are those that we see more
+often in the foreground model than expected in the background
+model. Returning to our Google example, this is a way to tell if there
+is more news than usual about a phrase--if 'George Bush' counts go way
+up, there is likely some big stories about him.
+</p>
+
+<p>
+In our hockey data set, we see that 400 (chronologically later)
+articles have surprisingly more information about the following
+capitalized phrases:
+</p>
+
+<pre class="code">
+New Terms in Order of Signficance:
+Score: 1.942594719053515E28 with : The Logistician
+Score: 3.64670037870023E27 with : Von Rospach
+Score: 7.573888901798824E24 with : Clint Malarchuk
+Score: 1.9306325340669786E24 with : Drozinski Tim
+Score: 1.6830864226219717E24 with : Allegheny College
+Score: 7.380822220736823E23 with : John Franjione
+Score: 9.025704916227892E21 with : Robert Andolina
+Score: 5.693776247868884E21 with : Paul Brownlow
+Score: 1.4125238917251475E20 with : Steven Kipling
+Score: 1.2786191514800556E20 with : Chuq Von
+Score: 1.61250626918026547E18 with : Swift Current
+Score: 1.25417154269577446E18 with : Scorers Rnk
+Score: 4.0378852066884986E17 with : Carol Jarosz
+Score: 9.314669849549016E16 with : Ray Borque
+Score: 8.7988271207488672E16 with : John Madden
+Score: 1.5837886331023705E15 with : Ali Lemer
+Score: 2.717240891101768E14 with : J Coyle
+</pre>
+
+<p>
+'Ali Lemer' was talked about once in the background model and 7 times in the foreground model, so that is an intersting new phrase to appear.
+</p>
+
+<h2>Popular Web Applications</h2>
+
+<h3>Amazon's &quot;Statistically Improbable Phrases&quot;</h3>
+<p>
+Amazon provides a description of their statistically improbable
+phrase extraction in:
+</p>
+
+<ul>
+<li><a href="http://www.amazon.com/gp/search-inside/sipshelp.html/104-1036386-7288716">What are Statistically Improbable Phrases?</a>
+</li>
+</ul>
+
+<p>
+They explain that they look for phrases that appear more
+frequently in a given book than in the entire collection of
+books and list the phrases in this order.
+</p>
+
+<p>
+You can see an example of SIP extraction for which
+Amazon does a good job:
+</p>
+
+<ul>
+<li>
+<a
+href="http://www.amazon.com/exec/obidos/tg/detail/-/0521419328/qid=1118951089/">Bob Carpenter's first book's SIPs</a>.
+</li>
+</ul>
+
+<h3>Amazon's &quot;Capitalized Phrases&quot;</h3>
+
+<p>
+This looks just like their statistically improbable phrases,
+only with a restriction to phrases that are capitalized.  There
+is an exaplanation at:
+</p>
+
+<ul>
+<li>
+<a href="http://www.amazon.com/gp/search-inside/capshelp.html/104-1036386-7288716">What are Capitalized Phrases?</a>
+</li>
+</ul>
+
+<h3>Yahoo's &quot;Buzz Index&quot;</h3>
+
+<p>
+Another application of this technique can be found in
+Finding new terms appears to be the basis of:
+</p>
+
+<ul>
+<li>Yahoo's <a
+href="http://buzz.yahoo.com/">Buzz Index</a></li>
+</ul>
+
+<p>
+which they explain in their
+</p>
+
+<ul>
+<li><a href="http://help.yahoo.com/help/us/buzz/">Buzz Index
+FAQ</a>
+</li>
+</ul>
+
+<p>Note particularly their hand-filtering of results.
+They additionally classify phrases in their indices
+that are considered &quot;movers&quot; (that is, moving up or down in
+frequency) by category.
+</p>
+
+<h3>Google's &quot;In the News&quot;</h3>
+<p>
+Google's &quot;In The News&quot; feature is a sidebar near the top of
+</p>
+
+<ul>
+<li><a href="http://news.google.com">Google News</a></li>
+</ul>
+
+<p>
+Like Yahoo, they seem to restrict attention to capitalized
+phrases.
+</p>
+
+
+<h2>Running an example</h2>
+
+<p>
+If you have not already, download and install LingPipe. That done,
+change directory to
+<code>demos/tutorial/interestingPhrases</code>. You will also need to
+untar/zip the data in <code>demos/rec.sport.hockey.tar.gz</code> and
+type the following on a single line (replacing the colon":" with a semicolon ";" if using Windows):
+</p>
+
+<pre class="code">
+java
+-cp &quot;../../../lingpipe-4.1.0.jar:build/classes&quot;
+InterestingPhrases
+</pre>
+
+<p>
+The resulting output will be collocations for the background model and
+new terms form the foreground model given the background model. See
+below for more details on how the software was configured.
+</p>
+
+
+<h2> The Code</h2>
+
+<p>
+First we assemble the background model by visiting a directory of text
+files and training up a tokenized language model (a model over tokens
+rather than over characters as in our <a href="../classify/read-me.html">classifier demo</a>). The rubber hits the road in just a few lines of the <a href="src/InterestingPhrases.java"><code>InterestingPhrases.java</code></a> class:
+</p>
+
+<pre class="code">
+IndoEuropeanTokenizerFactory tokenizerFactory
+    = new IndoEuropeanTokenizerFactory();
+
+System.out.println(&quot;Training background model&quot;);
+TokenizedLM backgroundModel = buildModel(tokenizerFactory,
+                                         NGRAM,
+                                         BACKGROUND_DIR);
+
+backgroundModel.sequenceCounter().prune(3);
+
+System.out.println(&quot;\nAssembling collocations in Training&quot;);
+SortedSet&lt;ScoredObject&lt;String[]&gt;&gt; coll
+    = backgroundModel.collocationSet(NGRAM_REPORTING_LENGTH,
+                                     MIN_COUNT,MAX_COUNT);
+
+System.out.println(&quot;\nCollocations in Order of Significance:&quot;);
+report(coll);
+</pre>
+
+<p>
+We need to specify what kind of tokenization we are using in the
+training and for English a reasonable assumption is the supplied <a
+href="../../../docs/api/com/aliasi/tokenizer/IndoEuropeanTokenizerFactory.html"><code>IndoEuropeanTokenizerFactory</code></a>
+which provides tokenizers. Recall that this will take a text like
+</p>
+
+<blockquote>
+<p>
+&quot;So many morons...
+</p>
+</blockquote>
+
+<p>
+and produce an array of tokens:
+</p>
+
+<blockquote>
+<p>
+{ &quot;\&quot;&quot;, &quot;So&quot;, &quot;many&quot;,
+  &quot;morons&quot;, &quot;...&quot; }
+</p>
+</blockquote>
+
+<p>
+If you need a different tokenization, for instance you don't want
+punctuation to be a token, then this class is the place to start
+digging around.
+</p>
+
+<p>
+Next we have the method <code>buildModel</code> which will take a directory of files and return a tokenized language model. That method is:
+</p>
+
+<pre class="code">
+
+private static TokenizedLM buildModel(TokenizerFactory tokenizerFactory,
+                                      int ngram,
+                                      File directory)
+    throws IOException {
+
+    String[] trainingFiles = directory.list();
+    TokenizedLM model
+        = new TokenizedLM(tokenizerFactory,ngram);
+
+    System.out.println(&quot;Training on &quot; + directory);
+
+    for (int j = 0; j &lt; trainingFiles.length; ++j) {
+        File file = new File(directory,trainingFiles[j]);
+        String text = Files.readFromFile(file,&quot;ISO-8859-1&quot;);
+        model.handle(text);
+    }
+    return model;
+}
+</pre>
+
+<p>
+We create a new <a
+href="../../../docs/api/com/aliasi/lm/TokenizedLM.html"><code>TokenizedLM</code></a>
+which requires us to set how many tokens of data it is sampling. Once
+that object is created we have a bit of training to do with the
+<a href="../../../docs/api/com/aliasi/lm/TokenizedLM.html#train(java.lang.CharSequence)"><code>train()</code></a>
+method which takes text from each file. Pretty simple.
+</p>
+
+<p>
+Popping back to where <code>buildModel()</code> is called, the next
+interesting line is
+<code>backgroundModel.sequenceCounter().prune(3);</code> which makes
+the collocation calculation run much faster because open ended parts
+of the internal data structures are cleaned up.
+</p>
+
+<p>
+Next we get the goodies with the method call <code><a
+href="../../../docs/api/com/aliasi/lm/TokenizedLM.html#collocations(int,%20int,%20int)">collocations(int,int,int)</a></code>
+which pulls phrases of specified token length <code>nGram</code>,
+minimum number of instances <code>minCount</code>, and how many
+phrases to return in the ranking <code>maxReturned</code>. Some
+experimenting is required to see what sort of minCount to use since if
+it is set too low then you get a bunch of noisy single/low count
+instances and if it is set too high you may lose interesting
+examples. The method returns an array of <code><a
+href="../../../docs/api/com/aliasi/util/ScoredObject.html">ScoredObject</a>
+</code> instances which is a convient class to use when there is a
+double value associated with an object.
+</p>
+
+<p>
+Now that we have collocations, 101 of them to be exact of length 2
+given the constant definitions, let's do something with them--like print
+them out in order. The method <code>report()</code> does just that as
+shown below:
+</p>
+
+<pre class="code">
+static void report(SortedSet&lt;ScoredObject&lt;String[]&gt;&gt; nGrams) {
+    for (ScoredObject&lt;String[]&gt; nGram : nGrams) {
+        double score = nGram.score();
+        String[] toks = nGram.getObject();
+        report_filter(score,toks);
+    }
+}
+    
+static void report_filter(double score, String[] toks) {
+    String accum = &quot;&quot;;
+    for (int j=0; j&lt;toks.length; ++j) {
+        if (nonCapWord(toks[j])) return;
+        accum += &quot; &quot;+toks[j];
+    }
+    System.out.println(&quot;Score: &quot;+score+&quot; with :&quot;+accum);
+}
+
+private static boolean nonCapWord(String tok) {
+    if (!Character.isUpperCase(tok.charAt(0)))
+        return true;
+    for (int i = 1; i &lt; tok.length(); ++i) 
+        if (!Character.isLowerCase(tok.charAt(i))) 
+            return true;
+    return false;
+}
+</pre>
+
+<p>
+The array is iterated over in the obvious fashion, and the
+<code>score</code> and <code>accum</code> variables built up in
+report_filter. We are only looking at words which start with a capital
+letter and it all ends in a glorious call to <code>println</code>. In
+an actual application you might want to find the phrases in the
+documents and provide a hyperlink from a web page, compare to
+yesterday's collocations or populate a database for a trend-spotting
+data-mining application.
+</p>
+
+<h3>Finding New Terms in Comparison with Another Data Set</h3>
+
+<p>Sometimes a more useful definition of interesting phrase is &quot;Am I
+seeing phrases in one data set more often than I would expect given
+another data set?&quot; For example, &quot;What is in today's news
+that is more common than expected given the past week of news?&quot; With
+very little additional work we can get just such a capability with
+LingPipe.
+</p>
+
+<p>
+All we need do is train up a foreground model and compare it to the
+background model we already have for the collocations demo
+above. Continuing in the source for <a
+href="src/InterestingPhrases.java">InterestingPhrases.java</a> we
+have:
+</p>
+
+<pre class="code">
+System.out.println(&quot;Training foreground model&quot;);
+TokenizedLM foregroundModel = buildModel(tokenizerFactory,
+                                         NGRAM,
+                                         FOREGROUND_DIR);
+foregroundModel.sequenceCounter().prune(3);
+
+System.out.println(&quot;\nAssembling New Terms in Test vs. Training&quot;);
+SortedSet&lt;ScoredObject&lt;String[]&gt;&gt; newTerms 
+    = foregroundModel.newTermSet(NGRAM_REPORTING_LENGTH,
+                                 MIN_COUNT,
+                                 MAX_COUNT,
+                                 backgroundModel);
+System.out.println("\nNew Terms in Order of Signficance:");
+report(newTerms);
+</pre>
+
+<p>
+We simply build a model with some different data, in this case it is
+more and chronologically later data from rec.sport.hockey, prune it,
+and apply the method <a
+href="../../../docs/api/com/aliasi/lm/TokenizedLM.html#newTerms(int,%20int,%20int,%20com.aliasi.lm.LanguageModel.Tokenized)">newTerms</a>
+with appropriate parameters. Then we use the same <code>report</code>
+method as with the collocations.
+</p>
+
+<h2>References</h2>
+
+<p>
+For a survey of research on collocations and novel phrase finding, see:
+</p>
+
+<ul>
+<li>
+Christopher D. Manning and Hinrich Schuetze.  1999. <i>Foundations of
+Statistical Natural Language Processing</i>. MIT Press.  Chapter 5:
+Collocations.
+</li>
+</ul>
+
+<p>
+For an early paper applying statistical hypothesis testing
+to phrase extraction, see:
+</p>
+
+<ul>
+<li>
+Dunning, Ted. 1993.
+<a href="http://acl.ldc.upenn.edu/J/J93/J93-1003.pdf">Accurate methods for the statistics of surprise and coincidence.</a>
+<i>Computational Linguistics Journal</i>.
+</li>
+</ul>
+
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>

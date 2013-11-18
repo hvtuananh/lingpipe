@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<project name="LingPipe Tutorial - Classification"
+         default="compile" basedir=".">
+
+  <description>
+    Commands that run the tutorial code.
+  </description>
+
+  <path id="classpath.standard">
+    <pathelement location="build/classes"/>
+    <pathelement location="../../../lingpipe-4.1.0.jar"/>
+  </path>
+
+  <target name="clean"
+          description="Clean build and distribution directories.">
+    <delete dir="build"/>
+    <delete file="classifyNews.jar"/>
+  </target>
+
+  <target name="compile"
+          depends=""
+          description="Compile the src code into the build directory.">
+    <mkdir dir="build/classes"/>
+    <javac includeantruntime="false"
+           optimize="on"
+           debug="yes"
+           debuglevel="source,lines,vars"
+           destdir="build/classes">
+      <compilerarg value="-Xlint:all"/>
+      <classpath refid="classpath.standard"/>
+      <src path="src/"/>
+    </javac>
+  </target>
+
+  <target name="jar"
+          depends="compile">
+    <jar destfile="classifyNews.jar">
+      <fileset dir="build/classes"
+               includes="**/*.class"/>
+    </jar>
+  </target>
+
+  <target name="classifyNews"
+          depends="compile"
+           description="Simple language model based categorizer">
+    <java classname="ClassifyNews"
+          maxmemory="512M"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+    </java>
+  </target>
+
+  <target name="crossValidateNews"
+          depends="compile"
+          description="runs cross validatation on News data">
+    <java classname="CrossValidateNews"
+          maxmemory="512M"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+    </java>
+  </target>
+
+</project>

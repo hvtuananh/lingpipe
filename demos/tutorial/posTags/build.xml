@@ -1,0 +1,169 @@
+<?xml version="1.0"?>
+
+<project name="LingPipe Tutorial - POS Tagging"
+         default="compile" basedir=".">
+
+<property name="data.dir"
+          value="e:/data"/>
+
+<property name="data.pos.medpost"
+          value="medtag/medpost"/>
+
+<property name="data.pos.genia"
+          value="${data.dir}/genia-3.02/unpacked/GENIAcorpus3.02.pos.txt"/>
+
+<property name="data.pos.brown"
+          value="${data.dir}/nltk-data-0.3/unpacked/nltk-data-0.3/brown.zip"/>
+
+
+<path id="classpath.standard">
+  <pathelement location="build/classes"/>
+  <pathelement location="../../../lingpipe-4.1.0.jar"/>
+</path>
+
+<target name="clean">
+  <delete dir="build"/>
+  <delete file="posTags.jar"/>
+</target>
+
+<target name="compile">
+  <mkdir dir="build/classes"/>
+  <javac includeAntRuntime="false"   optimize="on"
+         debug="yes"
+         debuglevel="source,lines,vars"
+         destdir="build/classes">
+    <compilerarg value="-Xlint:all"/>
+    <classpath refid="classpath.standard"/>
+    <src path="src/"/>
+  </javac>
+</target>
+
+<target name="jar"
+        depends="compile">
+  <jar destfile="posTags.jar">
+    <fileset dir="build/classes"
+             includes="**/*.class"/>
+  </jar>
+</target>
+
+<target name="run-medpost"
+        depends="compile">
+  <java classname="RunMedPost"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="../../models/pos-en-bio-medpost.HiddenMarkovModel"/>
+  </java>
+</target>
+
+
+<target name="train-medpost"
+        depends="compile">
+  <java classname="TrainMedPost"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${data.pos.medpost}"/>
+    <arg value="../../models/pos-en-bio-medpost.HiddenMarkovModel"/>
+  </java>
+</target>
+
+<target name="eval-medpost"
+        depends="compile">
+  <java classname="EvaluatePos"
+        fork="true"
+        maxMemory="512M">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+    <arg value="1"/>                 <!-- sent eval rate -->
+    <arg value="170000"/>            <!-- toks before eval -->
+    <arg value="100"/>               <!-- max n-best -->
+    <arg value="8"/>                 <!-- n-gram size -->
+    <arg value="256"/>               <!-- num characters -->
+    <arg value="8.0"/>               <!-- interpolation ratio -->
+    <arg value="MedPostPosCorpus"/>  <!-- corpus implementation class -->
+    <arg value="${data.pos.medpost}"/>    <!-- baseline for data -->
+  </java>
+</target>
+
+<property name="data.pos.crater"
+          value="e:\data\crater\ENGLISH"/>
+
+<target name="eval-crater-en"
+        depends="compile">
+  <java classname="EvaluatePos"
+        fork="true"
+        maxMemory="1G">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+    <arg value="1"/>                 <!-- sent eval rate -->
+    <arg value="800000"/>            <!-- toks before eval -->
+    <arg value="10"/>               <!-- max n-best -->
+    <arg value="8"/>                 <!-- n-gram size -->
+    <arg value="128"/>               <!-- num characters -->
+    <arg value="8.0"/>               <!-- interpolation ratio -->
+    <arg value="CraterCorpus"/>  <!-- corpus implementation class -->
+    <arg value="${data.pos.crater}"/>    <!-- baseline for data -->
+  </java>
+</target>
+
+
+<target name="eval-brown"
+        depends="compile">
+  <java classname="EvaluatePos"
+        fork="true"
+        maxMemory="512M">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+    <arg value="5"/>                 <!-- sent eval rate -->
+    <arg value="1000000"/>            <!-- toks before eval -->
+    <arg value="32"/>                <!-- max n-best -->
+    <arg value="8"/>                 <!-- n-gram size -->
+    <arg value="128"/>               <!-- num characters -->
+    <arg value="8.0"/>               <!-- interpolation ratio -->
+    <arg value="BrownPosCorpus"/>  <!-- corpus implementation class -->
+    <arg value="${data.pos.brown}"/>    <!-- baseline for data -->
+    <arg value="true"/>            <!-- smoothe tags -->
+  </java>
+</target>
+
+<target name="eval-genia"
+        depends="compile">
+  <java classname="EvaluatePos"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="5"/>                 <!-- sent eval rate -->
+    <arg value="480000"/>            <!-- toks before eval -->
+    <arg value="100"/>               <!-- max n-best -->
+    <arg value="8"/>                 <!-- n-gram size -->
+    <arg value="256"/>               <!-- num characters -->
+    <arg value="8.0"/>               <!-- interpolation ratio -->
+    <arg value="GeniaPosCorpus"/>    <!-- corpus implementation class -->
+    <arg value="${data.pos.genia}"/>       <!-- baseline for data -->
+  </java>
+</target>
+
+<target name="phrases"
+        depends="compile">
+  <java classname="PhraseChunker"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="../../models/pos-en-general-brown.HiddenMarkovModel"/>   <!-- HMM -->
+    <arg value="50000"/>                                                 <!-- cache -->
+
+    <arg value="'s not"/>
+
+    <arg value="The not very tall man ' will not run '"/>
+
+
+    <arg value="Not unheard of for peregrine falcons to live in urban settings."/>
+
+    <!-- NY Times Examples, May 10, 2007, web front page -->
+    <arg value="After months of coy hints, Prime Minister Tony Blair made the announcement today as part of a closely choreographed and protracted farewell."/>
+    <arg value="The attorney general appeared before the House Judiciary Committee to discuss the dismissals of U.S. attorneys."/>
+    <arg value="Nascar's most popular driver announced that his future would not include racing for Dale Earnhardt Inc."/>
+    <arg value="Purdue Pharma, its parent company, and three of its top executives today admitted to understating the risks of addiction to the painkiller."/>
+    <arg value="After a difficult stretch for the airline, David Neeleman will give way to David Barger, the No. 2 executive."/>
+  </java>
+</target>
+
+
+</project>

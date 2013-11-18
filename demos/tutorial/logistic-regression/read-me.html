@@ -1,0 +1,1891 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Logistic Regression Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">Logistic Regression Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a class="current" href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+
+<h2>Introduction</h2>
+
+
+
+<h3>What is Logistic Regression?</h3>
+
+<p>
+Logistic regression is a discriminitive probabilistic classification
+model that operates over real-valued vector inputs.  The dimensions
+of the input vectors being classified are called &quot;features&quot;
+and there is no restriction against them being correlated.  Logistic
+regression is one of the best probabilistic classifiers, measured in both
+log loss and first-best classification accuracy across a number of
+tasks.
+</p>
+
+
+<div class="sidebar">
+<h2>The Gory Details</h2>
+
+<p>The details of LingPipe's implementation of logistic regression can
+be found in the class documentation for:
+</p>
+
+<ul>
+<li>
+<a href="../../../docs/api/com/aliasi/stats/LogisticRegression.html"><code>stats.LogisticRegression</code></a>
+</li>
+<li>
+<a href="../../../docs/api/com/aliasi/classify/LogisticRegressionClassifier.html"><code>classify.LogisticRegressionClassifier</code></a>
+</li>
+</ul>
+
+
+<p>A full presentation of the mathematics and optimization
+algorithm may be found in the following white paper:
+</p>
+
+<ul>
+<li>
+Carpenter, Bob. 2008. <a href="http://lingpipe.files.wordpress.com/2008/04/lazysgdregression.pdf">Lazy Sparse Stochastic Gradient Descent for Regularized Multinomial Logistic Regression</a>.
+</li>
+</ul>
+<p>
+which contains extensive links to the research literature
+and other implementations.
+</p>
+</div>
+
+
+<p>The logistic regression implementation in LingPipe provides
+multinomial classification; that is, it allows more than two possible
+output categories.  
+</p>
+
+<p>The main drawback of logistic regression is that it's relatively
+slow to train compared to the other LingPipe classifiers.  It also
+requires extensive tuning in the form of feature selection and
+implementation to achieve state-of-the-art classification performance.
+</p>
+
+<h3>What's in the Tutorial?</h3>
+
+
+
+<p>
+This tutorial covers both the vector-based implementation in
+the statistics package and the use of feature extractors
+for classifying arbitrary objects in the classification
+package.  The tutorial will cover basic estimation, the
+effects of different choices and parameterizations of priors,
+and tuning the estimator's search.
+</p>
+<p>
+The tutorial will also cover the basics of feature-based
+classification in LingPipe.  Feature extractors convert
+arbitrary objects into feature vectors, which may then be
+converted to actual vectors for use in logistic regression.
+</p>
+
+
+<h2>Also Known As (AKA)</h2>
+
+<p>For the sake of terminological clarity (and
+<a href="http://en.wikipedia.org/wiki/Search_engine_optimization">search
+engine optimization</a>),
+here are some
+aliases for multinomial logistic regression.  </p>
+
+<h3>Polytomous Logistic Regression</h3>
+
+<p>Multinomial logistic regression is also known as polytomous,
+polychotomous, or multi-class logistic regression, or just
+multilogit regression.</p>
+
+
+
+<h3>Maximum Entropy Classifier</h3>
+
+<p>Logistic regression estimation obeys the maximum entropy
+principle, and thus logistic regression is sometimes called
+&quot;maximum entropy modeling&quot;, and the resulting classifier
+the &quot;maximum entropy classifier&quot;.</p>
+
+<h3>Neural Network: Classification with a Single Neuron</h3>
+
+<p>Binary logistic regression is equivalent to a one-layer,
+single-output neural network with a logistic activation function
+trained under log loss.  This is sometimes called classification
+with a single neuron.
+</p>
+
+<p>LingPipe's stochastic gradient descent is equivalent to
+a stochastic back-propagation algorithm over the single-output
+neural network.</p>
+
+
+<h3>Ridge Regression and the Lasso</h3>
+
+<p>Maximum a priori (MAP) estimation with Gaussian priors is often
+referred to as &quot;ridge regression&quot;; with Laplace priors
+MAP estimation is known as the &quot;lasso&quot;. 
+</p>
+
+
+<h3>Shrinkage and Regularized Regression</h3>
+
+<p>MAP estimation with Gaussian, Laplace or Cauchy priors is known as
+parameter shrinkage.  </p>
+
+<p>Gaussian and Laplace priors are equivalent to regularized
+regression, with the Gaussian version being regularized with the
+L<sub>2</sub> norm (Euclidean distance, called the Frobenius norm
+for matrices of parameters) and the Laplace version being
+regularized with the L<sub>1</sub> norm (taxicab distance or
+Manhattan metric); other Minkowski metrics may be used for
+shrinkage.
+</p>
+
+<h3>Generalized Linear Model and Softmax</h3>
+
+<p>Logistic regression is a generalized linear model with the
+logit link function.  The logistic link function is
+sometimes called softmax and given its use of exponentiation
+to convert linear predictors to probabilities, it is sometimes
+called an exponential model.</p>
+
+
+<h2>Logistic Regression Models</h2>
+
+<p>Logistic regression models provide multi-category classification
+in cases where the categories are exhaustive and mutually exclusive.
+That is, every instance belongs to exactly one category.</p>
+
+<p>Inputs are coded as real-valued vectors of a fixed dimensionality.
+The dimensions are often called predictors or features.
+There is no requirement that they be independent, and with
+regularization, they may even be highly or fully linearly
+correlated.</p>
+
+<p>The model consists of parameter vectors for categories of
+the dimensionality of inputs.  The last category does not get
+a parameter vector; or equivalently, it gets a constant 0 parameter
+vector.</p>
+
+<p>More formally, if the inputs are of dimension <code>d</code> and
+there are <code>k</code> categories, the model consists of <code>k-1</code>
+vectors <code>&beta;[0],...,&beta;[k-2]</code>.  Then for a given
+input vector <code>x</code> of dimensionality <code>k</code>, the
+conditional probability of a category given the input is defined to be:
+</p>
+
+<pre class="code">
+p(0 | x) <big>&#x221d;</big> exp(&beta;[0] * x)
+p(1 | x) <big>&#x221d;</big> exp(&beta;[1] * x)
+...
+p(k-2 | x) <big>&#x221d;</big> exp(&beta;[k-2] * x)
+p(k-1 | x) <big>&#x221d;</big> exp(0 * x)
+</pre>
+
+<p>Normalizing by the sum of the exponentiated bases yields the probability
+estimates:</p>
+
+<pre class="code">
+p(0 | x) = exp(&beta;[0]*x) / (exp(&beta;[0]*x) + ... + exp(&beta;[k-2]*x) + exp(0*x))
+p(1 | x) = exp(&beta;[1]*x) / (exp(&beta;[0]*x) + ... + exp(&beta;[k-2]*x) + exp(0*x))
+...
+p(k-2 | x) = exp(&beta;[k-2]*x) / (exp(&beta;[0]*x) + ... + exp(&beta;[k-2]*x) + exp(0*x))
+p(k-1 | x) = exp(0*x) / (exp(&beta;[0]*x) + ... + exp(&beta;[k-2]*x) + exp(0*x))
+</pre>
+
+<p>Writing it out in summation notation, for <code>c &lt; k-1</code>:</p>
+
+<pre class="code">
+p(c | x) = exp(&beta;[c] * x) / (1 + <big>&Sigma;</big><sub>i &lt; k-1</sub> exp(&beta;[i]*x))
+</pre>
+
+<p>and for <code>c = k-1</code>:</p>
+
+<pre class="code">
+p(k-1 | x) = 1 / (1 + <big>&Sigma;</big><sub>i &lt; k-1</sub> exp(&beta;[i]*x))
+</pre>
+
+
+<h2>Example of Logistic Regression</h2>
+
+<p>Logistic regression models are estimated from training data
+consisting of a sequence of vectors and their reference categories.
+The vectors are arbitrary, with their dimensions representing features
+of the input objects being classified.  The categories are discrete,
+and should be numbered contiguously from 0 to the number of categories
+minus one.
+</p>
+
+<h3>The Wallet Problem</h3>
+
+<p>The first example we consider is drawn from chapter 5 of the following
+book:
+</p>
+
+<ul>
+<li>
+Allison, Paul David. 1999.
+<i>Logistic Regression Using the SAS System: Theory and Application</i>.
+SAS Institute.
+</li>
+</ul>
+
+<p>The data is based on a survey of 195 undergraduates, and attempts
+to predict their answer to the question &quot;If you found a wallet on the street, would you...&quot;, with the following possible responses:
+</p>
+
+<table>
+<tr><th class="title" colspan="2">Wallet Problem Outcomes</th></tr>
+<tr><th>Outcome</th><th>Description</th></tr>
+<tr><td>0</td><td>keep both</td></tr>
+<tr><td>1</td><td>keep the money, return the wallet</td></tr>
+<tr><td>2</td><td>return both</td></tr>
+</table>
+
+<p>The input vectors are five dimensional, consisting of the following 
+features, the descriptions of which are directly transcribed 
+from (Allison 1999):
+</p>
+
+<table>
+<tr><th class="title" colspan="3">Wallet Problem Predictors</th></tr>
+<tr><th>Dimension</th><th>Description</th><th>Values</th></tr>
+<tr><td>0</td><td>Intercept</td><td>1: always</td></tr>
+<tr><td>1</td><td>Male</td>
+    <td>1: male<br />
+        0: female</td></tr>
+<tr><td>2</td><td>Business</td>
+    <td>1: enrolled in business school<br />
+        0: not enrolled in business school</td></tr>
+<tr><td>3</td><td>Punish</td>
+    <td>Variable describing whether student was physically punished by parents at various ages:<br />
+        1: punished in elementary school, but not in middle or high school<br />
+        2: punished in elementary and middle school, but not in high school<br />
+        3: punished at all three levels</td></tr>
+<tr><td>4</td><td>Explain</td>
+    <td>Response to question &quot;When you were punished, did your parents generally explain why what you did was wrong?"<br />
+        1: almost always<br />
+        0: sometimes or never</td></tr>
+</table>
+
+
+<p>LingPipe requires an explicit representation of the intercept
+feature, which is implicit in (Allison 1999).  The intercept is
+treated just like other features, but is assumed to
+take on value 1.0 in all inputs.  Thus it provides an input-independent
+bias term for estimation.  Most problems benefit from the addition
+of such an intercept feature.</p>
+
+<h4>Where do Features Come From?</h4>
+<p>The predictors in this problem are all discrete, most defining
+binary variables with the physical punishment model taking on
+three ordinal values.  It is also possible to include continuous
+inputs for regression problems such as token counts in linguistic
+examples or fetaures like width of petals in flower species classification
+problems.
+</p>
+
+
+<p>Here's the first few training examples out of the complete set of
+195:</p>
+
+<table>
+<tr><th class="title" colspan="6">Wallet Problem Data (Sample)</th></tr>
+<tr><th>Outcome</th><th>Intercept</th><th>Male</th><th>Business</th><th>Punish</th><th>Explain</th></tr>
+<tr><td>1</td><td>1.0</td><td>0.0</td><td>0.0</td><td>2.0</td><td>0.0</td></tr>
+<tr><td>1</td><td>1.0</td><td>0.0</td><td>0.0</td><td>2.0</td><td>1.0</td></tr>
+<tr><td>2</td><td>1.0</td><td>0.0</td><td>0.0</td><td>1.0</td><td>1.0</td></tr>
+<tr><td>2</td><td>1.0</td><td>0.0</td><td>0.0</td><td>2.0</td><td>0.0</td></tr>
+<tr><td>0</td><td>1.0</td><td>1.0</td><td>0.0</td><td>1.0</td><td>1.0</td></tr>
+<tr><td colspan="6">...</td></tr>
+</table>
+
+<div class="sidebar">
+<h2>Binary, Discrete and Continuous Features</h2>
+<p>Note that three of the features are binary, taking values 0.0 and 1.0.
+The intercept is constant, always taking value 1.0.  The punishment
+feature takes three discrete values, 1.0, 2.0 and 3.0, but they
+are ordered along a natural scale.  Decisions about scale here are
+arbitrary and determining the scale is an empirical issue.
+</p>
+</div>
+
+<p>For example, the third training instance represents a survey
+response for a woman (male=0.0) who is not in business school
+(business=0.0), who was punished only in elementary school
+(punish=1.0), had her punishment explained almost always (explain=1.0),
+and who said she'd return both the wallet and the money (outcome=2).
+The fifth training example represents a man who's not in business
+school, was punished only in elementary school, had his punishment
+explained, and answered that he would keep both the money and wallet.
+</p>
+
+
+
+<p>Our first logistic regression model is estimated from 195 of these
+training cases, yielding a classifier that given the five input
+feature values (intercept, male, business, punish and explain),
+assigns probabilities to the three outcomes (keep both, return only
+money, return both).</p>
+
+<h3>Coding the Problem</h3>
+
+<p>The source code for the wallet problem may be found in the
+file <a href="src/WalletProblem.java"><code>src/WalletProblem.java</code></a>.
+</p>
+
+<p>In order to train a logistic regression model, LingPipe requires
+the inputs to be coded as instances of <code>matrix.Vector</code>
+and outputs to be coded as integers.  These are presented as
+parallel arrays of vectors and output integers.
+</p>
+
+<p>To keep things simple, the outputs and inputs are coded directly
+as used as static constants.  Here are the outputs:
+</p>
+
+<pre class="code">
+    static final <b>int[] OUTPUTS</b> = new int[] {
+        1,
+        1,
+        2,
+        2,
+        0,
+        ...
+    }
+</pre>
+
+<p>The inputs are coded as dense vector instances:
+</p>
+
+<pre class="code">
+    static final <b>Vector[] INPUTS</b> = new Vector[] {
+        new DenseVector(new double[] { 1, 0, 0, 2, 0 }),
+        new DenseVector(new double[] { 1, 0, 0, 2, 1 }),
+        new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
+        new DenseVector(new double[] { 1, 0, 0, 2, 0 }),
+        new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
+        ...
+    };
+</pre>
+
+<p>Note how these two parallel arrays directly encode the sample data
+as presented in the previous table.</p>
+
+<h3>Estimating the Regression Coefficients</h3>
+
+<p>Running the code using the ant target <code>wallet</code>
+prints out the estimated regression coefficients:
+</p>
+
+<pre class="code">
+&gt; ant wallet
+
+Computing Wallet Problem Logistic Regression
+Outcome=0  -3.47   1.27   1.18   1.08  -1.60
+Outcome=1  -1.29   1.17   0.42   0.20  -0.80
+</pre>
+
+<p>An estimated model consists of a sequence of weight vectors
+for one minus the number of output categories.  We don't need
+a vector for the last category, because it can be taken to be
+zero without loss of generality (see Carpenter 2008). </p>
+
+<h4>Implicit Coefficients for Final Outcome</h4>
+
+<p>
+The final outcome has all zero coefficients.  Filling in for the
+wallet example, this gives us:
+</p>
+<pre class="code">
+Outcome=2   0.00   0.00   0.00   0.00   0.00
+</pre>
+
+
+<div class="sidebar">
+<h2>Those Whacky &quot;Studies&quot;</h2>
+<p>
+We've all seen reports of whacky studies in the popular
+press, with conclusions such as &quot;tall people less ethical&quot;.  
+The statistical conclusions in these studies are almost
+always evaluated by logistic regression.
+</p>
+<p>
+You could almost use the example to the side here as
+a template.  The only problem is that you'll want to
+drop these problems into a statistical package such
+as R in order to compute confidence intervals.  Then
+you can say men are 43% plus or minus 5% more likely
+to keep the money in a found wallet than women.
+</p>
+</div>
+
+<p>
+These are not printed as part of the model output.
+</p>
+
+<h3>Interpreting the Regresison Coefficients</h3>
+
+<p> Because logistic regression involves a simple linear predictor,
+the regression coefficients may be interpreted fairly directly.</p>
+
+
+<h4>Intercept</h4>
+
+<p>The values of the intercept parameter are -3.47 for outcome 0 (keep
+both), -1.29 for (keep money, return wallet), and 0.0 implicitly for
+outcome 2 (return-both).  Because of the definition of probability
+and the fact that the intercept feature dimension is always 1.0,
+the linear basis for outcomes 0, 1 and 2 start off on an uneven footing.
+To make the keep-both outcome most likely, another feature or combination
+of features will have to contribute more than 3.47 to the linear basis.</p>
+
+<h4>Computing Probabilities</h4>
+
+<p>The main point of fitting a model is to be able to interpret
+probabilities for events.  For instance, take male business students
+who were punished at all three levels without explanation.  That
+provides an input vector of <code>(1,1,1,3,0)</code>.  The probabilities
+work out as:</p>
+
+<pre class="code">
+p(keep-both|1,1,1,3,0)   <big>&#x221d;</big> exp(-3.47*1 + 1.27*1 + 1.18*1 + 1.08*3 + -1.6*0)
+                         = exp(-1.54) = 0.21
+
+p(keep-money|1,1,1,3,0)  <big>&#x221d;</big> exp(-1.29*1 + 1.17*1 + 0.42*1 + 0.20*3 + -0.8*0)
+                         = exp(-0.3) = 0.74
+
+p(return-both|1,1,1,3,0) <big>&#x221d;</big> exp(0.0*1 + 0.0*1 + 0.0*1 + 0.0*3 + 0.0*0) 
+                         = exp(0) = 1
+</pre>
+
+<p>Division by the sum of exponentiated linear predictors yields the
+probabilities:</p>
+
+<pre class="code">
+p(keep-both|1,1,1,3,0)   = 0.21 / (0.21 + 0.74 + 1) = 0.11
+p(keep-money|1,1,1,3,0)  = 0.74 / (0.21 + 0.74 + 1) = 0.38
+p(return-both|1,1,1,3,0) = 1.00 / (0.21 + 0.74 + 1) = 0.51
+</pre>
+
+<p>If we repeat this exercise for women (second feature = 0), we get:
+</p>
+
+<pre class="code">
+p(keep-both|1,0,1,3,0)   = 0.30 / (0.30 + 0.51 + 1.00) = 0.16
+p(keep-money|1,0,1,3,0)  = 0.51 / (0.30 + 0.51 + 1.00) = 0.28
+p(return-both|1,0,1,3,0) = 1.00 / (0.30 + 0.51 + 1.00) = 0.55
+</pre>
+
+<p>According to this model, among business students punished at all
+three levels without explanation, women are less likely to waffle;
+they're more likely to keep both the money and the wallet and also
+more likely to return both than men, who are prone to keep the money
+and return the wallet.</p>
+
+
+<h3>Code Walk Through</h3>
+
+
+
+<p>
+The code is all in the <code>main()</code> method.  The
+estimation is done with the following one-liner, with
+the imports from the <code>stats</code> package listed:
+</p>
+
+<pre class="code">
+import com.aliasi.stats.AnnealingSchedule;
+import com.aliasi.stats.LogisticRegression;
+import com.aliasi.stats.RegressionPrior;
+
+public static void main(String[] args) {
+    LogisticRegression regression
+        = <b>LogisticRegression.estimate</b>(INPUTS,
+                                      OUTPUTS,
+                                      RegressionPrior.noninformative(),
+                                      AnnealingSchedule.inverse(.05,100),
+                                      null, // null reporter        
+                                      0.000000001, // min improve
+                                      1, // min epochs
+	                              10000); // max epochs
+</pre>
+
+<p>The parameters to the <code>estimate()</code> method involve
+the inputs and outputs, model prior hyperparameter, parameters
+to control the search, and a progress monitor parameter.</p>
+
+<h4>Input Vectors and Output Categories</h4>
+
+<p>The first two arguments to the <code>estimate()</code> method
+are just the parallel arrays of input vectors and output categories;
+these were defined in the previous section.
+</p>
+
+<h4>Prior Hyperparameter</h4>
+
+<p>The hyperparameter controlling fitting in the model is the prior.
+The priors are defined in the <code>stats.RegressionPrior</code>
+class.  This example uses a so-called noninformative prior, the upshot
+of which is that the estimate will be a maximum likelihood estimate
+(the parameters which assign the highest likelihood to the entire
+corpus of training data).  We consider other priors in the next
+section.  </p>
+
+<div class="sidebar">
+<h2>SGD Proliferation</h2>
+<p>
+Stochastic gradient descent is a general online optimizer.
+Being online means that examples are processed one at a time.
+Typically, each example is handled multiple times.
+</p>
+<p>
+SGD is also used in the
+perceptron classifier (<code>classify.Perceptron</code>) and for
+singular value decomposition (<code>matrix.SvdMatrix</code>).
+</p>
+</div>
+
+<h4>Search Parameters</h4>
+
+<p>The remaining parameters all control the search for the estimate.
+Logistic regression has no analytic solution, so estimating parameters
+from data requires numerical optimization.  LingPipe employs
+stochastic gradient descent (SGD), a general, highly-scalable online
+optimization algorithm.  SGD makes several passes through the data,
+adjusting the parameters a little bit based on examples one at a time.
+</p>
+
+<p>The first search parameter, is the annealing schedule.  Simulated annealing
+is a widely used technique in numerical optimization.  It involves
+starting with large learning rates and gradually reducing the activity
+of the learner over time.  The annealing schedule used in this demo is
+exponential, meaing that the learning rate at each step is an
+exponential function.  The parameters 0.005 and 0.9999 are the initial
+learning rate and the base of the exponent.  There is more information
+about annealing in the class documentation for <a
+href="../../../docs/api/com/aliasi/stats/AnnealingSchedule.html"><code>stats.AnnealingSchedule</code></a>.
+</p>
+
+<p>The second search parameter, <code>0.000000001</code> indicates how
+tight the estimate must be before stopping the search.  This is measured
+in relative corpus log likelihood.  That is, if the corpus log likelihood
+in an epoch (run through all the input/output pairs) is reduced
+by less than 0.0000001 percent, the search is terminated.</p>
+
+<p>The third and fourth search parameters, <code>1</code> and
+<code>100000</code> indicate the minimum and maximum number of times
+each training example is visited.</p>
+
+<h4>Progress Monitor Parameter</h4>
+
+<p>The <code>null</code> parameter can optionally be populated
+a <code>com.aliasi.io.Reporter</code> to which feedback about
+the progress of the search will be printed.  A standard value
+would be to create a reporter using <code>com.aliasi.io.Reporters.stdOut()</code>
+to print to standard output.
+</p>
+
+
+
+<h3>Applying a Trained Model</h3>
+
+<p>Once a regression model is trained, it may be used to
+probabilistically classify new vectors of the same dimensionality as
+the training data.</p>
+
+<p>The sample code in wallet problem goes on with some randomly
+generated data to do classification.</p>
+
+<pre class="code">
+...
+Input Vector        Outcome Conditional Probabilities
+1.0 0.0 0.0 1.0 1.0  p(0|input)=0.02  p(1|input)=0.13  p(2|input)=0.86
+1.0 0.0 1.0 0.0 0.0  p(0|input)=0.07  p(1|input)=0.28  p(2|input)=0.66
+1.0 0.0 1.0 3.0 1.0  p(0|input)=0.28  p(1|input)=0.18  p(2|input)=0.54
+</pre>
+
+<p>The third input represents a female business student who
+was physically punished through high school with explanation.
+the model predicts she is 28 percent likely to keep the wallet
+and money, and only 54% likely to return both.
+</p>
+
+<p>The code to compute the outcome probabilities given the output
+just feeds the input vectors to the regression model to produce
+an array of output conditional probabilities (omitting some of the
+print statements):
+</p>
+
+<pre class="code">
+    for (Vector testCase : TEST_INPUTS) {
+        double[] conditionalProbs = <b>regression.classify(testCase)</b>;
+        for (int i = 0; i &lt; testCase.numDimensions(); ++i)
+            System.out.printf(&quot;%3.1f &quot;,testCase.value(i));
+        for (int k = 0; k &lt; conditionalProbs.length; ++k)
+            System.out.printf(&quot; p(%d|input)=%4.2f &quot;,k,conditionalProbs[k]);
+     }
+</pre>
+
+<p>The variable <code>TEST_INPUTS</code> is an array of vector objects,
+of the same format as the training inputs array.  The key method call in the
+code is in bold, applying the trained regresison model to classify
+a test case.  The rest just goes through the output and prints it out
+in a readable fashion.
+</p>
+
+
+<h2>Regularization with Priors</h2>
+
+<p>Regression models have a tendency to overfit their training data,
+so priors are introduced to control the complexity of the fitted
+model.</p>
+
+
+<h3>The Overfitting Problem</h3>
+
+<h4>Problems with Maximum Likelihood</h4>
+
+<p>Logistic regression models with large numbers of features and
+limited amounts of training data are highly prone to overfitting under
+maximum likelihood estimation.  A model is overfit if it is a tight
+match to the training data but does not generalize well to new data.
+The model is called &quot;overfit&quot; because  it is too closely
+tailored to the training data.  The maximum likelihood estimation
+procedure is at the root of the problem, because it simply
+fits the training data as tightly as possible.
+</p>
+
+<h4>Linearly Separable Problems</h4>
+
+<p>A particularly pathological case of overfitting is when the data is
+linearly separable.  A simple case is when a feature value (dimension
+of the input) is positive if and only for a single output.  For instance,
+in a study of 195 students, it might have turned out that every male
+kept the wallet and money.  In this case, the coefficient for
+outcome 0 for the male feature will be unbounded; making it larger
+always increases the probability.
+</p>
+
+<h3>Priors on Coefficients</h3>
+
+<div class="sidebar">
+<h2>Minimum Description Length (MDL)</h2>
+<p>
+Minimum description length (MDL) approaches are equivalent to
+maximum a posterior (MAP) methods.  This is because MDL
+minimizes description length, the number of bits required to 
+encode a model and the training data.  The number of bits
+required in an ideal code is equal to the sum of the log (base 2)
+probabilities of the model in the prior and the data in
+the model.
+</p>
+<p>Those classically inclined are prone to invoke 
+<a href="http://en.wikipedia.org/wiki/Occam's_Razor">Occam's Razor</a> at
+this juncture.
+</p>
+</div>
+
+<p>To compensate for the tendency of regression models to overfit, it
+is common to establish prior expectations for the values of
+parameters.  These prior densities are designed to favor simple
+models.  Simplicity for regression models means small regression
+coefficients, so the priors tend to concentrate parameters around zero.
+With smaller coefficients, the change in probability for a given
+change in an input dimension is less and thus the overall estimate
+is less variable.  
+</p>
+
+<h4>Varieties of Priors</h4>
+
+<p>LingPipe implements three priors for regression: Cauchy (Student-t
+with one degree of freedom), Gaussian (normal), and Laplace (double
+exponential).  The priors are listed here in order of how fat their
+tails are.  The Cauchy distribution is so dispersed, in fact, that it
+does not have a finite mean or variance.  The Laplace distribution is
+so peaked around its mean that it tends to drive most posterior
+coefficient estimates to its mean.</p>
+
+<p>Because we wish to push coefficients toward zero, we only
+consider priors with mean (or median in the case of the Cauchy)
+zero.  The variance (or scale in the case of the Cauchy) will
+determine how fat the distribution is, but the scale of the tails
+relative to the rest of the distribution is controlled by variance.
+</p>
+
+<p>Priors with means of zero exert a shrinkage effect on parameters
+relative to maximum likelihood estimates.  Applying priors is thus
+sometimes called &quot;shrinkage&quot;.
+</p>
+
+<h3>Running the Demo</h3>
+
+<p>The ant target <code>regularization</code> demonstrates regularization with priors
+over the wallet data.
+</p>
+
+<pre class="code">
+&gt; ant regularization
+
+VARIANCE=0.0010
+
+Prior=LaplaceRegressionPrior(Variance=0.0010, noninformativeIntercept=true)
+0) -1.62,  0.00,  0.00,  0.00,  0.00,
+1) -0.88,  0.00,  0.00,  0.00,  0.00,
+
+Prior=GaussianRegressionPrior(Variance=0.0010, noninformativeIntercept=true)
+0) -1.63, -0.00,  0.00,  0.01, -0.02,
+1) -0.84,  0.03,  0.01,  0.02,  0.01,
+
+Prior=CauchyRegressionPrior(Scale=0.0010, noninformativeIntercept=true)
+0) -3.36,  0.00,  0.00,  1.08, -0.00,
+1) -0.88,  0.01,  0.00,  0.01,  0.00,
+
+...
+
+VARIANCE=0.512
+
+Prior=LaplaceRegressionPrior(Variance=0.512, noninformativeIntercept=true)
+0) -3.00,  0.63,  0.57,  0.92, -0.91,
+1) -1.12,  0.88,  0.03,  0.06, -0.39,
+
+Prior=GaussianRegressionPrior(Variance=0.512, noninformativeIntercept=true)
+0) -3.13,  0.75,  0.76,  0.96, -0.98,
+1) -1.23,  0.90,  0.28,  0.15, -0.51,
+
+Prior=CauchyRegressionPrior(Scale=0.512, noninformativeIntercept=true)
+0) -3.14,  0.80,  0.77,  0.98, -1.12,
+1) -1.26,  0.96,  0.23,  0.16, -0.50,
+
+...
+
+VARIANCE=524.288
+
+Prior=LaplaceRegressionPrior(Variance=524.288, noninformativeIntercept=true)
+0) -3.46,  1.24,  1.15,  1.08, -1.57,
+1) -1.27,  1.17,  0.42,  0.19, -0.78,
+
+Prior=GaussianRegressionPrior(Variance=524.288, noninformativeIntercept=true)
+0) -3.48,  1.27,  1.17,  1.09, -1.60,
+1) -1.28,  1.18,  0.43,  0.20, -0.79,
+
+Prior=CauchyRegressionPrior(Scale=524.288, noninformativeIntercept=true)
+0) -3.48,  1.27,  1.17,  1.09, -1.60,
+1) -1.28,  1.18,  0.43,  0.20, -0.79,
+</pre>
+
+<p>With very low prior variance, as shown in the first example with a prior
+variance of 0.001, the coefficients are driven close to zero in the posterior.
+As the variance increases, the results get closer and closer to the
+maximum likelihood estimates, with only the Laplace prior only just
+barely shrinking a few parameters.
+</p>
+
+<p>Also note that for a given variance (or scale for the Cauchy),
+the Cauchy exerts the least push toward zero and the Laplace the most
+push toward zero.  In the natural language problems we consider in 
+the next section, a fairly liberal Laplace prior still drives most
+posterior parameters to zero.
+</p>
+
+<h3>Code Walk Through</h3>
+
+<p>We return to the wallet example in a demo of the effects of regularization in
+<a href="src/RegularizationDemo.java"><code>src/RegularizationDemo.java</code></a>.
+The <code>main()</code> method just loops over variances trying all the priors:
+</p>
+
+<pre class="code">
+	for (double variance = 0.001; variance &lt;= 1000; variance *= 2.0) {
+	    System.out.println(&quot;\n\nVARIANCE=&quot; + variance);
+	    evaluate(RegressionPrior.laplace(variance,true));
+	    evaluate(RegressionPrior.gaussian(variance,true));
+	    evaluate(RegressionPrior.cauchy(variance,true));
+	}
+</pre>
+
+<p>The evaluation program just fits a model and prints out the results,
+just as in the wallet example:
+</p>
+
+<pre class="code">
+static void evaluate(RegressionPrior prior) {
+    LogisticRegression regression
+        = LogisticRegression.estimate(WalletProblem.INPUTS,
+                                      WalletProblem.OUTPUTS,
+                                      prior,
+                                      AnnealingSchedule.inverse(.05,100),
+                                      null,
+                                      0.0000001,
+                                      10,
+                                      5000);
+        Vector[] betas = regression.weightVectors();
+    ...    
+</pre>
+
+
+<h2>Feature Extractors and Text Classification</h2>
+
+<p>As implemented in the LingPipe <code>stats</code> package, 
+logistic regression operates over input vectors, integer
+outcomes, and arrays of conditional probabilities.  This
+is the basic material required to implement
+a classifier that produces conditional probability classifications.
+</p>
+
+<h3>The Logistic Regression Classifier</h3>
+
+<p>
+Several classes are implicated in adapting the stats package
+logistic regression models to implementations of classifiers.
+First, a feature extractor is used to convert arbitrary objects
+into mappings from string-based features to values.  Second,
+a symbol table converts these features into dimensions.  Together,
+a feature extractor and symbol table support the conversion of
+arbitrray objects into vectors.  Finally, another symbol table is used
+to convert the string-based category representations in the
+classification package into the integer representation required
+by the statistics package.
+</p>
+
+<p>
+The class
+<a href="../../../docs/api/com/aliasi/classify/LogisticRegressionClassifier.html"><code>classify.LogisticRegressionClassifier</code></a> handles all the details of this adaptation, as shown
+in the code examples below.
+</p>
+
+<h3>Running the Demo</h3>
+
+<p>There's a simple demo implementation of natural language classification
+based on the 4-newsgroup data distributed with LingPipe and discussed
+in the <a href="../classify/read-me.html">Topic Classification Tutorial</a>.
+The data is the bodies of messages to four easily confusible news groups:
+</p>
+<ul>
+<li><code>soc.religion.christian</code></li>
+<li><code>talk.religion.misc</code></li>
+<li><code>alt.atheism</code></li>
+<li><code>misc.forsale</code></li>
+</ul>
+
+<p>The demo is run with the ant target <code>nl-topics</code>:
+</p>
+
+<pre class="code">
+&gt; ant nl-topics
+
+Reading data.
+Num instances=250.
+Permuting corpus.
+
+EVALUATING FOLDS
+
+Logistic Regression Progress Report
+Number of dimensions=1462
+Number of Outcomes=4
+Number of Parameters=4386
+Prior:
+LaplaceRegressionPrior(Variance=0.5, noninformativeIntercept=true)
+Annealing Schedule=Exponential(initialLearningRate=0.0020, base=0.9975)
+
+Minimum Epochs=100
+Maximum Epochs=1000
+Minimum Improvement Per Period=1.0E-7
+Has Sparse Inputs=true
+Has Informative Prior=true
+...
+</pre>
+
+<p>The first part of the output reports back on some of the praameters
+set in the code.  For instance, there are 4386 unique feature dimensions,
+the prior is a Laplace prior with variance 0.5 and an noninformative
+intercept on the intercept, the annealing schedule is exponential, and 
+so on.
+</p>
+
+<p>
+ and then provides feedback on the epoch-by-epoch
+progress of the stochastic gradient descent algorithm used for
+estimation.  
+</p>
+
+<pre class="code">
+...
+epoch=    0 lr=0.002000000 ll=  -392.4239 lp=   -34.4435 llp=  -426.8675 llp*=  -426.8675       :00
+epoch=    1 lr=0.001995000 ll=  -342.0040 lp=   -43.1246 llp=  -385.1286 llp*=  -385.1286       :00
+epoch=    2 lr=0.001990013 ll=  -294.9343 lp=   -43.7030 llp=  -338.6373 llp*=  -338.6373       :00
+epoch=    3 lr=0.001985037 ll=  -249.8116 lp=   -44.6577 llp=  -294.4693 llp*=  -294.4693       :00
+...
+epoch=  997 lr=0.000164891 ll=   -53.4495 lp=   -54.3246 llp=  -107.7740 llp*=  -107.7740       :15
+epoch=  998 lr=0.000164478 ll=   -53.4494 lp=   -54.3239 llp=  -107.7732 llp*=  -107.7732       :15
+epoch=  999 lr=0.000164067 ll=   -53.4492 lp=   -54.3232 llp=  -107.7725 llp*=  -107.7725       :15
+...
+</pre>
+
+<div class="sidebar">
+<h2>Tuning Regression Convergence</h2>
+<p>
+The reason there is feedback on the progress of the algorithm is
+so that users may judge the convergence of the search.  It is
+often necessary to fiddle with the initial learning rate,
+annealing rate or exponent of decay, number of iterations run,
+minimum difference before considering the algorithm converged,
+and so on.  
+</p>
+</div>
+
+<p>In each epoch, the algorithm visits every training instance and
+adjusts each coefficient based on the current model and the trianing
+instance.  The reports indicate the epoch number, the learning rate
+for that epoch (<code>lr</code>), the log likelihood of the data in
+the model (<code>ll</code>), the log likelihood of the current set of
+coefficients (<code>lp</code>), the sum of the two log likelihoods
+(<code>llp</code>) [note that this is just negative error], the best
+sum so far (<code>llp*</code>), and finally, the time, down to the
+second.  In this case, estimation took 15 seconds resulting in a log
+likelihood of -53.4 and log prior -107.8.</p>
+
+<div class="sidebar">
+<h2>Early Stopping</h2>
+<p>Sometimes stochastic gradient descent methods are stopped
+before they converge, a practice known as &quot;early stopping&quot;.
+</p>
+<p>The effect of early stopping in situations with relatively
+small learning rates is a kind of shrinkage or regularization.
+Unlike the priors, these have no probabilistic interpretations.
+</p>
+</div>
+
+<p>After the feedback on estimation, the demo program prints out
+the features by name and their coefficient weights.  In this instance, features
+are alphabetic or numeric tokens (or the intercept).  Here are
+the top positive and negative coefficients for each category, as well as
+some zero coefficients from the first category, <code>alt.atheism</code>:
+</p>
+
+<pre class="code">
+CLASSIFIER &amp; FEATURES
+
+NUMBER OF CATEGORIES=4
+NUMBER OF FEATURES=1462
+
+  CATEGORY=alt.atheism
+                 Jim        0.542459
+                some        0.519327
+            atheists        0.454521
+                  on        0.346886
+                they        0.264611
+               model        0.259512
+                  at        0.233116
+                  is        0.225087
+             article        0.154355
+                 ICO        0.153443
+                 TEK        0.153443
+                vice        0.153192
+                  of        0.137563
+                 The        0.136769
+                 mcl        0.134621
+            timmbake        0.134621
+...
+            approach       -0.000000
+              causes       -0.000000
+             equally       -0.000000
+              happen       -0.000000
+            ignoring       -0.000000
+         immediately       -0.000000
+               later       -0.000000
+            provided       -0.000000
+              regard       -0.000000
+            separate       -0.000000
+               small       -0.000000
+              sounds       -0.000000
+               stand       -0.000000
+                week       -0.000000
+             willing       -0.000000
+               women       -0.000000
+             America       -0.000000
+            cultural       -0.000000
+           disciples       -0.000000
+            speaking       -0.000000
+             implied       -0.000000
+              debate       -0.000000
+...
+                   7       -0.179450
+                that       -0.237454
+                   2       -0.239784
+                  do       -0.269343
+              Mormon       -0.291933
+                very       -0.293706
+           Christian       -0.339846
+                  ca       -0.374287
+                  in       -0.425005
+  *&amp;^INTERCEPT%$^&amp;**       -0.947079
+</pre>
+
+<p>Here the name &quot;Jim&quot; is the most positively indicative of
+the <code>alt.atheism</code> topic, and the intercept the most
+negative feature.  For some reason this includes the word <code>in</code>
+and <code>very</code> and <code>do</code>, which seem unlikely features
+to discriminate atheism from other religious topics.  This is a problem
+with unigram (single token) features -- they are often perplexing.
+Features like &quot;Christian&quot; may show up because the alt.atheism
+board may refer less to Christians (or Mormons) as a class.
+</p>
+
+<p>Compare the <code>alt.atheism</code> topic with the <code>misc.forsale</code>
+topic, where words like &quot;PC&quot; or &quot;sale&quot; are strongly
+positive and again words like &quot;Mormon&quot; are negative, with some
+perplexing entries like &quot;that&quot;.
+</p>
+
+<pre class="code">
+  CATEGORY=misc.forsale
+                 for        0.888025
+                  PC        0.747638
+               drive        0.700343
+                  or        0.510954
+                   2        0.377641
+                 edu        0.282761
+                 300        0.253986
+                  on        0.251271
+               would        0.194138
+                sale        0.147936
+                  00        0.103214
+  *&amp;^INTERCEPT%$^&amp;**        0.083822
+...
+                  ca       -0.000098
+                Book       -0.058855
+                 the       -0.084477
+                  In       -0.108700
+                  of       -0.120941
+              Mormon       -0.246687
+                  to       -0.461844
+                that       -0.726345
+                  Re       -0.883255
+</pre>
+
+<p>Finally, here are the top positive and negative features
+for <code>soc.religion.christian</code>:
+</p>
+
+<pre class="code">
+  CATEGORY=soc.religion.christian
+             rutgers        1.068456
+                life        0.763778
+                 has        0.700812
+                 May        0.676530
+                Mary        0.565283
+               athos        0.530967
+                 who        0.354184
+            doctrine        0.263468
+            Orthodox        0.242234
+             Trinity        0.193247
+                   s        0.178808
+              verses        0.142781
+...
+                NNTP       -0.026967
+                  we       -0.046827
+                 edu       -0.047974
+                   A       -0.055054
+              Mormon       -0.056953
+                 The       -0.060776
+              Robert       -0.077967
+                 the       -0.079859
+                were       -0.108695
+                  ca       -0.120587
+                  it       -0.156520
+
+                 you       -0.157730
+        Organization       -0.164869
+                   a       -0.219583
+           Christian       -0.294424
+        Distribution       -0.389873
+  *&amp;^INTERCEPT%$^&amp;**       -0.437988
+             Posting       -0.470168
+                Host       -0.486523
+</pre>
+
+<p>Oddly, this category has junk from the mail headers and signatures
+and what not, like &quot;rutgers&quot;, &quot;NNTP&quot; and
+&quot;Posting&quot;.
+</p>
+
+<h4>Variance of Coefficient Estimates</h4>
+
+<div class="sidebar">
+<h2>Bootstrap Estimates of Variance</h2>
+<p>
+Consider a collection of random train/test splits
+of a data set.  Each training split may be used to estimate
+a value such as the coefficient for &quot;Trinity&quot;.
+With a collection of estimates, the mean estimate and
+variance of the estimate may be calculated.  If the
+splits are chosen from the original data with replacement
+until a sample the size of the original set is created,
+the resulting estimates are known as &quot;bootstrap
+estimates&quot;.
+</p>
+<p>
+The Wikipedia article as of the time of writing
+uses bootstrap estimates of logistic regression coefficient variance
+as its first example:
+</p>
+<ul>
+<li>Wikipedia; <a href="http://en.wikipedia.org/wiki/Bootstrapping_(statistics)">Bootstrapping (Statistics)</a></li>
+</ul>
+</div>
+
+<p>To get some feeling for the variability of the feature estimates, here are
+the top positive and negative features for the second fold of a four-way
+cross-validation of which the above reports the first fold:
+</p>
+
+<pre class="code">
+CATEGORY=misc.forsale
+               for        1.215978
+             drive        0.748811
+*&amp;^INTERCEPT%$^&amp;**        0.629428
+                PC        0.555030
+                on        0.525066
+              sale        0.515190
+                 2        0.479129
+              Host        0.266548
+           Posting        0.266545
+...
+               COM       -0.000069
+              been       -0.000102
+               Sun       -0.000180
+               are       -0.034722
+                in       -0.070332
+               the       -0.114678
+                of       -0.272626
+                In       -0.276476
+                to       -0.372242
+                Re       -0.459132
+               that       -0.806237
+</pre>
+
+
+<h3>Code Walkthrough</h3>
+
+<p>The code for generating this demo is in <a
+href="src/TextClassificationDemo.java"><code>src/TextClassificationDemo.java</code></a>.
+First, it builds up a corpus instance just as in the cross-validation
+demo in the topic classification tutorial:</p>
+
+<pre class="code">
+public static void main(String[] args) throws Exception {
+    ...
+    PrintWriter progressWriter = new PrintWriter(System.out,true);
+    int numFolds = 4;
+    XValidatingObjectCorpus&lt;Classified&lt;CharSequence&gt;&gt; corpus
+        = new XValidatingObjectCorpus&lt;Classified&lt;CharSequence&gt;&gt;(numFolds);
+
+    ...
+
+    corpus.permuteCorpus(new Random(7117)); // destroys runs of categories    
+
+    <b>TokenizerFactory tokenizerFactory</b>
+         = new RegExTokenizerFactory(&quot;\\p{L}+|\\d+&quot;); // letter+ | digit+
+    <b>FeatureExtractor&lt;CharSequence> featureExtractor</b>
+        <b>= new TokenFeatureExtractor(tokenizerFactory);</b>
+    int minFeatureCount = 5;
+    boolean addInterceptFeature = true;
+    boolean noninformativeIntercept = true;
+    double priorVariance = 0.5;
+    RegressionPrior prior 
+        = RegressionPrior.laplace(priorVariance,noninformativeIntercept);
+    AnnealingSchedule annealingSchedule
+         = AnnealingSchedule.exponential(0.002,0.9975);
+    double minImprovement = 0.0000001;
+    int minEpochs = 100;
+    int maxEpochs = 1000;
+
+    for (int fold = 0; fold &lt; numFolds; ++fold) {
+        corpus.setFold(fold);
+        Reporter reporter = Reporters.writer(progressWriter);
+        LogisticRegressionClassifier&lt;CharSequence> classifier
+            = LogisticRegressionClassifier.&lt;CharSequence>train(corpus,
+                                                               featureExtractor,
+                                                               minFeatureCount,
+                                                               addInterceptFeature,
+                                                               prior,
+                                                               annealingSchedule,
+                                                               minImprovement,
+                                                               minEpochs,
+                                                               maxEpochs,
+                                                               reporter);
+    ...
+</pre>
+
+<p>The training method for the logistic regression classifier is almost
+identical to the static method for estimating logistic regression models
+in the <code>stats</code> package.  The main difference is that the 
+classifier requires an instance of <a href="../../../docs/api/com/aliasi/util/FeatureExtractor.html"><code>util.FeatureExtractor</code></a>.  The feature extractor interface defines a single method:
+</p>
+
+<pre class="code">
+public interface FeatureExtractor&lt;E&gt; {
+    public Map&lt;String,? extends Number&gt; features(E in);
+}
+</pre>
+
+
+<div class="sidebar">
+<h2>Feature Hacking</h2>
+<p>
+The joy and curse of feature-based classifiers like
+logistic regression is that they leave a lot of latitude
+for &quot;tweaking&quot;.  Just about anything can be
+brought in as a feature.  With discriminitive models like
+logistic regression, the
+features do not even need to be independent.
+</p>
+</div>
+
+<p>In the code above, we use a pre-built adapter that converts a
+tokenizer factory into a feature extractor.  The
+<code>tokenizer.TokenFeatureExtractor</code> is constructed with a
+tokenizer factory, which it then uses to tokenize character sequences
+it receives.  The resulting mapping is simply the count of the tokens in the
+input.</p>
+
+<p>The features are printed out in order by the classifier
+itself:
+</p>
+
+<pre class="code">
+        ...
+        progressWriter.println(&quot;\nCLASSIFIER &amp; FEATURES\n&quot;);
+        progressWriter.println(classifier);
+        ...
+</pre>
+
+<p>The evaluation is done in the usual way, by having the corpus
+walk the evaluator over the test section:
+</p>
+
+<pre class="code">
+    ...
+    progressWriter.println(&quot;\nEVALUATION\n&quot;);
+    boolean storeInputs = false;
+    ConditionalClassifierEvaluator&lt;CharSequence&gt; evaluator 
+        = new ConditionalClassifierEvaluator&lt;CharSequence&gt;(classifier,CATEGORIES,storeInputs);
+    corpus.visitTest(evaluator);
+    progressWriter.printf(&quot;FOLD=%5d  ACC=%4.2f  +/-%4.2f\n&quot;, 
+                          fold,
+                          evaluator.confusionMatrix().totalAccuracy(),
+                          evaluator.confusionMatrix().confidence95());
+}
+</pre>
+
+<h2>Discrete Choice Analysis</h2>
+
+<p>Discrete choice analysis models one or more agent's selections when
+presented with one or more alternative options.  The alternatives are
+represented as vectors and the decision is probabilistically
+normalized using muli-logit, just as for logistic regression.  The
+vectors representing the alternatives may include information about the
+agent making the choice; their content is really up to the application.
+</p>
+
+<p>DCA models are easy to construct directly or to estimate from
+a set of training data.  Each training instance consists of one or
+more alternatives represented as vectors along with an indication of
+which choice was made.</p>
+
+<h3>Feature-Extraction for DCA</h3>
+
+<p>As for logistic regression, it is possible to represent choices
+among alternatives that are arbitrary objects.  A user-supplied
+feature extractor is used to map the alternative objects to vectors.</p>
+
+
+<h3>DCA Examples</h3>
+
+<div class="sidebar">
+<h2>Yahoo!'s Learning to Rank Challenge</h2>
+<p>
+Yahoo! is sponsoring the:
+</p>
+<ul>
+<li><a href="http://learningtorankchallenge.yahoo.com/">Learning to Rank Challenge</a>.</li>
+</ul>
+<p>
+The training data consists of over 500K query-document vectors representing a total
+of 23K queries (so that's an average of 20 docments per query), along with
+editorial grades from 0 (completely irrelevant) to 4 (perfect match) for each
+of the 500K+ document-query pairs.</p>
+<p>Bakeoff contestants will have their systems ranked based on the
+<a href="http://lingpipe-blog.com/2010/03/09/chapelle-metzler-zhang-grinspan-2009-expected-reciprocal-rank-for-graded-relevance/">expected reciprocal rank</a> metric.
+</p>
+</div>
+
+
+<h4>DCA Transportation Example</h4>
+
+<p>A common example is transportation, where choices might include
+walking, bicycling, taknig a bus, taking a train, driving, etc.  Each
+choice is represented a a set of features, such as time, cost, safety,
+and so on.  The agent making the choice may be represented by further
+features such as disposable income and impatience.  A model then
+considers how to weight these features to represent choices.
+</p>
+
+<h4>DCA Query-Specific Document Ranking Example</h4>
+
+<p>Another application is to rank documents with respect to a query.
+If each document and query pair is represented by a feature vector,
+the choice probabilities may be used for ranking.</p>
+
+
+<h4>DCA Coreference Example</h4>
+
+<p>Coreference is essentially a clustering task on entity mentions in
+text.  For instance, in <a href="">Babe Ruth's Wikipedia entry</a> (as
+downloaded on 12 March 2010 at 2:59 PM EST) the Yankee slugger is
+referred to witht he names &quot;Base Ruth&quot;, &quot;Ruth&quot;,
+and &quot;the Babe&quot;, the pronoun &quot;he&quot; and the common
+noun phrase &quot;the first true American sports celebrity
+superstar&quot;.  On the othe hand, in the same article, &quot;Baby
+Ruth&quot; refers to a candy bar, &quot;The Babe Ruth Story&quot; t a
+film, and &quot;Babe Ruth Day&quot; to a recurrning event.  </p>
+
+<p> As a choice problem, coreference is often approached by working
+through a document in text order, making a linkage decision for each
+referential noun phrase.  The noun phrase may be linked to any of the
+previously introduced entities or it may be the first mention of an
+entity.  Obviously the first mention is a new entity.  The second
+mention may either refer to the same entity as the first mention, or
+may introduce a new entity.</p>
+
+<p> These options may be represented as alternative choices, with
+features such as gender, distance, number of intervening noun phrases,
+similarity of phrasing such as token overlap, edit distance, etc.,
+syntactic structure, discourse parallelism, semantic knowledge of
+common nouns, and so on.</p>
+
+<p>Cross-document coreference is often approached the same way,
+as a sequential choice problem.  In this case, you'd want to use
+different features than for within-document coreference.  You can
+use information such as string overlap, as well as meta information
+such document source, date, author, language, etc.
+</p>
+
+
+<h3>Mathematical Definition</h3>
+
+<p>A <code>K</code>-dimensional discrete choice model is parameterized
+by a single <code>K</code>-dimensional real-valued vector
+<code>&beta;</code>.  A set of <code>N</code> alternatives is
+represented by <code>N</code> <code>K</code>-dimensional vectors
+<code>&alpha;[1],...,&alpha;[N]</code>, one for each alternative.
+</p>
+<p>
+DCA is normalized in the same way as logistic regression, with 
+the multi-logit transform.  The multilogit takes a vector of
+arbitrary real numbers and converts them into probabilities
+that sum to 1.0.  This is done by simply exponentiating and
+normalizing.  Thus the probability of choosing alternative <code>n</code> is
+proportional to <code>exp(&beta;'&alpha;[n])</code> (where <code>x'</code> is
+the transpose of an implicit column vector <code>x</code>).  In
+symbols,
+</p>
+
+<p>
+<code>p(n|&alpha;,&beta;) &prop; exp(&beta;'&alpha;[n]).</code>
+</p>
+
+<p>where normalization is computed by the usual summation,</p>
+
+<p>
+<code>p(n|&alpha;,&beta;) = exp(&beta;'&alpha;[n]) / <big><big>&Sigma;</big></big><sub>m in 1:N</sub> exp(&beta;'&alpha;[m]).</code>
+</p>
+
+
+<h3>Stochastic Gradient MAP Estimator for DCA</h3>
+
+<p>We use the same set of tools to fit DCA models as logistic
+regression models.  Specifically, fitting is carried out via
+stochastic gradient descent using a specified learning rate annealing
+schedule.  Priors may be placed on the coefficients, resulting in
+maximum a posteriori (MAP) estimates. and priors on coefficients.
+Convergence may be monitored to within a certain tolerance or the
+number of training epochs may be specified directly.  A reporter
+may be configured and passed into the fitter to monitor the
+fit on an epoch-by-epoch basis.</p>
+
+
+<h3>DCA Simulation and API Demo</h3>
+
+<p>A good strategy for testing an estimator is to simulate a data
+set according to the model and see if the estimator finds the
+model parameters.  
+</p>
+
+<p>Here, we take a very simple model with <code>&beta; = (3,-2,1)</code>.
+For instance, this might be a very simple model for proper name coreference
+where dimension 1 represents string similarity, dimension 2 represents distance,
+and dimension 3 represents discourse parallelism.  Thus better choices have
+higher string similarity, lower distance, and higher parallelism.
+</p>
+
+<h3>Running the Demo</h3>
+
+<p>The demo may be run directly from ant:
+</p>
+
+<pre class="code">
+&gt; cd $LINGPIPE/demos/tutorial/logistic-regression
+&gt; ant dca
+</pre>
+
+<p>The first output provided dumps the training data, consisting of 1000 samples randomly
+generated  according to the model (we'll see the code shortly):
+</p>
+
+<pre class="code">
+DCA Demo
+
+Sample 0 random choice prob=0.011066323782317866
+  0 p=0.0010942559149001196 xs= 0=0.5537208017939629 1=0.26016864313905447 2=-1.7522309679972126
+* 1 p=0.9912422418199297 xs= 0=-0.20898887445894693 1=-1.8909983320493842 2=3.0424484541278125
+  2 p=6.61481706344221E-7 xs= 0=-2.3236185850552404 1=-0.40191224523950836 2=-1.8554774163187067
+  3 p=0.007342638209775382 xs= 0=-0.8585314472003086 1=-2.6506128889054077 2=-1.4334136804432425
+  4 p=2.5835112077154026E-4 xs= 0=-1.4926364565738457 1=-0.9874988045707495 2=0.44799562310696617
+  5 p=6.185145291665587E-5 xs= 0=-1.3091994188446996 1=-1.2314203046062415 2=-2.0197424935306385
+
+Sample 1 random choice prob=0.5716203055299767
+  0 p=0.4774808501121091 xs= 0=-0.34658066612216726 1=-3.7171702891729055 2=2.847613891265687
+  1 p=5.3291162894215095E-6 xs= 0=-2.727452048150046 1=-3.929332197507756 2=-1.8371896878683784
+  2 p=5.631246738398885E-9 xs= 0=-5.097774786769612 1=-3.261921315683861 2=-0.24400954923978324
+* 3 p=0.5194675028142764 xs= 0=2.578318143603154 1=-0.5382777113119868 2=0.5149828170181778
+  4 p=0.003046289030927008 xs= 0=-0.6398287520090654 1=-3.5369997185026127 2=-0.9669006257184916
+  5 p=2.294939187015502E-8 xs= 0=-1.0199809307787397 1=2.233346753932399 2=-0.08189440303456576
+  6 p=3.45760010680944E-10 xs= 0=-2.215343033840159 1=3.724642835294389 2=2.291482275418305
+
+Sample 2 random choice prob=0.6571403489348165
+  0 p=0.0033735721977343185 xs= 0=-2.1173544097861843 1=-0.9525961733238733 2=-1.5757085479755961
+  1 p=0.0014417439480520734 xs= 0=-2.809800209893541 1=-1.313051420770636 2=-1.069400368972158
+* 2 p=0.9951846838542135 xs= 0=-1.6884130661052648 1=-1.43110875271501 2=1.8673984117586233
+
+...
+
+Sample 998 random choice prob=0.7185102111403285
+* 0 p=0.9999870403750512 xs= 0=4.94972268738353 1=-0.9018199885770234 2=1.0128061582237957
+  1 p=1.2385892859586818E-5 xs= 0=0.7649756068129245 1=-0.95647020022203 2=2.1588075307465373
+  2 p=3.807341515916061E-7 xs= 0=1.540848982493464 1=0.019785197111358486 2=-1.69851386624265
+  3 p=1.8148517752607114E-7 xs= 0=-0.1960515695662867 1=-1.8262256057851793 2=-0.9207611987335641
+  4 p=3.9743816403578186E-12 xs= 0=-2.7740831520265568 1=-0.42268913434325006 2=-1.108653597466911
+  5 p=1.150878487520586E-8 xs= 0=-0.4714941289898704 1=-2.440351927961609 2=-4.080749502726419
+
+Sample 999 random choice prob=0.979861378724821
+* 0 p=0.9938278009515112 xs= 0=2.1921160621760403 1=-1.8106535867532818 2=0.5622076284200712
+  1 p=8.531431715509726E-7 xs= 0=0.3150259443121377 1=0.30802222712621374 2=-3.537317523230222
+  2 p=1.9513289313863527E-7 xs= 0=0.568094267556212 1=3.425238707385209 2=0.46266391914347
+  3 p=0.006144525436311744 xs= 0=0.9501447084912402 1=-1.1087942598824052 2=0.6058379024682905
+  4 p=2.1205752876833113E-5 xs= 0=-2.6827568717213035 1=-2.9647540869667397 2=2.123578704514057
+  5 p=4.19065365895493E-7 xs= 0=-0.025821863917245638 1=1.5799428062033578 2=-0.681833406242208
+  6 p=5.000517302099065E-6 xs= 0=-0.653631008901344 1=1.243981268705386 2=3.008940687919986
+  7 p=5.67485413433939E-13 xs= 0=-2.5063853494611035 1=4.837516266561886 2=-0.23731845331128532
+
+...
+</pre>
+
+<p>The training samples have varying number of alternatives.  For
+instance, sample 0 and sample 998 have five altenratives, whereas
+sample 2 only has three alternatives.  Each alternative is represented
+by a vector, following <code>xs=</code>.  For instance, the first
+alternative in sample 0 is roughly <code>(0.55,0.26,-1.75)</code>, and
+the second alternative is represented by the vector
+<code>(0.21,-1.90,3.04)</code>.  Each alternative for a sample is preceded by
+its probability in the model computed according to the formula above.</p>
+
+<p>Each training example simulates a choice by generating a random number between
+0 and 1, shown after the sample number.  For instance, sample 1 generated
+the random number that was roughly 0.572.  This resulted in alternative 3 being
+chosen.  But alternative 3 only had a 0.52 chance of being chosen; if the random
+number were lower than 0.47, alternative 0 would have been selected.  These
+choices make up the training data.</p>
+
+<p>The next piece of output reports the estimation parameters:
+an epoch-by-epoch basis:</p>
+
+<pre class="code">
+...
+    :00 estimate()
+    :00 # training cases=1000
+    :00 regression prior=GaussianRegressionPrior(Variance=4.0, noninformativeIntercept=true)
+    :00 annealing schedule=Exponential(initialLearningRate=0.1, base=0.99)
+    :00 min improvement=1.0E-5
+    :00 min epochs=5
+    :00 max epochs=500
+</pre>
+
+<p>We have a fairly low prior variance and use an exponential decay learning rate
+that decays fairly quickly.  We have specified it to stop after relative convergence to
+to within <code>0.0001</code>, or about four or five decimal places.</p>
+
+<p>Then, like logistic regression, we get an epoch-by-epoch report of the gradient
+descent,</p>
+
+<pre class="code">
+    :00 epoch=    0 lr=0.100000000 ll=  -229.2331 lp=    -3.7495 llp=  -232.9826 llp*=  -232.9826
+    :00 epoch=    1 lr=0.099000000 ll=  -230.3207 lp=    -3.8286 llp=  -234.1493 llp*=  -232.9826
+    :00 epoch=    2 lr=0.098010000 ll=  -230.6148 lp=    -3.8482 llp=  -234.4630 llp*=  -232.9826
+    :00 epoch=    3 lr=0.097029900 ll=  -230.5728 lp=    -3.8521 llp=  -234.4249 llp*=  -232.9826
+    :00 epoch=    4 lr=0.096059601 ll=  -230.4288 lp=    -3.8516 llp=  -234.2804 llp*=  -232.9826
+    :00 epoch=    5 lr=0.095099005 ll=  -230.2566 lp=    -3.8498 llp=  -234.1064 llp*=  -232.9826
+    :00 epoch=    6 lr=0.094148015 ll=  -230.0782 lp=    -3.8476 llp=  -233.9258 llp*=  -232.9826
+    :00 epoch=    7 lr=0.093206535 ll=  -229.9002 lp=    -3.8453 llp=  -233.7455 llp*=  -232.9826
+    :00 epoch=    8 lr=0.092274469 ll=  -229.7245 lp=    -3.8430 llp=  -233.5674 llp*=  -232.9826
+    :00 epoch=    9 lr=0.091351725 ll=  -229.5515 lp=    -3.8407 llp=  -233.3922 llp*=  -232.9826
+    :00 epoch=   10 lr=0.090438208 ll=  -229.3815 lp=    -3.8385 llp=  -233.2200 llp*=  -232.9826
+    :00 epoch=   11 lr=0.089533825 ll=  -229.2144 lp=    -3.8362 llp=  -233.0506 llp*=  -232.9826
+    :00 epoch=   12 lr=0.088638487 ll=  -229.0501 lp=    -3.8340 llp=  -232.8841 llp*=  -232.8841
+    :00 epoch=   13 lr=0.087752102 ll=  -228.8885 lp=    -3.8319 llp=  -232.7204 llp*=  -232.7204
+    :00 epoch=   14 lr=0.086874581 ll=  -228.7297 lp=    -3.8297 llp=  -232.5594 llp*=  -232.5594
+...
+    :03 epoch=  252 lr=0.007944545 ll=  -217.6262 lp=    -3.6695 llp=  -221.2957 llp*=  -221.2957
+    :03 epoch=  253 lr=0.007865100 ll=  -217.6224 lp=    -3.6693 llp=  -221.2917 llp*=  -221.2917
+    :03 epoch=  254 lr=0.007786449 ll=  -217.6186 lp=    -3.6692 llp=  -221.2878 llp*=  -221.2878
+    :03 epoch=  255 lr=0.007708584 ll=  -217.6149 lp=    -3.6691 llp=  -221.2840 llp*=  -221.2840
+    :03 epoch=  256 lr=0.007631498 ll=  -217.6113 lp=    -3.6689 llp=  -221.2802 llp*=  -221.2802
+    :03 epoch=  257 lr=0.007555183 ll=  -217.6077 lp=    -3.6688 llp=  -221.2765 llp*=  -221.2765
+    :03 epoch=  258 lr=0.007479632 ll=  -217.6042 lp=    -3.6687 llp=  -221.2729 llp*=  -221.2729
+    :03 Converged with rollingAverageRelativeDiff=9.894823299509656E-6
+...
+</pre>
+
+<p>We see that the estimate covnerged to within our specified bound after 259 epochs (we
+count from 0).  The columns are the same as for logistic regression.  First,
+the time (here only 3 seconds total including all the output), the learning
+rate for the epoch (note the steep decline frome poch 0 to epoch 258), the
+log likelihood of the training data given the model parameters, the log prio
+value (note the likelihood dominates the prior here with only 3 parameters),
+and a sum of log likelihood and prior followed by the best found
+log likelihood and prior.</p>
+
+
+<p>Finally, we see how well the estmiator recovered the model parameters:</p>
+
+<pre class="code">
+ACTUAL coeffs= 0=3.0 1=-2.0 2=1.0
+FIT coeffs= 0=3.017291072658265 1=-1.9885202732810667 2=1.0845623307943484
+</pre>
+
+
+<p>That's very clsoe given 1000 training examples, so we can see that the API
+is doing the right thing.</p>
+
+<h3>DCA Code Walkthrough</h3>
+
+<p>The DCA code is in <a href="src/Dca.java"><code>src/Dca.java</code></a>.</p>
+
+<h4>Simulating the Training Data</h4>
+
+<p>Our first job is to simulate those training examples.  We actually
+do this by first constructig a discrete chooser with our simulated coefficient
+vector:</p>
+
+<pre class="code">
+public static void main(String[] args) {
+
+    double[] simCoeffs 
+        = new double[] { 3.0, -2.0, 1.0 };
+    Vector simCoeffVector
+        = new DenseVector(simCoeffs);
+    DiscreteChooser simChooser = new DiscreteChooser(simCoeffVector);
+...
+</pre>
+
+<p>Next, we generate the alternatives using a fixed random number
+generator (you can change it and other parameters to get different
+training data).  First, we create a two-dimensioanl array of vectors
+to represent the alternative choices and a parallel one-dimensional
+array of integers to represent the outcomes.
+</p>
+
+<pre class="code">
+...
+    int numDims = simCoeffs.length;
+    int numSamples = 1000;
+
+    Random random = new Random(42);
+    Vector[][] alternativess = new Vector[numSamples][];
+    int[] choices = new int[numSamples];
+...
+</pre>
+
+Next, we iterate over the samples, first generating a random number
+of choices between 1 and 8 and creating a vector to hold them
+in the alternatives vector:
+
+<pre class="code">
+...
+    for (int i = 0; i &lt; numSamples; ++i) {
+        int numChoices = 1 + random.nextInt(8);
+        alternativess[i] = new Vector[numChoices];
+...
+</pre>
+
+<p>Next, we generate a value for each dimension of each alternative
+by sampling from a Gaussian distribution with mean of 0 and standard
+deviation of 2.  Finally, we set the altenative to a dense vector
+with those coefficients:</p>
+
+<pre class="code">
+...
+        for (int k = 0; k &lt; numChoices; ++k) {
+            double[] xs = new double[numDims];
+            for (int d = 0; d &lt; numDims; ++d) {
+                xs[d] = 2.0 * random.nextGaussian();
+            }
+            alternativess[i][k] = new DenseVector(xs);
+        }
+...
+</pre>
+
+<p>Next, we extract the choice probabilities from the simulated
+discrete choice model, <code>simChooser</code>.  We then sample an
+outcome in the usual way by generating a random number between
+0 and 1 (<code>choiceProb</code>).  We take the first outcome where
+the cumulative probability is above that value.</p>
+
+<pre class="code">
+        double[] choiceProbs = simChooser.choiceProbs(alternativess[i]);
+        double choiceProb = random.nextDouble();
+        double cumProb = 0.0;
+        for (int k = 0; k &lt; numChoices; ++k) {
+            cumProb += choiceProbs[k];
+            if (choiceProb &lt; cumProb || k == (numChoices - 1)) {
+                choices[i] = k;
+                break;
+            }
+        }
+        System.out.println("\nSample " + i + " random choice prob=" + choiceProb);
+        for (int k = 0; k &lt; numChoices; ++k) {
+            System.out.println((choices[i] == k ? "* " : "  ") + k
+                               + " p=" + choiceProbs[k]
+                               + " xs=" + alternativess[i][k]);
+        }
+    }
+</pre>
+
+<p>This time we've left in the print in order to illustrate the working
+of the choices array, the choice probabilities, and the alternatives vector.</p>
+
+<h4>Estimating a DCA Model from Data</h4>
+
+<p>The rest of the demo consists of creating the estimator parameters
+and then running it over the training data.  The parameters are set up
+just as in logistic regression, with:</p>
+
+<pre class="code">
+...
+    double priorVariance = 4.0;
+    boolean nonInformativeIntercept = true;
+    RegressionPrior prior 
+        = RegressionPrior.gaussian(priorVariance,nonInformativeIntercept);
+    int priorBlockSize = 100;
+        
+    double initialLearningRate = 0.1;
+    double decayBase = 0.99;
+    AnnealingSchedule annealingSchedule
+        = AnnealingSchedule.exponential(initialLearningRate,decayBase);
+
+    double minImprovement = 0.00001;
+    int minEpochs = 5;
+    int maxEpochs = 500;
+        
+    Reporter reporter = Reporters.stdOut().setLevel(LogLevel.DEBUG);
+...
+</pre>
+
+<p>Then we call the static estimate method on the <code>dca.DiscreteChooser</code>
+class:</p>
+
+<pre class="code">
+...
+    DiscreteChooser chooser
+        = DiscreteChooser.estimate(alternativess,
+                                   choices,
+                                   prior,
+                                   priorBlockSize,
+                                   annealingSchedule,
+                                   minImprovement,
+                                   minEpochs,
+                                   maxEpochs,
+                                   reporter);
+...
+</pre>
+
+<p>The estimated model is then assigned to the variable <code>chooser</code>.  
+Its parameters are printed along with the simulated value with:
+</p>
+
+<pre class="code">
+...
+        Vector coeffVector = chooser.coefficients();
+        System.out.println("\nACTUAL coeffs=" + simCoeffVector);
+        System.out.println("FIT coeffs=" + coeffVector);
+    }
+</pre>
+
+<h4>Serialization</h4>
+
+<p>A discrete chooser may be serialized.</p>
+
+<h4>Training with Objects and Feature Extractors</h4>
+
+<p>Object based training data replaces the alternative vectors in the two-dimensional
+array <code>alternativess</code> with a two-dimensional array of objects and
+a feature extractor.  A symbol table is used to convert the training data into
+vectors, and then the basic DCA estimator is called, again, just like for
+logistic regression.</p>
+
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+
+
+
+
+
+
+

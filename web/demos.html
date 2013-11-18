@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Demos</title>
+<meta http-equiv="Content-type" 
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language" 
+      content="en"/>
+<link href="css/lp-site.css" 
+      type="text/css" 
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="css/lp-site-print.css" 
+      title="lp-site" 
+      type="text/css" 
+      rel="stylesheet" 
+      media="print,handheld,tty,aural,braille,embossed"/>
+
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1>
+<h1 id="pagetitle">Demos</h1>
+<a id="logo" 
+   href="http://alias-i.com/"
+  ><img src="img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../index.html">home</a></li>
+
+<li>
+  <a class="current" href="demos.html">demos</a>
+  <ul>
+    <li>
+      demo instructions
+      <ul>
+        <li><a href="demo-web.html">web</a></li>
+        <li><a href="demo-gui.html">gui</a></li>
+        <li><a href="demo-cmd.html">command line</a></li>
+      </ul>
+    </li>
+    <li>
+      list of demos
+      <ul>
+        <li><a href="demo-sentence.html">sentences</a></li>
+        <li><a href="demo-pos.html">parts of speech</a></li>
+        <li><a href="demo-ne.html">named entities</a></li>
+        <li><a href="demo-coref.html">coreference</a></li>
+        <li><a href="demo-chinese-words.html">chinese words</a></li>
+        <li><a href="demo-echo.html">echo &amp; transcoding</a></li>
+      </ul>
+    </li>
+  </ul>
+</li>
+
+<li><a href="licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="download.html">lingpipe core</a></li>
+<li><a href="models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="install.html">install</a></li>
+<li><a href="../demos/tutorial/read-me.html">tutorials</a></li>
+<li><a href="../docs/api/index.html">javadoc</a></li>
+<li><a href="book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="bugs.html">bugs</a></li>
+<li><a href="sandbox.html">sandbox</a></li>
+<li><a href="competition.html">competition</a></li>
+<li><a href="citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="contact.html">contact</a></li>
+
+<li><a href="about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<a name="list"></a>
+<h2>List of Demos</h2>
+
+<div class="sidebar">
+<h2>Language, Genre and Topic</h2>
+
+<p>
+Information extraction techniques are tuned for specific kinds of text
+and often degrade rapidly when presented with input of unexpected
+genre (e.g. blog versus newswire), topic (e.g. politics versus
+biology) or language (e.g. English versus Chinese).  The demos all
+indicate their expected language, genre and topic.
+</p>
+</div>
+
+<p>Each demo page contains instructions and examples of running
+on the web, as a command and in a GUI.
+</p>
+
+<ul>
+
+<li><a href="demo-echo.html">Echo Demo</a>: 
+Simply echoes input to output; transcodes character sets and normalizes HTML.
+</li>
+
+<li>
+<a href="demo-sentence.html">Sentence Demo</a>: 
+Extract sentences from text.
+</li>
+
+<li>
+<a href="demo-pos.html">Part of Speech Demo</a>: 
+Assign parts of speech to words.
+</li>
+
+<li>
+<a href="demo-ne.html">Named Entity Demo</a>: 
+Extract entity mentions from text.
+</li>
+
+<li>
+<a href="demo-coref.html">Within-Document Coreference Demo</a>: 
+Resolve which entity mentions refer to the same entity.
+</li>
+
+<li>
+<a href="demo-chinese-words.html">Chinese Word Segmentation Demo</a>: 
+Break Chinese text into words.
+</li>
+
+</ul>
+
+
+
+<h2>Quick Start Instructions</h2>
+
+
+
+
+<h3>Ways to Run the Demos</h3>
+
+<p>
+LingPipe's demos are available on the web, 
+as shell commands and through a graphical
+user interface (GUI).  Each method of running
+the demos has its own set of detailed 
+instructions:
+</p>
+
+<div class="sidebar">
+<h2>Unicode</h2>
+<p>
+LingPipe, like Java, is based on <a
+href="http://www.unicode.org">Unicode</a>.  Sun's default
+installations include encoders and decoders for most well-known
+character sets.  Installations may provide additional character sets.
+</p>
+</div>
+
+<ul>
+<li>
+<a href="demo-web.html">Web Demo Instructions</a>
+</li>
+
+<li>
+<a href="demo-gui.html">GUI Demo Instructions</a>
+</li>
+
+<li><a href="demo-cmd.html">Command Demo Instructions</a>
+</li>
+</ul>
+
+
+<h3>Content Types: Plain, HTML, XML</h3>
+
+
+<p>
+The demos all support XML, HTML and plain text input.  HTML is
+converted to XML using NekoHTML.  For XML and HTML input, annotation
+may be restricted to specific elements.  Output is always in XML.
+</p>
+
+
+
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+

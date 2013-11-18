@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+
+  <project name="Demo Data" default="" basedir=".">
+
+  <description>
+
+    Cleans up the data directories
+  </description>
+  <target name="clean"
+	  description="Clean unpacked directories.">
+    <delete dir="rec.sport.hockey"/>
+    <delete dir="fourNewsGroups"/>
+    <delete dir="johnSmith"/>
+  </target>
+
+  <target name="unpack">
+    <untar dest="." 
+           src="rec.sport.hockey.tar.gz" 
+           compression="gzip"/>
+    <untar dest="." 
+           src="fourNewsGroups.tar.gz" 
+           compression="gzip"/>
+    <untar dest="." 
+           src="johnSmith.tar.gz" 
+           compression="gzip"/>
+  </target>
+
+</project>

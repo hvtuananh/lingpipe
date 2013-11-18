@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+
+<project name="LingPipe Tutorial - Logistic Regression"
+         default="compile" basedir=".">
+
+  <path id="classpath.standard">
+    <pathelement location="build/classes"/>
+    <pathelement location="../../../lingpipe-4.1.0.jar"/>
+  </path>
+
+  <target name="clean">
+    <delete dir="build"/>
+    <delete file="logisticRegression.jar"/>
+  </target>
+
+  <target name="compile"
+          depends=""
+          description="Compile the src code into the build directory.">
+    <mkdir dir="build/classes"/>
+    <javac includeAntRuntime="false"   optimize="on"
+           debug="yes"
+           debuglevel="source,lines,vars"
+           destdir="build/classes">
+      <compilerarg value="-Xlint:all"/>
+      <classpath refid="classpath.standard"/>
+      <src path="src/"/>
+    </javac>
+  </target>
+
+  <target name="jar"
+          depends="compile">
+    <jar destfile="logisticRegression.jar">
+      <fileset dir="build/classes"
+               includes="**/*.class"/>
+    </jar>
+  </target>
+
+
+  <target name="wallet"
+          depends="compile">
+    <java classname="WalletProblem"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+    </java>
+  </target>
+
+
+  <target name="regularization"
+          depends="compile">
+    <java classname="RegularizationDemo"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+    </java>
+  </target>
+
+  <target name="nl-topics"
+          depends="compile">
+    <java classname="TextClassificationDemo"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+    </java>
+  </target>
+
+  <target name="dca"
+          depends="compile">
+    <java classname="Dca"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+    </java>
+  </target>
+
+
+
+</project>

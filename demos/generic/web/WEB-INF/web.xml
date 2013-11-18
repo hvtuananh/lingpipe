@@ -1,0 +1,243 @@
+<web-app>
+
+<display-name>LingPipe Web Demos</display-name>
+
+<description>LingPipe Web Demos</description>
+
+<!-- IP limit per day filter -->
+<filter>
+  <filter-name>AccessLimitFilter</filter-name>
+  <filter-class>com.aliasi.demo.framework.AccessLimitFilter</filter-class>
+  <init-param>
+    <param-name>maxAccesses</param-name>
+    <param-value>32</param-value>
+  </init-param>
+  <init-param>
+    <param-name>resetInterval</param-name>
+    <param-value>8640000</param-value>  <!-- 1 day in ms -->
+  </init-param>
+</filter>
+<filter-mapping>
+  <filter-name>AccessLimitFilter</filter-name>
+  <url-pattern>*.xml</url-pattern>
+</filter-mapping>    
+
+<!-- Models -->
+
+<servlet>
+  <servlet-name>ResourceServlet</servlet-name>
+  <servlet-class>com.aliasi.demo.framework.ModelsServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+  <servlet-name>ResourceServlet</servlet-name>
+  <url-pattern>/resource/*</url-pattern> <!-- star allows it to pick up path -->
+</servlet-mapping>
+
+
+
+
+<!-- Demo: Sentence Boundaries -->
+
+<servlet>
+  <servlet-name>SentenceEnglishNews</servlet-name>
+  <servlet-class>com.aliasi.demo.framework.DemoServlet</servlet-class>
+  <init-param>
+    <param-name>demoConstructor</param-name>
+    <param-value>com.aliasi.demo.demos.SentenceDemo</param-value>
+  </init-param>
+  <init-param>
+    <param-name>demoConstructorArgs</param-name>
+    <param-value>com.aliasi.tokenizer.IndoEuropeanTokenizerFactory,com.aliasi.sentences.IndoEuropeanSentenceModel,English News</param-value>
+  </init-param>
+</servlet>
+<servlet-mapping>
+  <servlet-name>SentenceEnglishNews</servlet-name>
+  <url-pattern>/sentence_en_news/*</url-pattern> 
+</servlet-mapping>
+
+<servlet>
+  <servlet-name>SentenceEnglishBio</servlet-name>
+  <servlet-class>com.aliasi.demo.framework.DemoServlet</servlet-class>
+  <init-param>
+    <param-name>demoConstructor</param-name>
+    <param-value>com.aliasi.demo.demos.SentenceDemo</param-value>
+  </init-param>
+  <init-param>
+    <param-name>demoConstructorArgs</param-name>
+    <param-value>com.aliasi.tokenizer.IndoEuropeanTokenizerFactory,com.aliasi.sentences.MedlineSentenceModel,English Bio-medical</param-value>
+  </init-param>
+</servlet>
+<servlet-mapping>
+  <servlet-name>SentenceEnglishBio</servlet-name>
+  <url-pattern>/sentence_en_bio/*</url-pattern> 
+</servlet-mapping>
+
+
+<!-- Demo: Part-of-Speech -->
+
+
+<servlet>
+  <servlet-name>PosEnglishGeneralBrown</servlet-name>
+  <servlet-class>com.aliasi.demo.framework.DemoServlet</servlet-class>
+  <init-param>
+    <param-name>demoConstructor</param-name>
+    <param-value>com.aliasi.demo.demos.PosDemo</param-value>
+  </init-param>
+  <init-param>
+    <param-name>demoConstructorArgs</param-name>
+    <param-value>com.aliasi.tokenizer.IndoEuropeanTokenizerFactory,com.aliasi.sentences.IndoEuropeanSentenceModel,/models/pos-en-general-brown.HiddenMarkovModel,0,0,General English trained on the Brown Corpus</param-value>
+  </init-param>
+</servlet>
+<servlet-mapping>
+  <servlet-name>PosEnglishGeneralBrown</servlet-name>
+  <url-pattern>/pos_en_general_brown/*</url-pattern> 
+</servlet-mapping>
+
+<servlet>
+  <servlet-name>PosEnglishBioGenia</servlet-name>
+  <servlet-class>com.aliasi.demo.framework.DemoServlet</servlet-class>
+  <init-param>
+    <param-name>demoConstructor</param-name>
+    <param-value>com.aliasi.demo.demos.PosDemo</param-value>
+  </init-param>
+  <init-param>
+    <param-name>demoConstructorArgs</param-name>
+    <param-value>com.aliasi.tokenizer.IndoEuropeanTokenizerFactory,com.aliasi.sentences.MedlineSentenceModel,/models/pos-en-bio-genia.HiddenMarkovModel,0,0,Biomedical English trained on the GENIA corpus</param-value>
+  </init-param>
+</servlet>
+<servlet-mapping>
+  <servlet-name>PosEnglishBioGenia</servlet-name>
+  <url-pattern>/pos_en_bio_genia/*</url-pattern> 
+</servlet-mapping>
+
+<servlet>
+  <servlet-name>PosEnglishBioMedPost</servlet-name>
+  <servlet-class>com.aliasi.demo.framework.DemoServlet</servlet-class>
+  <init-param>
+    <param-name>demoConstructor</param-name>
+    <param-value>com.aliasi.demo.demos.PosDemo</param-value>
+  </init-param>
+  <init-param>
+    <param-name>demoConstructorArgs</param-name>
+    <param-value>com.aliasi.tokenizer.IndoEuropeanTokenizerFactory,com.aliasi.sentences.MedlineSentenceModel,/models/pos-en-bio-medpost.HiddenMarkovModel,0,0,Biomedical English trained on NCBI's MedPost corpus</param-value>
+  </init-param>
+</servlet>
+<servlet-mapping>
+  <servlet-name>PosEnglishBioMedPost</servlet-name>
+  <url-pattern>/pos_en_bio_medpost/*</url-pattern> 
+</servlet-mapping>
+
+
+<!-- Demo: Named Entities -->
+
+<servlet>
+  <servlet-name>NeEnNewsMuc6</servlet-name>
+  <servlet-class>com.aliasi.demo.framework.DemoServlet</servlet-class>
+  <init-param>
+    <param-name>demoConstructor</param-name>
+    <param-value>com.aliasi.demo.demos.NamedEntityDemo</param-value>
+  </init-param>
+  <init-param>
+    <param-name>demoConstructorArgs</param-name>
+    <param-value>com.aliasi.tokenizer.IndoEuropeanTokenizerFactory,com.aliasi.sentences.IndoEuropeanSentenceModel,/models/ne-en-news-muc6.AbstractCharLmRescoringChunker,News English trained on the MUC 6 Corpus</param-value>
+  </init-param>
+</servlet>
+<servlet-mapping>
+  <servlet-name>NeEnNewsMuc6</servlet-name>
+  <url-pattern>/ne_en_news_muc6/*</url-pattern> 
+</servlet-mapping>
+
+<servlet>
+  <servlet-name>NeEnBioGenia</servlet-name>
+  <servlet-class>com.aliasi.demo.framework.DemoServlet</servlet-class>
+  <init-param>
+    <param-name>demoConstructor</param-name>
+    <param-value>com.aliasi.demo.demos.NamedEntityDemo</param-value>
+  </init-param>
+  <init-param>
+    <param-name>demoConstructorArgs</param-name>
+    <param-value>com.aliasi.tokenizer.IndoEuropeanTokenizerFactory,com.aliasi.sentences.MedlineSentenceModel,/models/ne-en-bio-genia.TokenShapeChunker,Biomedical English trained on the GENIA Corpus</param-value>
+  </init-param>
+</servlet>
+<servlet-mapping>
+  <servlet-name>NeEnBioGenia</servlet-name>
+  <url-pattern>/ne_en_bio_genia/*</url-pattern> 
+</servlet-mapping>
+
+<servlet>
+  <servlet-name>NeEnBioGeneTag</servlet-name>
+  <servlet-class>com.aliasi.demo.framework.DemoServlet</servlet-class>
+  <init-param>
+    <param-name>demoConstructor</param-name>
+    <param-value>com.aliasi.demo.demos.NamedEntityDemo</param-value>
+  </init-param>
+  <init-param>
+    <param-name>demoConstructorArgs</param-name>
+    <param-value>com.aliasi.tokenizer.IndoEuropeanTokenizerFactory,com.aliasi.sentences.MedlineSentenceModel,/models/ne-en-bio-genetag.HmmChunker,Biomedical English trained on the GeneTag Corpus</param-value>
+  </init-param>
+</servlet>
+<servlet-mapping>
+  <servlet-name>NeEnBioGeneTag</servlet-name>
+  <url-pattern>/ne_en_bio_genetag/*</url-pattern> 
+</servlet-mapping>
+
+
+<!-- Demo: Coref -->
+
+<servlet>
+  <servlet-name>CorefEnNewsMuc6</servlet-name>
+  <servlet-class>com.aliasi.demo.framework.DemoServlet</servlet-class>
+  <init-param>
+    <param-name>demoConstructor</param-name>
+    <param-value>com.aliasi.demo.demos.CorefDemo</param-value>
+  </init-param>
+  <init-param>
+    <param-name>demoConstructorArgs</param-name>
+    <param-value>com.aliasi.tokenizer.IndoEuropeanTokenizerFactory,com.aliasi.sentences.IndoEuropeanSentenceModel,/models/ne-en-news-muc6.AbstractCharLmRescoringChunker,Newswire English trained on the MUC 6 Corpus</param-value>
+  </init-param>
+</servlet>
+<servlet-mapping>
+  <servlet-name>CorefEnNewsMuc6</servlet-name>
+  <url-pattern>/coref_en_news_muc6/*</url-pattern> 
+</servlet-mapping>
+
+
+
+
+<!-- Demo: Chinese Words -->
+
+<servlet>
+  <servlet-name>WordChineseAcademiaSinica</servlet-name>
+  <servlet-class>com.aliasi.demo.framework.DemoServlet</servlet-class>
+  <init-param>
+    <param-name>demoConstructor</param-name>
+    <param-value>com.aliasi.demo.demos.ChineseWordsDemo</param-value>
+  </init-param>
+  <init-param>
+    <param-name>demoConstructorArgs</param-name>
+    <param-value>Academia Sinica,/models/words-zh-as.CompiledSpellChecker</param-value>
+  </init-param>
+</servlet>
+<servlet-mapping>
+  <servlet-name>WordChineseAcademiaSinica</servlet-name>
+  <url-pattern>/word_zh_as/*</url-pattern> 
+</servlet-mapping>
+
+
+<!-- Demo: Echo / Transcoding -->
+
+<servlet>
+  <servlet-name>EchoDemoServlet</servlet-name>
+  <servlet-class>com.aliasi.demo.framework.DemoServlet</servlet-class>
+  <init-param>
+    <param-name>demoConstructor</param-name>
+    <param-value>com.aliasi.demo.demos.EchoDemo</param-value>
+  </init-param>
+</servlet>
+<servlet-mapping>
+  <servlet-name>EchoDemoServlet</servlet-name>
+  <url-pattern>/echo/*</url-pattern> <!-- star allows it to pick up path -->
+</servlet-mapping>
+
+
+</web-app>

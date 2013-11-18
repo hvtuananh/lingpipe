@@ -1,0 +1,1816 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Hyphenation and Syllabification Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle" style="font-size:175%">Hyphenation &amp; Syllabification Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a class="current" href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+
+
+<div id="content" class="content">
+
+<h2>What is Hyphenation and Syllabification?</h2>
+
+<div class="sidebar">
+<h2>It's Like Chinese Word Segmentation</h2>
+<p>
+<a href="../chineseTokens/read-me.html">Chinese Word Segmentation</a> 
+is so similar to hyphenation that we've taken
+an identical approach to the tasks.
+</p>
+</div>
+
+<p>The simplest way to understand hyphenation and syllabification
+is through some examples.  
+</p>
+
+<h3>Some Examples</h3>
+<p>
+Here are three examples taken from
+<a href="http://dictionary.reference.com">dictionary.reference.com</a>,
+which federates several popular dictionaries, including their own.
+In the following table, the top row here is the word, with a hyphenation and
+syllabification below it:
+</p>
+
+<table>
+<tr><th></th><th>side</th><th>landed</th><th>publisher</th></tr>
+<tr><th>Hyphenation</th><td>side</td><td>land - ed</td><td>pub - lish - er</td></tr>
+<tr><th>Syllabification</th><td>s&#x026A;d</td><td>l&#x00E6;n + d&#x026A;d</td><td>p&#x028C;b + l&#x026A; + &#x0283;&#x0259;r</td></tr>
+</table>
+
+
+<h3>Hyphenation</h3>
+<p>
+The hyphenation process inserts hyphens at
+various points in the word itself.  These hyphenations are used primarily in
+typesetting, where words may be broken over a line and a hyphen
+inserted at a legal hyphenation point.  Thus hyphenation is an
+orthographic process, meaning it works over the spellings of words
+in a language.
+</p>
+
+<div class="sidebar">
+<h2>To IPA, or Not?</h2>
+<p>
+As the Wikipedia entry for the <a href="http://en.wikipedia.org/wiki/International_Phonetic_Alphabet">International Phonetic Alphabet</a> points out, many dictionaries use their own
+symbols for sounds.  The advantage of this over the IPA is that it
+can be more fine-grained, allowing the representation of a vowel
+that is pronounced differently in different dialects.
+</p>
+<p>If you do decide to use IPA, here's a useful page of <a href="http://www.phon.ucl.ac.uk/home/wells/ipa-unicode.htm">unicode code points</a> for the IPA symbols.
+</p>
+</div>
+
+<h3>Syllabification</h3>
+<p>Syllables, on the other hand, break the sequence of spoken sounds
+into units.  The sounds of a language are here written in the <a
+href="http://en.wikipedia.org/wiki/International_Phonetic_Alphabet">International
+Phonetic Alphabet</a> (IPA), a widely used system for writing down the
+distinctive sounds of the world's languages.  The number of syllables
+in a word roughly correspond to the number of spoken vowel clusters in
+a word.  For instance, the word &quot;side&quot; has two vowels, but
+only the first is spoken, so it only has a single syllable.
+</p>
+
+<h3>Boundary Ambiguity</h3>
+<p>Exactly where the boundaries go for hyphenation and syllabification
+is another matter.  There are no &quot;official&quot; definitions of syllables or
+hyphens.  Hyphenation may vary by dictionary or publishing
+standard (e.g. <i>The Chicago Manual of Style</i>).  Hyphenation
+tends to follow both the word form and the syllabification.
+But consider &quot;landed&quot;, where the hyphenation and
+syllabification disagree about where the first &quot;d&quot;
+should be.  As is typical with syllabification, consonants tend
+to pile up at the front of syllables, whereas in hyphenation,
+words tend to get split at morphological boundaries (that is,
+between stems and affixes in English).  Some linguists admit
+so-called <a href="http://dictionary.reference.com/browse/ambisyllabic">ambisyllabicity</a>, which involve
+sounds at boundaries that belong to two syllables at once.</p>
+
+<h3>Words vs. Usages</h3>
+
+<p> It's not actually possible to solve the hyphenation problem for
+words, per se, because hyphenation really depends on the form of the
+word used.  Consider the word &quot;<a
+href="http://dictionary.reference.com/browse/invalid">invalid</a>&quot;,
+which when used as a noun is hyphenated in-va-lid and when used as an
+adjective is hyphenated in-val-id.  Note that there's <a
+href="http://en.wikipedia.org/wiki/Stress_(linguistics)">lexical
+stress</a> involved at the pronounciation level, with the noun
+stressing the first syllable and the adjective the second.  </p>
+
+<p>For the purposes of this tutorial, we'll just fix a dictionary
+and take its definitions as the reference standard, and then build
+systems that can recreate the dictionary's decisions.
+</p>
+
+<h2>How is it Done?</h2>
+
+<h3>Rules and Taggers</h3>
+
+<p>There are several approaches to hyphenation and syllabification
+in the literature, ranging from traditional rule-based transducers
+to k-nearest neighbors approaches up through
+structured support vector machines.  
+</p>
+
+<p>As a tagging problem, the spaces between letters need to be
+assigned as either a break point or a non-break point.  This
+should be able to produce the best tagger, as it can use all of
+the information we include in the noisy channel model and also
+emphasize the discriminative role of the boundaries.  Having said
+that, the model we present here is state-of-the-art in terms
+of accuracy.
+</p>
+
+<div class="sidebar">
+<h2>Uniform or Frequency-based Source?</h2>
+<p>With a noisy channel model, the source is probabilistic.
+For this tutorial, we have weighted each word the same.
+In some approaches, the words are frequency weighted,
+based on their token count in a corpus.
+</p>
+<p>
+The choice makes a big difference in evaluations,
+which can also be frequency weighted or uniformly
+weighted.  This is just another fallout from
+the <a href="http://en.wikipedia.org/wiki/Zipf's_law">Zipfian distriubtion</a> 
+of words.
+Frequency weighting puts a huge emphasis
+on the common words, whereas word weighting places
+relatively much more emphasis on rare words.  
+</p>
+<p>
+In this demo, we're implicitly going with uniform
+weighting, which has been the standard for evaluation
+in this domain.
+</p>
+</div>
+
+<h3>The Noisy Channel Model</h3>
+
+<p>Our approach follows that of our Chinese word tokenization, which
+in turn is based on spelling correction.  Specifically, we use what's
+known as a <a
+href="http://en.wikipedia.org/wiki/Noisy_channel_model">noisy channel
+model</a>.  A noisy channel model has two components, a source
+and a channel.  The source represents a probabilisitic message generator.
+In this case, the hyphenated words.  The channel represents noise
+in transmission.  In our case, we use a deterministic channel that
+simply deletes the hyphenations.  The recipient's job is then to
+decode the original message with hyphens from the received message,
+which has no hyphens.  
+</p>
+
+<p>Given a source model <code>p(h)</code> for hyphenated words, and a channel
+model <code>p(w|h)</code> defined so that <code>p(w|h) = 1</code> if
+<code>w</code> is equal to <code>h</code> with the hyphens removed and <code>0</code>
+otherwise.  We then seek to find the most likely source message <code>h</code>
+to have produced message <code>w</code> by:
+</p>
+<pre class="code">
+ARGMAX<sub><sub style="font-size:100%">h</sub></sub> p(h|w) = ARGMAX<sub><sub style="font-size:100%">h</sub></sub> p(w|h) p(h) / p(w)
+               = ARGMAX<sub><sub style="font-size:100%">h</sub></sub> p(w|h) p(h)         
+               = ARGMAX<sub><sub style="font-size:100%">h s.t. strip(h)=w</sub></sub> p(h)
+</pre>
+
+<p>where we use <code>strip(h)&nbsp;=&nbsp;w</code> to mean that
+<code>w</code> is equal to <code>h</code> with the hyphenations
+stripped out (in Java terms, <code>h.replaceAll(&quot; &quot;,&quot;&quot;).equals(w)</code>).  Thus with a deterministic channel, we wind up looking
+for the most likely hyphenation <code>h</code> according to <code>p(h)</code>,
+restricting our search to <code>h</code> that produce <code>w</code>
+when the hyphens are stripped out.
+</p>
+
+
+<h2>The Moby Corpus</h2>
+
+<p>
+For our quick getting started example, we'll use a free
+corpus of English hyphenations.
+</p>
+
+<h3>Downloading the Corpus</h3>
+
+<p>Grady Ward produced a free corpus of English hyphenations, which
+is available from Project Gutenberg:
+</p>
+
+<ul>
+<li>Project Gutenberg: <a href="http://www.gutenberg.org/etext/3204">Moby Corpus Home</a></li>
+<li>Project Gutenberg: <a href="http://www.gutenberg.org/dirs/etext02/mhyph10.zip">Download Moby Corpus</a></li>
+</ul>
+
+<p>We'll assume you've downloaded the corpus and unzipped it into a
+file <code>$MOBY_RAW_DATA</code> (the data unpackes into a file called
+<code>mhyph.txt</code>).</p>
+
+<pre class="code">
+&gt; cd $MOBY_RAW_DATA
+&gt; unzip mhyph10.zip
+</pre>
+
+<h3>Munging the Corpus</h3>
+
+<p>The corpus is encoded as bytes, with byte sequence
+<code>0xFF</code> <code>0xFD</code> used to indicate hyphens.
+There's a simple program <a href="src/MobyHyphenCorpus.java"><code>src/MobyHyphenCorpus.java</code></a>
+which we wrote to munge the corpus into our official input
+format, which is one word per line separated by spaces.  It
+splits out space-separated compounds into their own entries.
+</p>
+
+<p>The munger can be run through the ant target <code>moby-hyphens</code> (be sure to replace <code>$MOBY_RAW_DATA</code> as described above):
+</p>
+
+<pre class="code">
+&gt; ant -Dmoby.raw.file=$MOBY_RAW_DATA/mhyph.txt -Dhyphens.file=moby-hyphens.txt moby-hyphens
+
+Raw Input=e:\data\moby-hyphens\unpacked\mhyph.txt
+Hyphenation Output=moby-hyphens.txt
+Found #input lines=187175
+Found #hyphenations=173781
+</pre>
+
+<p>We don't discuss this corpus in much detail as it
+seems to be very noisy, including all sorts of non-English
+words and non-words with fairly inconsistent hyphenations. Here's
+a small sampleof the resulting file <code>moby-hyphens.txt</code>:</p>
+
+<pre class="code">
+...
+a bid ing ness
+a bid jan
+a bide
+a bie
+a bil i ty
+a bim e lech
+a bin o am
+a bin o em
+...
+</pre>
+
+<h3>Running Hyphenation Cross-Validation</h3>
+
+<p>We can then take this corpus and run it through our hyphenation
+cross-validation program (fully explained below), using the
+ant target <code>xval-hyphens</code> (it'll take a while to run
+without spitting out any feedback in non-verbose mode):
+</p>
+
+<pre class="code">
+&gt; ant -Dhyphens.file=moby-hyphens.txt -Dverbose=FALSE xval-hyphens
+
+Reading data from file=C:\carp\mycvs\lingpipe\demos\tutorial\hyphenation\moby-hyphens.txt
+     #words=173732
+     #hyphens=396978
+     #hyphen insertion points=1439791
+
+ACCURACY ARGS: NGRAM=8 NUM_CHARS=64 INTERPOLATION_RATIO=4.0 HYPHENATION_N_BEST=1024 VERBOSE=false
+
+OVERALL ACCURACIES ACROSS FOLDS
+
+PER HYPHENATION: PREC=0.949 RECALL=0.950 F(1)=0.949
+
+PER TAGGING DECISION: ACC=0.9721 #DECISIONS=1439791
+
+WHOLE WORD: ACCURACY=0.877 DEV=0.002
+</pre>
+
+<p>We describe the code used for training and testing the model
+below, including a description of what all the evaluation
+numbers mean.  We also discuss a couple other modes of operation
+other than the simple language-model-based noisy channel that can be used.</p>
+
+
+
+<h2><i>Webster's Unabridged Dictionary</i></h2>
+
+<p>A quirky encoding of the 1890
+version of <i>Webster's Unabridged Dictionary</i>
+is also available from Project Gutenberg:
+</p>
+
+<ul>
+<li>Project Gutenberg: <a href="http://www.gutenberg.org/etext/673"><i>Webster's Unabridged Dictionary</i> Home</a></li>
+<li>Project Gutenberg: <a href="http://www.gutenberg.org/dirs/etext96/pgwht04.zip"><i>Webster's Unabridged Dictionar</i> Download</a></li>
+</ul>
+
+<p>We'll assume you've unzipped the distribution into a file.</p>
+
+<h3>Munging the Corpus</h3>
+
+<p>A program to extract the hyphenations may be found in
+<a href="src/WebstersHyphensCorpus.java"><code>WebstersHyphensCorpus.java</code></a>.
+It's just a bunch of scraping code that's not worth discussing,
+other than to mention that we decompound compounds and hyphenated
+forms, and remove any residual characters containing non-ASCII letters.
+</p>
+
+<p>The munging program may be run from the ant target <code>websters-hyphens</code> (be sure to replace <code>$MOBY_RAW_DATA</code> as decribed above):
+</p>
+
+<pre class="code">
+ant -Dhyphens.file=websters-hyphens.txt -Dwebsters.raw.file=$MOBY_RAW_DATA/pgwht04.txt websters-hyphens
+
+BAD: .
+BAD: 1
+BAD: ab b\'82
+BAD: ac a le ph\'91
+BAD: a ch\'91 an
+BAD: ach ro \'94 dex trin
+...
+BAD: zo \'94 troph ic
+BAD: zu &amp;ntil;is
+BAD: zyg o dac ty l\'91
+# rejected entries=1433
+# retained entries=95349
+DONE.
+</pre>
+
+<p>It prints out the entries that were rejected, reporting that
+a total of 1433 entries were rejected, while 95,349 were
+retained.  A better version of this program would figure out
+which Latin1 characters the numerical escapes referred to and
+do a replace.  For instance, <code>\'91</code> is
+clearly unicode character U+00E6 (&#x00E6;).
+</p>
+
+<h3>Evaluating Hyphenation</h3>
+
+<p>We can cross-validate on the Webster's dictionary data
+the same way as for the Moby corpus, with the <code>xval-hyphens</code>
+ant target:</p>
+
+<pre class="code">
+&gt; ant -Dhyphens.file=websters-hyphens.txt -Dverbose=FALSE xval-hyphens
+
+Reading data from file=C:\carp\mycvs\lingpipe\demos\tutorial\hyphenation\websters-hyphens.txt
+     #words=93750
+     #hyphens=191118
+     #hyphen insertion points=708320
+
+ACCURACY ARGS: NGRAM=8 NUM_CHARS=64 INTERPOLATION_RATIO=4.0 HYPHENATION_N_BEST=1024 VERBOSE=false
+
+NGRAM=  8 INTERP= 4.0 ACC=0.880 P=0.940 R=0.941 F=0.941
+
+OVERALL ACCURACIES ACROSS FOLDS
+
+PER HYPHENATION: PREC=0.940 RECALL=0.941 F(1)=0.941
+
+PER TAGGING DECISION: ACC=0.9679 #DECISIONS= 708320
+
+WHOLE WORD: ACCURACY=0.880 DEV=0.003
+</pre>
+
+<p>This doesn't look very good from the whole word perspective,
+though the per-hyphenation scores are OK.  This may be due
+to the number of non-English words and names in Webster's
+dictionary.
+</p>
+
+<pre class="code">
+&gt; ant -Dhyphens.file=websters-hyphens.txt -Dverbose=TRUE xval-hyphens
+
+Reading data from file=C:\carp\mycvs\lingpipe\demos\tutorial\hyphenation\websters-hyphens.txt
+
+Reading data from file=C:\carp\mycvs\lingpipe\demos\tutorial\h
+Rejecting word=fellowship
+Rejecting word=griev'ance
+Rejecting word=thermometer
+Rejecting word=worthwhile
+     #words=93750
+     #hyphens=191118
+     #hyphen insertion points=708320
+ACCURACY ARGS: NGRAM=8 NUM_CHARS=64 INTERPOLATION_RATIO=4.0 HYPHENATION_N_BEST=1024 VERBOSE=true
+
+EVALUATING FOLD=0/10
+     Training Hyphenator
+     Compiling Hyphenator
+                REFERENCE                  RESPONSE CORRECT
+             @duc ti ble@              @duct i ble@   false
+                @deu sed@                  @deused@   false
+            @ble ton ism@             @ble to nism@   false
+                  @lil y@                    @lily@   false
+              @dil u ent@               @di lu ent@   false
+                 @sau te@                   @saute@   false
+        @dem o ni a cism@         @de mo ni a cism@   false
+                 @secant@                 @se cant@   false
+             @in flat ed@              @in fla ted@   false
+                @var den@                 @vard en@   false
+                 @mon te@                   @monte@   false
+          @je ron y mite@           @jer on y mite@   false
+         @sec u rif e ra@          @se cu rif e ra@   false
+             @bur let ta@              @burl et ta@   false
+      @non med ul la ted@       @non me dul la ted@   false
+                 @fe rie@                  @fer ie@   false
+                @cist ic@                 @cis tic@   false
+                  @piste@                  @pis te@   false
+           @ruhm korff's@           @ruhm korff 's@   false
+</pre>
+
+<p>On the left is the reference value in the dictionary and
+on the right the system responses.  Note that four words were rejected because they
+were very long and had no hyphneation.  The heuristic obviously
+misses errors like the word &quot;secant&quot; above, which
+should have at least one hyphen.</p>
+
+
+<h2>The CELEX2 Corpus</h2>
+
+<div class="sidebar">
+<h2>Spidering Online Dictionaries</h2>
+<p>High quality syllabification and hyphenation may be found in online
+dictionaries.  It's possible to spider and scrapes sites like
+<code>reference.com</code>, but the process is tricky because of
+the form of dictionary entries and inconsistent hyphenation across
+dictionaries and missing hyphenations within single dictionaries.
+More consistent dictionary sites, like <code>education.yahoo.com</code>, throttle IP addresses.
+</p>
+</div>
+
+<p>Rather than spidering and scraping a web site, for the
+purposes of this tutorial we use the <a
+href="http://www.ldc.upenn.edu/Catalog/CatalogEntry.jsp?catalogId=LDC96L14">CELEX2</a>
+corpus from the <a href="http://www.ldc.upenn.edu">Linguistic Data
+Consortium</a>.  CELEX2 contains data for English, German and Dutch,
+including spelling, syllabification and hyphenation,
+created by a consortium of Dutch research institutes.  The CELEX2
+corpus is only US$300 for non-members, but even for LDC members, comes
+with a <a
+href="http://www.ldc.upenn.edu/Catalog/mem_agree/celex.html">very
+restrictive research-only license</a>.</p>
+
+<p>We will assume CELEX2 has been downloaded and then unpacked
+from its gzipped tarball into a directory we'll call <code>$CELEX2</code>.
+CELEX2 provides various annotations, each in their own files.
+For English hyphenation, the relevant file is
+<code>$CELEX2/english/eow/eow.cd</code>.  Each entry is
+on its own numbered line. Here's a sample:
+</p>
+
+<pre class="code">
+...
+147\abolish\27\78\1\B\27\78\a-bol-ish
+148\abolished\31\78\1\B\31\125\a-bol-ished
+149\abolishes\3\78\1\B\3\0\a-bol-ish-es
+...
+</pre>
+
+<p>
+It's very easy to pull out the hyphenated versions of the
+words for our data set.  There is a small complication in
+that both hyphenated words and compounds are allowed as
+inputs, with spaces and double-hyphens in the output respectively:
+</p>
+
+<pre class="code">
+...
+75889\run-around\2\39595\1\B\2\0\run--a-round
+75890\run around\0\39594\1\B\0\0\run a-round
+...
+</pre>
+
+<p>To handle this issue, we'll just collect all the single
+words, splitting on double-hyphens and spaces.</p>
+
+<p>The final complication is that there can be more than
+one annotation per line, as in:
+</p>
+
+<pre class="code">
+...
+235\abridgments\0\124\2\B\0\0\a-bridg-ments\abridgements\B\0\0\a-bridge-ments
+...
+</pre>
+
+<p>In this case, an alternate spelling (&quot;abridgments&quot; vs. &quot;abridgements&quot;),
+with corresponding hyphenations.</p>
+
+<h3>CELEX Guidelines for English, Dutch and German</h3>
+
+<div class="sidebar">
+<h2>That Pesky Postscript</h2>
+<p>
+The German and Dutch guides are only available as postscript
+files.  These may be viewed using ghostview, or converted to
+PDF using <code>ps2pdf</code>.</p>
+</div>
+
+<p>The tagging guides for Dutch, English, and German may be found
+at the top-level directory for each language:
+</p>
+
+<ul>
+<li><code>$CELEX/dutch/dug_let.ps</code></li>
+<li><code>$CELEX/english/eug_let.pdf</code></li>
+<li><code>$CELEX/german/gug_let.ps</code></li>
+</ul>
+
+<p>There's also an <a href="http://www.ldc.upenn.edu/Catalog/readme_files/celex.readme.html">online description</a> of the contents of the corpus.</p>
+
+<p>Among other resources, these guides (at least the English one)
+contain a mapping between IPA symbols and the symbols used in CELEX
+for phonemes.
+</p>
+
+
+<h2>Creating the Input Data</h2>
+
+<h3>Running the Extractor</h3>
+<p>We pull the input data out of the CELEX2 file through the
+ant target <code>celex-hyphens</code>, with input file and
+output file specified with a <code>-D</code> property declaration:
+</p>
+
+<pre class="code">
+&gt; ant -Dcelex.ow.file=e:\data\celex2\unpacked\celex2\english\eow\eow.cd -Dhyphens.file=celex-english-hyphens.txt celex-hyphens
+
+# hyphenations=71476
+# unique words=71363
+[naafi, naaf i]
+[de serts, des erts]
+[coun ci lors, coun cil ors]
+[reb el, re bel]
+[cursed, curs ed]
+...
+[in valid, in val id, in va lid]
+...
+RESIDUAL ESCAPES=[]
+
+BUILD SUCCESSFUL
+Total time: 6 seconds
+</pre>
+
+<h4>Multiple Hyphenations</h4>
+
+<p>Note that there are 71,476 unique hyphenations, but only
+71,363 words from which they were drawn.  The difference
+is made up by words with multiple hyphenations, which are
+listed below the counts (truncated here).  The word
+&quot;invalid&quot; is unique in having three hyphenations,
+though the first one appears to be an error (unless that
+last syllable's pronounced like &quot;vlid&quot;, but in
+general, reductions like that aren't listed in the corpus).
+The system we will produce will generate a first-best
+hyphenation for each word; under this scheme, the system
+will make at least 113 mistakes on the ambiguous English data.
+</p>
+
+<h4>Diacritics and Special Symbols</h4>
+
+<p>
+The CELEX2 corpus uses ASCII encodings of characters, employing
+their own custom diacritic encodings, listed in their README file(s) [this
+combines the Dutch, English and German accent sets, which are
+consistent]:
+</p>
+
+<pre class="code">
+  diacritic symbol           diacritic sign
+        #                           '         (acute accent)
+        `                           `         (grave accent)
+        &quot;                           &quot;         (diaeresis)
+        ^                           ^         (circumflex accent)
+        ,                           ,         (cedilla)
+        ~                           ~         (tilde)
+        @                           o         (ring)        
+</pre>
+
+<p> The German Eszett symbol (&#x00DF; unicode <code>U+00DF</code>) is
+encoded by the dollar-sign character <code>'$'</code>.  </p>
+
+
+<h4>Multiple Forms of the Same Word</h4>
+
+<p>There are also multiple entries and entries with apostrophes
+for posssessives and contractions:
+</p>
+
+<pre class="code">
+...
+8378\boatswains\1\4518\4\B\0\0\boat-swains\bosuns\B\0\0\bo-suns\bo's'ns\B\0\0\bo's'ns\bo'suns\B\1\0\bo'suns
+...
+</pre>
+
+<p>In this example, the word &quot;boatwsains&quot; is hyphenated as boat-swains, and then additional
+varieties are supplied on the same line, such as &quot;bosuns&quot;, &quot;bo's'ns&quot;,
+and &quot;bo'suns&quot;, each with their own hyphenation.
+</p>
+
+<h4>Commas in Phrasal Entries</h4>
+
+<p>There's an error in some of the English encodings, which have commas
+in the entries, even though commas are reserved for cedillas.  We just clean
+up by breakong in comma plus space in breaking multiple words.
+</p>
+
+<pre class="code">
+42215\hop, skip, and jump\0\21578\1\B\0\0\hop, skip, and jump
+42216\hop, step, and jump\0\21579\1\B\0\0\hop, step, and jump
+</pre>
+
+<h4>Finished Data</h4>
+
+<p>The finished product, the file for which was specified
+as <code>celex-english-hyphens.txt</code> in the ant target
+invocation above, is UTF-8 encoded, with one entry per line,
+with spaces representing hyphens:
+</p>
+
+<pre class="code">
+'d
+'em
+'ll
+...
+a
+a back
+a baft
+a ban don
+a ban don ing
+...
+&#x00E9; p&#x00E9;e
+&#x00E9; p&#x00E9;es
+</pre>
+
+<p>There are remaining entries with hyphens for contractions and
+possessives.</p>
+
+
+<h3>Hyphen Extractor Source Code</h3>
+
+<p>The source code for the extractor is in <a
+href="src/CelexHyphenCorpus.java"><code>src/CelexHyphenCorpus.java</code></a>.
+It's not particularly interesting, as it merely walks through
+the data stripping out pronunciations, breaking compounds into
+single words, collecting counts, and reinserting the diacritics.
+</p>
+
+
+<h2>Cross-Validating Hyphenation</h2>
+
+<p>Like our other evaluations, we set up hyphenation to run through
+ten-fold cross-validation.  This means we will divide the data up into 
+ten random sets, known as folds, and then for each fold in turn, train on the
+other nine folds and test on the given fold.  Results get reported
+as averages.
+</p>
+
+<pre class="code">
+&gt; ant -Dverbose=false -Dhyphens.file=celex-english-hyphens.txt xval-hyphens
+
+ACCURACY ARGS: NGRAM=8 NUM_CHARS=64 INTERPOLATION_RATIO=4.0 HYPHENATION_N_BEST=1024 VERBOSE=false
+
+Reading data from file=C:\carp\mycvs\lingpipe\demos\tutorial\hyphenation\celex-english-hyphens.txt
+     #words=71476
+     #hyphens=121794
+     #hyphen insertion points=524910
+
+FOLD = 0 ACCURACY=0.955
+FOLD = 1 ACCURACY=0.957
+FOLD = 2 ACCURACY=0.957
+FOLD = 3 ACCURACY=0.958
+FOLD = 4 ACCURACY=0.955
+FOLD = 5 ACCURACY=0.956
+FOLD = 6 ACCURACY=0.960
+FOLD = 7 ACCURACY=0.952
+FOLD = 8 ACCURACY=0.958
+FOLD = 9 ACCURACY=0.956
+
+OVERALL ACCURACIES ACROSS FOLDS
+
+PER HYPHENATION: PREC=0.975 RECALL=0.976 F(1)=0.975
+
+PER TAGGING DECISION: ACC=0.9886 #DECISIONS= 524910
+
+WHOLE WORD: ACCURACY=0.956 DEV=0.002
+</pre>
+
+<h3>Evaluations</h3>
+
+<p>Before going into the code, we'll describe the three distinct lines of the evaluations.
+</p>
+
+<h4>Whole Word Accuracy</h4>
+
+<p>The simplest evaluation is whole word accuracy, which is
+simply the number of words that were hyphenated correctly
+divided by the number of words.  The whole word accuracy for
+this run was 0.956, with a deviation of 0.002 derived from
+the ten runs, which varied in accuracy between 0.952 and
+0.960.</p>
+
+<p>It's instructive to compute the <a href="http://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval">binomial confidence
+interval</a> (a kind of <a href="http://en.wikipedia.org/wiki/Z-test">Z-test</a>, which is appropriate here
+due to large sample size), which is based on a standard deviation calculation,
+where <code>p</code> is the success probability (here 0.956)
+and <code>N</code> is the number of trials (71,476):
+</p>
+
+<pre class="code">
+dev(Binomial(p,N)) = sqrt(p * (1-p) / N)
+</pre>
+
+<p>Note that the result is normalized (by dividing by <code>N</code>) back
+to the probability scale.  The actual deviation in the binomial
+outcome is <code>sqrt(N * p * (1-p))</code>, which is then divided
+by <code>N</code> to yield <code>sqrt(p * (1-p)/n)</code>.
+</p>
+
+<div class="sidebar">
+<h2>Real Confidence Intervals are Wider</h2>
+
+<p> Theoretical confidence intervals tend to be narrower than found in
+practice.  This is mainly because real data is rarely <a
+href="http://en.wikipedia.org/wiki/Independent_and_identically-distributed_random_variables">IID</a>
+(independent, identically distributed).  Typically real data is
+<a href="http://en.wikipedia.org/wiki/Overdispersion">overdispersed</a> compared to a
+theoretical model.  
+</p> 
+</div>
+
+<p>Plugging in our numbers yields 0.000767.  A 95% confidence interval
+is roughly two times the deviation in either direction, or, +/-
+.00153, for a confidence interval of (0.9545, 0.9575), which appears
+to be a bit too narrow given the cross-validation results (see the sidebar).
+</p>
+
+<h4>Per-Hyphenation Precision and Recall</h4>
+
+<p>Treating the hyphenations as objects to be found, we can
+report precision and recall values.  There's a total of
+121,794 hyphens in the corpus.  As usual, precision is the
+percentage of hyphens the model returns that are correct,
+whereas recall is the percentage of correct hyphenations returned
+by the model.  The numbers here are precision=0.975 and
+recall=0.976.  That is, we found 97.6% of the hyphens and
+97.5% of what we found was correct.  The F-measure is their
+harmonic mean, which is 0.975.</p>
+
+<h4>Per-Decision Accuracy</h4>
+
+<p>Finally, we can look at each position between a pair of
+characters in the input to judge whether we made the
+right decision, hyphen or no-hyphen.  There's a total of
+524,910 such decision points, and our overall accuracy is
+0.9886.
+</p>
+
+<h4>Verbose Reports Per Word</h4>
+
+<p>Reports on all the errors made by the system on a word-by-word
+basis are available by setting the <code>verbose</code> property to
+<code>true</code>, which it is by default.  Here's a sample:
+</p>
+
+<pre class="code">
+&gt; ant -Dhyphens.file=celex-english-hyphens.txt xval-hyphens
+
+....
+EVALUATING FOLD=0/10
+     Training Hyphenator
+     Compiling Hyphenator
+                REFERENCE                  RESPONSE CORRECT
+                @lla mas@                @ll a mas@   false
+               @py ja ma@                @py jam a@   false
+           @fril li ness@            @frill i ness@   false
+                 @trag i@                  @tra gi@   false
+               @ser aphs@                @se raphs@   false
+          @he do nis tic@           @he don is tic@   false
+          @mo ral i ties@           @mor al i ties@   false
+              @frig ates@               @fri gates@   false
+             @cha ris ma@              @char is ma@   false
+...
+           @step fathers@           @step fa thers@   false
+...
+   @dis in fla tion a ry@    @dis in fla tion ar y@   false
+...
+            @vaude ville@            @vau dev ille@   false
+</pre>
+
+<p>The labeled data's hyphenation is listed on the left under
+<code>REFERENCE</code>, with the system's answer listed on the
+right under <code>RESPONSE</code>.</p>
+
+<p>Most of the mistakes involve off-by-one break locations, but some
+of these lead to the wrong number of syllables, as for &quot;llamas&quot;
+and &quot;vaudeville&quot;.</p>
+
+<p>Some of the mistakes appear to be errors in the training data, such
+as &quot;step-fathers&quot;, which clearly should have a hyphenation
+point in &quot;fathers&quot;.  Other errors are questionable, such as
+&quot;dis-in-fla-tion-a-ry&quot;, whose <a
+href="http://dictionary.reference.com/search?q=disinflationary">hypehnation
+in <code>dictionary.reference.com</code></a> matches our response.  In
+part, this indicates how sketchy the &quot;rules&quot; are for hyphenation
+in English.
+</p>
+
+<h3>Code Walkthrough</h3>
+
+<p>The cross-validation code is available
+in <a href="src/XvalHyphenation.java"><code>src/XvalHyphenation.java</code></a>.
+The portions of the code to train, compile, and run on
+new data is very simple.  Most of the code's tied up
+in creating the folds and running evaluations.</p>
+
+
+<h4>Spell Checking</h4>
+
+<p>Hyphenation is based on our spell checking API, which is further
+explained in the <a href="../querySpellChecker/read-me.html">spell check
+tutorial</a> and in the 
+<a href="../chineseTokens/read-me.html">Chinese tokenization tutorial</a>.
+</p>
+
+<h4>Problem Encoding</h4>
+
+<p> To cast the problem into our spelling framework, we wrap each word
+in a start-word and end-word symbol, both chosen to be
+<code>'@'</code> here.  Using different symbols for start and end
+doesn't change our results, so we went with the simpler encoding.  We
+then just train the model by feeding it these wrapped words.
+</p>
+
+<h4>Corpus Parsing</h4>
+
+<p>There's code to parse the corpus in method <code>parseCorpus()</code>.
+The only piece of this relevant to the API is the piece that appends
+the start-of-word and end-of-word symbols:
+</p>
+
+<pre class="code">
+public static String[] parseCorpus(File hyphenationDataFile) throws IOException {
+    ...
+    String[] hyphenatedWords = new String[hyphenatedWordList.size()];
+    for (int i = 0; i &lt; hyphenatedWords.length; ++i)
+        hyphenatedWords[i] = "@" + hyphenatedWordList.get(i) + "@";
+</pre>
+
+<p>and the piece that permutes the array of hyphenated words (using our
+utility class <code>util.Arrays</code>):
+</p>
+
+<pre class="code">
+    com.aliasi.util.Arrays.&lt;String&gt;permute(hyphenatedWords, new Random(42));
+</pre>
+
+<p>The random seed is hard-coded here so that the results are the
+same.  This is a re-usable trick for debugging methods with a random
+component.  Changing the seed changes the results, as there's a truly
+random element to cross-validation.</p>
+
+<h4>Model Training</h4>
+
+<p>Training the spell checking model is done in the usual way:
+</p>
+
+<pre class="code">
+static CompiledSpellChecker compileHyphenator(String[] hyphenatedWords, 
+                                              int fold, int numFolds,
+                                              int maxNGram, int numChars, 
+                                              double interpolationRatio)
+    throws IOException, ClassNotFoundException {
+
+    NGramProcessLM lm 
+        = new NGramProcessLM(maxNGram,numChars,interpolationRatio);
+    WeightedEditDistance distance
+        = CompiledSpellChecker.TOKENIZING;
+    TrainSpellChecker trainer 
+        = new TrainSpellChecker(lm,distance,null);
+    for (int i = 0; i &lt; hyphenatedWords.length; ++i)
+        if (i % numFolds != fold)
+            trainer.handle(hyphenatedWords[i]);
+    ...
+</pre>
+
+<p>First, a process n-gram language model is created using the
+specified parameters for n-gram length, interpolation ratio
+and number of characters for the baseline uniform districution.</p>
+
+<p>Next, the weighted edit distance is set to the constant
+<code>CompiledSpellChecker.TOKENIZING</code>, which implements
+the deterministic channel model by making space insertion and
+matching cost zero and all other edits cost infinity. 
+</p>
+
+<p>Then, the model is compiled using the utility method <code>compile()</code> from
+<code>util.AbstractExternalizable</code>:</p>
+
+<pre class="code">
+        CompiledSpellChecker hyphenator
+            = (CompiledSpellChecker) AbstractExternalizable.compile(trainer);
+        hyphenator.setAllowInsert(true);
+        hyphenator.setAllowMatch(true);
+        hyphenator.setAllowDelete(false);
+        hyphenator.setAllowSubstitute(false);
+        hyphenator.setAllowTranspose(false);
+        hyphenator.setNumConsecutiveInsertionsAllowed(1);
+        hyphenator.setFirstCharEditCost(0);
+        hyphenator.setSecondCharEditCost(0);
+        hyphenator.setNBest(HYPHENATION_N_BEST);
+
+        return hyphenator;
+</pre>
+
+<p>After the model is compiled, it is configured for efficiency using
+methods in <code>CompiledSpellChecker</code>.  In particular, it
+allows inserts (for the spaces), but limits the number of consecutive
+insertions to one.
+The code allows matches, but all other edits are
+disallowed.  </p>
+
+<p>This code also sets the first and second character edit
+cost penalties to 0, putting them on an equal footing with other
+characters.  For ordinary spelling correction, there is a much lower
+chance of first and second characters being wrong than characters later
+in the word.
+</p>
+
+<p>
+Finally, the n-best list is set to a constant. In general,
+the n-best list should be set as low as possible without hurting
+accuracy, because fatter n-best lists mean slower parsing time.
+</p>
+
+<h4>Compiling to File</h4>
+
+<p>The trained model could have been compiled to a file
+using the method <code>compileTo(ObjectOutput)</code> in the
+compiled spell checker or the utility method
+<code>AbstractExternalizable.compileto(Compilable,File)</code>, because
+<code>TrainSpellChecker</code> implements <code>util.Compilable</code>.
+</p>
+
+<p>After compilation to a file, the model may be read back in through
+ordinary serialization (that is, an <code>ObjectInput</code>), or
+using the utility method
+<code>AbstractExternalizable.readObject(File)</code>, cast to
+a <code>CompiledSpellChecker</code>.  Don't forget to run the
+configuration on the compiled spell checker following the code
+above.  </p>
+
+
+<h4>Evaluation</h4>
+
+<p>The evaluation happens in the method <code>evaluateFold()</code>, which
+is called for each fold value (from 0 to the number of folds):
+</p>
+
+<pre class="code">
+    static void evaluateFold(String[] hyphenatedWords, int fold, int numFolds, double[] accuracies,
+                             PrecisionRecallEvaluation prEval) 
+        throws ClassNotFoundException, IOException {
+
+        CompiledSpellChecker hyphenator = compileHyphenator(hyphenatedWords,fold,numFolds,
+                                                            MAX_NGRAM,NUM_CHARS,INTERPOLATION_RATIO);
+
+        ...
+</pre>
+
+<p>Note that a precision-recall evaluation is passed in, so that it
+may be re-used across all the folds to provide a cumulative answer
+for the whole evaluation.  The array <code>accuracies</code> is
+to fill with fold accuracies so that means and variance may be
+reported once all the folds are run.</p>
+
+<p>The first call is just to compile the hyphenator.  Then it
+loops over the word array, evaluating on a case-by-case basis:
+</p>
+
+<pre class="code">
+    int numCases = 0;
+    int numCorrect = 0;
+    for (int i = 0; i &lt; hyphenatedWords.length; ++i) {
+        if (i % numFolds == fold) {
+            String hyphenatedWord = hyphenatedWords[i];
+            String unhyphenatedWord = hyphenatedWord.replaceAll(" ","");
+            String rehyphenatedWord = tamp(hyphenator.didYouMean(unhyphenatedWord));
+            boolean correct = hyphenatedWord.equals(rehyphenatedWord);
+            ++numCases;
+            if (correct)
+                ++numCorrect;
+            updatePrEval(prEval,hyphenatedWord,rehyphenatedWord);
+        }
+    }
+    double accuracy = numCorrect / (double) numCases;
+    accuracies[fold] = accuracy;
+</pre>
+
+<p>We keep track of overall accuracy using counters, and evaluate
+on the fold at hand (determined by the mod arithmetic test).
+The oringla hyphenated word is retrieved, and the spaces removed
+using a replace operation. Then it is fed to the <code>didYouMean()</code>
+method of the hyphenator (named after its use for spelling correction).
+The answer is correct if it's equal to the input, and counts are updated
+according.  Finally, the precision-recall evaluation is updated given
+the reference hyphenation from the corpus and system response hyphenation.
+Outside of the loop over cases, overall accuracy is recorded on the
+array passed in.
+</p>
+
+<p>The method <code>tamp()</code> applied to the hyphenation gets rid
+of any spurious hyphens between the start and end boundaries and the word:
+</p>
+
+<pre class="code">
+static String tamp(String hyphenation) {
+    return &quot;@&quot; + hyphenation.replaceAll(&quot;@&quot;,&quot;&quot;).trim() + &quot;@&quot;;
+}
+</pre>
+
+<h4>Precision-Recall Evaluation</h4>
+
+<p>The precision-recall eval uses the LingPipe class
+<code>classify.PrecisionRecallEvaluation</code>, which is a general
+confusion-matrix based scorer.</p>
+
+<pre class="code">
+static void updatePrEval(PrecisionRecallEvaluation prEval, String reference, String response) {
+    Set&lt;Integer&gt; referenceBoundarySet = getBoundarySet(reference);
+    Set&lt;Integer&gt; responseBoundarySet = getBoundarySet(response);
+
+    Set&lt;Integer&gt; universalSet = new HashSet&lt;Integer&gt;();
+    universalSet.addAll(referenceBoundarySet);
+    universalSet.addAll(responseBoundarySet);
+    for (Integer i : universalSet) {
+        boolean ref = referenceBoundarySet.contains(i);
+        boolean resp = responseBoundarySet.contains(i);
+        prEval.addCase(ref,resp);
+    }
+}
+</pre>
+
+<p>The method <code>getBoundarySet(String)</code> returns a set of
+the integers representing the index of the characters before
+hyphenation points, not counting the hyphenation characters (spaces).  For instance, 
+<code>foo bar ly</code> would return the set <code>{2,&nbsp;5}</code>.
+We then create the union of the reference and response boundaries,
+then iterate over these, calculating for each whether it's a reference
+and/or response tagging.  These are added as cases to the precision-recall
+eval.  For instance, adding <code>true,true</code> is a true positive,
+<code>true,false</code> is a false negative, and <code>false,true</code>
+a false positive.
+</p>
+
+<pre class="code">
+static Set&lt;Integer&gt; getBoundarySet(String hyphenatedWord) {
+    Set&lt;Integer&gt; boundarySet = new HashSet&lt;Integer&gt;();
+    int pos = 0;
+    for (int i = 0; i &lt; hyphenatedWord.length(); ++i) {
+        if (hyphenatedWord.charAt(i) == ' ')
+            boundarySet.add(pos);
+        else
+            ++pos;
+    }
+    return boundarySet;
+}
+</pre>
+
+<p>The rest of the code is just setup and print statements.   Here's
+how the results get reported given the precision-recall eval, number
+of decisions (which there's a method to compute given the corpus)
+and accuracies with deviations:
+</p>
+
+<pre class="code">
+public static void report(PrecisionRecallEvaluation prEval, int numTagDecisions,
+                          double[] accuracies) {
+
+    System.out.printf("\nPER HYPHENATION: PREC=%5.3f RECALL=%5.3f F(1)=%5.3f\n",
+                       prEval.precision(),
+                       prEval.recall(),
+                       prEval.fMeasure());
+
+    double numTagErrors = prEval.falsePositive() + prEval.falseNegative();
+    double perTagAccuracy = (numTagDecisions - numTagErrors) / (double) numTagDecisions;
+        
+    System.out.printf("\nPER TAGGING DECISION: ACC=%5.4f #DECISIONS=%7d\n",
+                       perTagAccuracy,numTagDecisions);
+
+    System.out.printf("\nWHOLE WORD: ACCURACY=%5.3f DEV=%5.3f\n",
+                      Statistics.mean(accuracies),
+                      Statistics.standardDeviation(accuracies));
+
+}
+</pre>
+
+<h2>An Interpolated Bidirectional Model</h2>
+
+<p>Like many left-to-right sequence models, the language-model based
+noisy channel model suffers from the <a
+href="http://lingpipe-blog.com/2008/06/09/per-tag-error-function-for-conditional-random-fields-for-removing-label-bias/">label
+bias problem</a>.</p>
+
+<p>
+Without resorting to conditional random fields or structured support vector
+machines, we can mitigate the label bias problem somewhat by running
+models in both directions.  That is, we train once with the usual data,
+then we train a second model with all of the words reversed.  To produce
+a single answer, we can either combine the probability estimates of the
+forward and backward models using the n-best lists from spelling.  We
+provide a model that does this in <a href="src/XvalHyphenationBiDi.java"><code>src/XvalHyphenationBidi.java</code></a>.
+</p>
+
+<h3>N-best Spell Checker Output</h3>
+
+<p>Other than a whole lot of bookkeeping to track when a string is
+forward and backward, the only interesting innovation here is in
+combining the n-best lists from the spell checkers.  This is done
+with a helper method <code>nBest()</code> which converts the output
+to a mapping from hyphenations to scores:</p>
+
+<pre class="code">
+static ObjectToDoubleMap&lt;String&gt; nBest(CompiledSpellChecker hyphenator, String word, boolean reverseIO) {
+    Iterator&lt;ScoredObject&lt;String&gt;&gt; nBest = hyphenator.didYouMeanNBest(reverseIO ? reverse(word) : word);
+    ObjectToDoubleMap&lt;String&gt; nBestMap = new ObjectToDoubleMap&lt;String&gt;();
+    while (nBest.hasNext()) {
+        ScoredObject&lt;String&gt; scoredHyphenation = nBest.next();
+        String hyphenation = XvalHyphenation.tamp(scoredHyphenation.getObject());
+        Double score = Math.pow(2.0,scoredHyphenation.score());
+        String orderedHyphenation = reverseIO ? reverse(hyphenation) : hyphenation;
+        Double currentScore = nBestMap.get(orderedHyphenation);
+        if (currentScore != null) {
+            // happens when two inputs tamp to same val
+            score = currentScore + score;
+        }
+        nBestMap.set(orderedHyphenation,score);
+    }   
+    double totalProb = 0.0;
+    for (String key : nBestMap.keySet()) {
+        totalProb += nBestMap.get(key);
+    }
+    ObjectToDoubleMap&lt;String&gt; conditionalNBestMap = new ObjectToDoubleMap&lt;String&gt;();
+    for (String key : nBestMap.keySet()) {
+        double conditionalProb = nBestMap.get(key) / totalProb;
+        conditionalNBestMap.set(key,conditionalProb);
+    }
+    return conditionalNBestMap;
+}
+</pre>
+
+<p>This just walks over the scored object output of the n-best spell
+checker.  Scored objects include an object, in this case a string
+representing a hyphenation, and a score, in this case a joint log
+likelihood of the string and its hyphenation.  In some cases, the
+result of tamping down the spaces around the boundaries leads to two
+or three entries on the n-best list that correspond to the same
+hyphenation.  In these cases, we convert to a linear scale, add
+values, and convert back to a log scale for the final result.  </p>
+
+<p>The last step of the algorithm sums the linear probabilities
+<code>p(h,w)</code> to get the marginal probability <code>p(w)</code>
+of the underlying string, then divides the linear probabilies by the
+marginal to get the conditional, <code>p(h|w) = p(h,w)/p(w)</code>.  
+</p>
+
+<h3>Combining Forward and Backward Results</h3>
+
+<p>The hyphenation method just adds the forward and backward
+estimates and divides by two to get an interpolated score:
+</p>
+
+<pre class="code">
+p(h|w) = 0.5 * (p<sub>F</sub>(h|w) + p<sub>B</sub>(h|w))
+</pre>
+
+<p>Different interpolation ratios other than 0.5/0.5 might produce
+different results.  For instance, at 1.0/0.0 it produces the forward results
+and at 0.0/1.0 the backward results.</p>
+
+<pre class="code">
+static String hyphenate(String word,
+                        CompiledSpellChecker hyphenator,
+                        CompiledSpellChecker hyphenatorReversed) {
+    String reversed = reverse(word);
+    ObjectToDoubleMap&lt;String&gt; fwdNBest = nBest(hyphenator,word,false);
+    ObjectToDoubleMap&lt;String&gt; revNBest = nBest(hyphenatorReversed,word,true);
+    ObjectToDoubleMap&lt;String&gt; nBest = new ObjectToDoubleMap&lt;String&gt;();
+    for (String hyphenation : fwdNBest.keySet()) {
+        double fwdScore = fwdNBest.getValue(hyphenation);
+        double revScore = revNBest.getValue(hyphenation);   
+        nBest.set(hyphenation, 0.5 * fwdScore + 0.5 * revScore);
+    }
+    return nBest.keysOrderedByValueList().get(0);
+}
+</pre>
+
+<p>Basically, this just takes the two values and interpolates them evenly,
+adding them to a map.  The final return just takes the top scoring
+value from the list and returns it.
+</p>
+
+<h3>Bidirectional Results</h3>
+
+<p>Unfortunately, the bidirectional results look almost identical to
+the unidirectional forward results.
+</p>
+
+<pre class="code">
+&gt; ant -Dhyphens.file=celex-english-hyphens.txt xval-hyphens
+
+ACCURACY ARGS: NGRAM=8 NUM_CHARS=64 INTERPOLATION_RATIO=4.0 HYPHENATION_N_BEST=256
+
+Reading data from file=C:\carp\mycvs\lingpipe\demos\tutorial\hyphenation\celex-english-hyphens.txt
+     #words=71476
+     #hyphens=121794
+     #hyphen insertion points=524910
+
+FOLD = 0 ACCURACY=0.955
+FOLD = 1 ACCURACY=0.958
+FOLD = 2 ACCURACY=0.956
+FOLD = 3 ACCURACY=0.959
+FOLD = 4 ACCURACY=0.955
+FOLD = 5 ACCURACY=0.956
+FOLD = 6 ACCURACY=0.960
+FOLD = 7 ACCURACY=0.953
+FOLD = 8 ACCURACY=0.959
+FOLD = 9 ACCURACY=0.955
+
+OVERALL ACCURACIES ACROSS FOLDS
+
+PER HYPHENATION: PREC=0.975 RECALL=0.975 F(1)=0.975
+
+PER TAGGING DECISION: ACC=0.9885 #DECISIONS= 524910
+
+WHOLE WORD: ACCURACY=0.957 DEV=0.002
+</pre>
+
+<p>The whole word accuracy is .001 better, the recall is .001 worse,
+and the per-tagging accuracy .0001 worse.  This makes the
+bidirectional system statistically indistinguishable from
+the forward system.
+</p>
+
+<h2>An Intersecting Bidirectional Model</h2>
+
+<p>The final variant we consider is motivated by the fact that
+hyphenation is a precision-oriented problem.  This is because
+of the use case, which is inserting hyphens in printed material.
+As long as there's a reasonable hyphenation point somewhere near
+the middle of long words, overall recall is less important.
+With that in mind, we will deliver a system that simply
+intersects the first-best hyphens in the forward and backward models.
+</p>
+
+<h3>The Intersection Code</h3>
+
+<p>Training works just as in the bidirectional interpolation
+model, but decoding works by intersecting (or unioning, depending
+on the command-line flag) the tags in the forward and backward
+first-best results.  
+</p>
+
+<p>The code is in <a
+href="src/XvalHyphenationBiDiIntersect.java"><code>src/XvalHyphenationBiDiIntersect.java</code></a>.
+The only interesting difference from previous code takes the first-best
+hyphenations from the forward and backward models and intersects (or unions
+them).
+</p>
+
+<pre class="code">
+static String intersect(String hyphenationFwd, String hyphenationRev) {
+    boolean matched = hyphenationFwd.equals(hyphenationRev);
+    if (matched) 
+        return hyphenationFwd;
+
+    Set&lt;Integer&gt; hyphenSetFwd = XvalHyphenation.getBoundarySet(hyphenationFwd);
+    Set&lt;Integer&gt; hyphenSetRev = XvalHyphenation.getBoundarySet(hyphenationRev);
+
+    if (INTERSECT)
+        hyphenSetFwd.retainAll(hyphenSetRev);
+    else
+        hyphenSetFwd.addAll(hyphenSetRev);
+    int k = 0;
+    int[] hyphenPositions = new int[hyphenSetFwd.size()];
+    for (Integer hyphenPosition : hyphenSetFwd) {
+        hyphenPositions[k++] = hyphenPosition;
+    }
+    Arrays.sort(hyphenPositions);
+    String hyphenation = hyphenationFwd.replaceAll(" ",""); // strip hyphens
+    for (int i = hyphenPositions.length; --i >= 0; ) {
+        hyphenation = hyphenation.substring(0,hyphenPositions[i])
+            + " " + hyphenation.substring(hyphenPositions[i]);
+    }
+    return hyphenation;
+}
+</pre>
+
+<p>It's just a bunch of index fiddling.  The boolean flag <code>INTERSECT</code>
+determines if the results are unioned or intersected.  It's controlled by
+the property <code>intersect</code> from the command line.</p>
+
+<h3>Results from Intersection</h3>
+
+<p>The code can be run from the ant target <code>xval-hyphens-bidi-int</code>, with the
+verbosity and corpus specified on the command line, and additionally, a flag
+indicating whether to intersect or not (a <code>false</code> value yields union).
+</p>
+
+<pre class="code">
+&gt; ant -Dverbose=false -Dintersect=true -Dhyphens.file=celex-english-hyphens.txt xval-hyphens-bidi-int
+
+Reading data from file=C:\carp\mycvs\lingpipe\demos\tutorial\hyphenation\celex-english-hyphens.txt
+     #words=71476
+     #hyphens=121794
+     #hyphen insertion points=524910
+FOLD = 0 ACCURACY=0.948
+FOLD = 1 ACCURACY=0.949
+FOLD = 2 ACCURACY=0.950
+FOLD = 3 ACCURACY=0.952
+FOLD = 4 ACCURACY=0.949
+FOLD = 5 ACCURACY=0.948
+FOLD = 6 ACCURACY=0.953
+FOLD = 7 ACCURACY=0.944
+FOLD = 8 ACCURACY=0.949
+FOLD = 9 ACCURACY=0.947
+
+OVERALL ACCURACIES ACROSS FOLDS
+
+PER HYPHENATION: PREC=0.981 RECALL=0.969 F(1)=0.975
+
+PER TAGGING DECISION: ACC=0.9884 #DECISIONS= 524910
+
+WHOLE WORD: ACCURACY=0.949 DEV=0.002
+</pre>
+
+<p>These results are substantially different than
+the two previous sets (forward and interpolating), in
+that the precision is much higher at 0.981 versus 0.975.
+It effectively eliminates .006/.025 = 24% of the spurious
+hyphens suggested by the system.  Whole word accuracy drops
+from 0.956 to 0.949, but the per-tagging accuracy remains
+roughly the same.  Recall also drops from 0.976 to
+0.969.</p>
+
+<p>Running in unioning mode, we push the precision/recall
+balance in the opposite direction, which is not so useful
+other than as a theoretical exercise:
+</p>
+
+<pre class="code">
+ACCURACY ARGS: NGRAM=8 NUM_CHARS=64 INTERPOLATION_RATIO=4.0 HYPHENATION_N_BEST=256 VERBOSE=false MODE=UNIONING
+
+Reading data from file=C:\carp\mycvs\lingpipe\demos\tutorial\hyphenation\celex-english-hyphens.txt
+     #words=71476
+     #hyphens=121794
+     #hyphen insertion points=524910
+FOLD = 0 ACCURACY=0.945
+FOLD = 1 ACCURACY=0.946
+FOLD = 2 ACCURACY=0.949
+FOLD = 3 ACCURACY=0.950
+FOLD = 4 ACCURACY=0.948
+FOLD = 5 ACCURACY=0.946
+FOLD = 6 ACCURACY=0.951
+FOLD = 7 ACCURACY=0.943
+FOLD = 8 ACCURACY=0.949
+FOLD = 9 ACCURACY=0.945
+
+OVERALL ACCURACIES ACROSS FOLDS
+
+PER HYPHENATION: PREC=0.968 RECALL=0.981 F(1)=0.974
+
+PER TAGGING DECISION: ACC=0.9880 #DECISIONS= 524910
+
+WHOLE WORD: ACCURACY=0.947 DEV=0.002
+</pre>
+
+<p>Here we have recall at 0.981, which is higher than our original
+0.976, at the cost of a few points of precision. As with the
+precision-balanced system, overall accuracy and per-tagging accuracy
+also suffer compared to the simple forward or the forward/backward
+interpolating system.  </p>
+
+
+<h2>Parameter Tuning</h2>
+
+<p>Like most of the models based on character language models, 
+hyphenation is relatively insensitive to the available tuning
+parameters.
+</p>
+
+<h3>N-gram Length</h3>
+
+<p>First, let's look at n-gram length and interpolation ratio
+for some reasonable values.  The following table contains reports
+for the simple forward model, evaluated over n-grams from 4 to 10
+and interpolation ratios from 1/8 the n-gram length to 4 times
+the n-gram length.</p>
+
+<table>
+<tr><th>N</th><th>Interp</th><th>Acc</th><th>Prec</th><th>Recall</th><th>F</th></tr>
+<tr><td>4</td><td>0.3</td><td>0.819</td><td>0.889</td><td>0.886</td><td>0.887</td></tr>
+<tr><td>4</td><td>0.5</td><td>0.819</td><td>0.889</td><td>0.885</td><td>0.887</td></tr>
+<tr><td>4</td><td>1.0</td><td>0.819</td><td>0.889</td><td>0.885</td><td>0.887</td></tr>
+<tr><td>4</td><td>2.0</td><td>0.819</td><td>0.889</td><td>0.884</td><td>0.887</td></tr>
+<tr><td>4</td><td>4.0</td><td>0.817</td><td>0.889</td><td>0.883</td><td>0.886</td></tr>
+<tr><td>4</td><td>8.0</td><td>0.814</td><td>0.888</td><td>0.880</td><td>0.884</td></tr>
+<tr><td>4</td><td>16.0</td><td>0.806</td><td>0.887</td><td>0.874</td><td>0.880</td></tr>
+<tr><td colspan="6"></td></tr>
+<tr><td>5</td><td>0.3</td><td>0.909</td><td>0.945</td><td>0.947</td><td>0.946</td></tr>
+<tr><td>5</td><td>0.6</td><td>0.910</td><td>0.946</td><td>0.947</td><td>0.946</td></tr>
+<tr><td>5</td><td>1.3</td><td>0.909</td><td>0.946</td><td>0.945</td><td>0.945</td></tr>
+<tr><td>5</td><td>2.5</td><td>0.907</td><td>0.945</td><td>0.944</td><td>0.944</td></tr>
+<tr><td>5</td><td>5.0</td><td>0.903</td><td>0.943</td><td>0.941</td><td>0.942</td></tr>
+<tr><td>5</td><td>10.0</td><td>0.895</td><td>0.939</td><td>0.935</td><td>0.937</td></tr>
+<tr><td>5</td><td>20.0</td><td>0.881</td><td>0.931</td><td>0.925</td><td>0.928</td></tr>
+<tr><td colspan="6"></td></tr>
+<tr><td>6</td><td>0.4</td><td>0.944</td><td>0.968</td><td>0.970</td><td>0.969</td></tr>
+<tr><td>6</td><td>0.8</td><td>0.945</td><td>0.968</td><td>0.969</td><td>0.969</td></tr>
+<tr><td>6</td><td>1.5</td><td>0.944</td><td>0.968</td><td>0.969</td><td>0.968</td></tr>
+<tr><td>6</td><td>3.0</td><td>0.944</td><td>0.967</td><td>0.967</td><td>0.967</td></tr>
+<tr><td>6</td><td>6.0</td><td>0.940</td><td>0.965</td><td>0.965</td><td>0.965</td></tr>
+<tr><td>6</td><td>12.0</td><td>0.933</td><td>0.961</td><td>0.960</td><td>0.961</td></tr>
+<tr><td>6</td><td>24.0</td><td>0.921</td><td>0.955</td><td>0.952</td><td>0.954</td></tr>
+<tr><td colspan="6"></td></tr>
+<tr><td>7</td><td>0.4</td><td>0.953</td><td>0.973</td><td>0.974</td><td>0.974</td></tr>
+<tr><td>7</td><td>0.9</td><td>0.953</td><td>0.973</td><td>0.974</td><td>0.974</td></tr>
+<tr><td>7</td><td>1.8</td><td>0.953</td><td>0.974</td><td>0.974</td><td>0.974</td></tr>
+<tr><td>7</td><td>3.5</td><td>0.953</td><td>0.973</td><td>0.974</td><td>0.974</td></tr>
+<tr><td>7</td><td>7.0</td><td>0.952</td><td>0.972</td><td>0.972</td><td>0.972</td></tr>
+<tr><td>7</td><td>14.0</td><td>0.946</td><td>0.969</td><td>0.969</td><td>0.969</td></tr>
+<tr><td>7</td><td>28.0</td><td>0.937</td><td>0.964</td><td>0.963</td><td>0.964</td></tr>
+</table>
+
+<table>
+<tr><th>N</th><th>Interp</th><th>Acc</th><th>Prec</th><th>Recall</th><th>F</th></tr>
+<tr><td>8</td><td>0.5</td><td>0.954</td><td>0.975</td><td>0.975</td><td>0.975</td></tr>
+<tr><td>8</td><td>1.0</td><td>0.955</td><td>0.975</td><td>0.975</td><td>0.975</td></tr>
+<tr><td>8</td><td>2.0</td><td>0.956</td><td><b>0.976</b></td><td><b>0.976</b></td><td><b>0.976</b></td></tr>
+<tr><td>8</td><td>4.0</td><td>0.956</td><td>0.975</td><td><b>0.976</b></td><td>0.975</td></tr>
+<tr><td style="background-color:yellow">8</td><td style="background-color:yellow">8.0</td><td style="background-color:yellow">0.955</td><td style="background-color:yellow">0.975</td><td style="background-color:yellow">0.975</td><td style="background-color:yellow">0.975</td></tr>
+<tr><td>8</td><td>16.0</td><td>0.951</td><td>0.972</td><td>0.972</td><td>0.972</td></tr>
+<tr><td>8</td><td>32.0</td><td>0.942</td><td>0.968</td><td>0.967</td><td>0.967</td></tr>
+<tr><td colspan="6"></td></tr>
+<tr><td>9</td><td>0.6</td><td>0.954</td><td>0.975</td><td>0.974</td><td>0.974</td></tr>
+<tr><td>9</td><td>1.1</td><td>0.955</td><td>0.975</td><td>0.975</td><td>0.975</td></tr>
+<tr><td>9</td><td>2.3</td><td>0.956</td><td><b>0.976</b></td><td>0.975</td><td><b>0.976</b></td></tr>
+<tr><td>9</td><td>4.5</td><td><b>0.958</b></td><td><b>0.976</b></td><td><b>0.976</b></td><td><b>0.976</b></td></tr>
+<tr><td>9</td><td>9.0</td><td>0.956</td><td>0.975</td><td>0.975</td><td>0.975</td></tr>
+<tr><td>9</td><td>18.0</td><td>0.952</td><td>0.973</td><td>0.973</td><td>0.973</td></tr>
+<tr><td>9</td><td>36.0</td><td>0.944</td><td>0.969</td><td>0.968</td><td>0.968</td></tr>
+<tr><td colspan="6"></td></tr>
+<tr><td>10</td><td>0.6</td><td>0.953</td><td>0.974</td><td>0.973</td><td>0.974</td></tr>
+<tr><td>10</td><td>1.3</td><td>0.954</td><td>0.975</td><td>0.974</td><td>0.975</td></tr>
+<tr><td>10</td><td>2.5</td><td>0.956</td><td><b>0.976</b></td><td><b>0.976</b></td><td><b>0.976</b></td></tr>
+<tr><td>10</td><td>5.0</td><td><b>0.958</b></td><td><b>0.976</b></td><td><b>0.976</b></td><td><b>0.976</b></td></tr>
+<tr><td>10</td><td>10.0</td><td>0.957</td><td><b>0.976</b></td><td><b>0.976</b></td><td><b>0.976</b></td></tr>
+<tr><td>10</td><td>20.0</td><td>0.952</td><td>0.973</td><td>0.973</td><td>0.973</td></tr>
+<tr><td>10</td><td>40.0</td><td>0.944</td><td>0.969</td><td>0.968</td><td>0.969</td></tr>
+</table>
+
+
+<p>The higher the interpolation ratio, the more smoothing
+is applied to higher-order character n-gram estimates.  
+</p>
+
+<p>The bold-faced entries are maximal values for their categories.
+Thus the highest achieved F-measure is 0.976, and the highest
+accuracy found was 0.958.  The most important thing to notice here is
+that the response of the scores to the parameters is relatively
+smooth and insensitive to small changes.  That is, 9-grams
+perform pretty much like 8-grams, and an interpolation of 4.0
+performs pretty much like 8.0.</p>
+
+<p>Our default recommendation for English is to use 8-grams with the
+default interpolation ratio of 8.0.  That row is highlighted in
+yellow. The runs in the body of the tutorial use 8-grams with an
+interpolation ratio of 4.0.
+</p>
+
+<h2>Dutch Hyphenation</h2>
+
+<p>We run Dutch the same way as English.</p>
+
+<h3>The Dutch Corpus</h3>
+
+<p>Here's the ant target to create
+the corpus:</p>
+
+<pre class="code">
+&gt; ant -Dcelex.ow.file=e:\data\celex2\unpacked\celex2\dutch\dow\dow.cd -Dhyphens.file=celex-dutch-hyphens.txt celex-hyphens
+# hyphenations=315957
+# unique words=315897
+[tim er, ti mer]
+[lijs ten, lij sten]
+[made, ma de]
+[mi se, mise]
+...
+[story, sto ry]
+[an ne, anne]
+[wets taal, wet staal]
+[coun try, country]
+[raket, ra ket]
+RESIDUAL ESCAPES=[]
+</pre>
+
+<p>Some of those duplicate hyphenations look highly suspect.</p>
+
+<h3>Dutch Cross-Validation</h3>
+
+<p>Here's the ant target to evaluate using cross-validation:
+</p>
+
+<pre class="code">
+&gt; ant -Dverbose=false -Dhyphens.file=celex-dutch-hyphens.txt xval-hyphens
+
+Reading data from file=C:\carp\mycvs\lingpipe\demos\tutorial\hyphenation\celex-dutch-hyphens.txt
+     #words=315957
+     #hyphens=811045
+     #hyphen insertion points=3115724
+ACCURACY ARGS: NGRAM=8 NUM_CHARS=64 INTERPOLATION_RATIO=4.0 HYPHENATION_N_BEST=1024 VERBOSE=false
+
+
+NGRAM=  8 INTERP= 4.0 ACC=0.994 P=0.998 R=0.998 F=0.998
+
+OVERALL ACCURACIES ACROSS FOLDS
+
+PER HYPHENATION: PREC=0.998 RECALL=0.998 F(1)=0.998
+
+PER TAGGING DECISION: ACC=0.9990 #DECISIONS=3115724
+
+WHOLE WORD: ACCURACY=0.994 DEV=0.001
+</pre>
+
+<p>First note that there's almost five times as many words in the
+Dutch dictionary than in the English one.  There's over 300,000 unique
+Dutch hyphenations in the corpus.</p>
+
+<p>It looks like hyphenation in Dutch is a whole lot easier than
+in English.  In fact, it's nearly perfect, with a mistake
+being made only every 200th word or 500th hyphenation point.</p>
+
+
+<h2>German Hyphenation</h2>
+
+<h3>German Corpus Special Cases</h3>
+
+<p>Just to keep us on our toes, the German data's in a slightly
+different format, with only a single hyphenation (no ambiguities)
+listed in column 5 of their data.  And it also contains an
+escape for the Eskett (&#x00DF;) character.</p>
+
+<p>So we cut-and-pasted and modified
+to produce a German corpus builder, <a href="src/CelexHyphenCorpusGerman.java"><code>src/CelexHyphenCorpusGerman.java</code></a>.
+It runs just like the other ones, though from its own ant target <code>celex-hyphens-german</code>:
+</p>
+
+<pre class="code">
+&gt; ant -Dcelex.ow.file=e:\data\celex2\unpacked\celex2\german\gow\gow.cd -Dhyphens.file=celex-german-hyphens.txt celex-hyphens-german
+# hyphenations=312215
+# unique words=312128
+[ras tet, ra stet]
+[ra sten, ras ten]
+[be stem, bes tem]
+...
+[in di gnier test, in dig nier test]
+[gro tes ke, gro te ske]
+
+RESIDUAL ESCAPES=[]
+</pre>
+
+<h3>German Cross-Validation</h3>
+
+<p>We don't need to do anything special for evaluating German with
+cross-validation:</p>
+
+<pre class="code">
+&gt; ant -Dverbose=false -Dhyphens.file=celex-german-hyphens.txt xval-hyphens
+
+Reading data from file=C:\carp\mycvs\lingpipe\demos\tutorial\hyphenation\celex-german-hyphens.txt
+     #words=312208
+     #hyphens=793598
+     #hyphen insertion points=3164400
+ACCURACY ARGS: NGRAM=8 NUM_CHARS=64 INTERPOLATION_RATIO=4.0 HYPHENATION_N_BEST=1024 VERBOSE=false
+
+NGRAM=  8 INTERP= 4.0 ACC=0.997 P=0.999 R=0.999 F=0.999
+
+OVERALL ACCURACIES ACROSS FOLDS
+
+PER HYPHENATION: PREC=0.999 RECALL=0.999 F(1)=0.999
+
+PER TAGGING DECISION: ACC=0.9996 #DECISIONS=3164400
+
+WHOLE WORD: ACCURACY=0.997 DEV=0.000
+</pre>
+
+<p>German's even eaiser to hyphenate than English.  We didn't run
+multiple parameters here, but it's easy to imagine longer contexts
+might help for German, because of the length of some of
+the compounds in the dictionary.
+</p>
+
+<h2>English Syllabification</h2>
+
+<p>Next, we turn to English syllabification.  Syllabification is essentially
+the same problem as hyphenation, only with a different set of characters.
+</p>
+
+<h3>Extracting the Syllables</h3>
+
+<p>To extract a training corpus, we have a separate program <a
+href="src/CelexSyllableCorpus.java"><code>src/CelexSyllableCorpus.java</code></a>.
+It's basically just like the hyphen corpus extractor, only with a
+different separator and different set of characters.</p>
+
+<p>English syllables can be extracted using the ant target
+<code>celex-syllables</code>: </p>
+
+<pre class="code">
+&gt; ant -Dcelex.pw.file=e:\data\celex2\unpacked\celex2\english\epw\epw.cd -Dcelex.sylls.file=celex-english-syllables.txt celex-syllables
+
+# syllabifications=108224
+# unique words=108123
+[I nO: gjU r+l, In O: gjU r+l]
+[nEs lIN, nE slIN]
+[In O: gjU rl,, I nO: gjU rl,]
+...
+[pOp + d+mz, pO p+ d+mz]
+[pOn j+dz, pO nj+dz]
+[n&amp; tSr+ lIst, n&amp; tSr+l Ist]
+</pre>
+
+<p>There are many more syllabifications than there were hyphenations.
+This is primarily due to there being multiple pronunciations for
+words.  </p>
+
+<p>The phonetic symbols are encoded in a CELEX-specific encoding.
+Some of the symbols represent length, as in the character ':',
+and some of them indicate syllabic consonants, and so on.  There's
+a full description in the annotation guides reference above.   Rather
+than replacing the multi-character symbols with their IPA equivalents,
+we just left them as is, which probably hurts accuracy somewhat.
+</p>
+
+<p>We had to change the input symbols for the syllabification
+task because we are using the at-sign (<code>@</code>) as a boundary in the
+hyphenation program.  We just replaced it with a plus sign (<code>'+'</code>),
+which doesn't conflict with other symbols.</p>
+
+
+<h3>Performing Syllabification</h3>
+
+<p>Because we output the data in the same format as for hyphenation,
+we do not need to recode the evaluator.  We run the standard forward
+evaluation from the ant target <code>xval-hyphens</code>.  The
+bidirectional and intersecting targets may be invoked in the same way.
+</p>
+
+<pre class="code">
+&gt; ant -Dhyphens.file=celex-english-syllables.txt -Dverbose=false xval-hyphens
+
+Reading data from file=C:\carp\mycvs\lingpipe\demos\tutorial\hyphenation\celex-english-syllables.txt
+     #words=108224
+     #hyphens=218187
+     #hyphen insertion points=689124
+ACCURACY ARGS: NGRAM=8 NUM_CHARS=64 INTERPOLATION_RATIO=4.0 HYPHENATION_N_BEST=1024 VERBOSE=false
+
+NGRAM=  8 INTERP= 4.0 ACC=0.988 P=0.995 R=0.994 F=0.995
+
+OVERALL ACCURACIES ACROSS FOLDS
+
+PER HYPHENATION: PREC=0.995 RECALL=0.994 F(1)=0.995
+
+PER TAGGING DECISION: ACC=0.9966 #DECISIONS= 689124
+
+WHOLE WORD: ACCURACY=0.988 DEV=0.001
+</pre>
+
+
+<p>As expected, syllabification is a whole lot more predicatable
+than hyphenation in English.  That's because the sound system used
+by the language is much more regular than the spelling.
+</p>
+
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+

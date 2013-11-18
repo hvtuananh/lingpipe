@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<project name="Alias-i LingPipe Demos Build" default="jars" basedir=".">
+
+  <target name="clean">
+    <ant dir="data" target="clean"/>
+    <ant dir="generic" target="clean"/>
+    <ant dir="tutorial" target="clean"/>
+  </target>
+
+  <target name="jars">
+    <ant dir="data" target="unpack"/>
+    <ant dir="generic" target="jar"/>
+    <ant dir="tutorial" target="jars"/>
+  </target>
+
+</project>

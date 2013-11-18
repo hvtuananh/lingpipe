@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Alias-i LingPipe" default="compile" basedir=".">
+
+  <property name="version"
+            value="4.1.0"/>
+
+  <property name="previous_version"
+            value="4.0.1"/>
+
+  <path id="classpath.test">
+    <path path="build/testClasses"/>
+    <pathelement location="lib/junit-4.8.2.jar"/>
+    <pathelement location="lingpipe-${version}.jar"/>
+  </path>
+
+  <target name="clean"
+          description="Removes most automatically built files except docs.">
+    <delete dir="build"/>
+    <delete failonerror="false" file="lingpipe-${version}.jar"/>
+    <delete file="lingpipe-${version}.tar.gz"/>
+    <delete file="lingpipe-html-update-${version}.tar.gz"/>
+    <delete>
+      <fileset dir="."  includes="junit*.properties"/>
+    </delete>
+    <ant dir="demos" target="clean"/>
+  </target>
+
+
+
+  <target name="realClean"
+          depends="clean"
+          description="Removes all automatic files, emacs backups and generated javadocs.">
+    <delete verbose="true" dir="docs"/>
+    <delete verbose="true">
+      <fileset dir="."
+               includes="**/*~ **/#*# **/.#*"
+               defaultexcludes="no"/>
+    </delete>
+  </target>
+
+
+  <target name="compile"
+          description="Compiles LingPipe's classes to build/classes.">
+    <mkdir dir="build/classes"/>
+    <javac optimize="on"
+           debug="yes"
+           debuglevel="source,lines,vars"
+           destdir="build/classes"
+           includeAntRuntime="false">
+      <compilerarg value="-Xlint:all"/>
+      <src path="src"/>
+      <include name="com/aliasi/**"/>
+      <exclude name="com/aliasi/test/**"/>
+    </javac>
+  </target>
+
+
+  <target name="jar"
+          depends="compile"
+          description="Compile, then create jar = /lingpipe-${version}.jar">
+    <jar destfile="lingpipe-${version}.jar">
+      <fileset dir="build/classes"
+               includes="**/*.class,**/*.dtd"/>
+    </jar>
+  </target>
+
+
+  <target name="jars"
+          depends="jar"
+          description="Creates LingPipe jar and all demo jars.">
+      <ant dir="demos" target="jars"/>
+  </target>
+
+
+  <target name="javadoc"
+          description="Creates javadocs in /docs/api">
+    <mkdir dir="docs/api"/>
+    <javadoc destdir="docs/api"
+             author="true"
+             use="false"
+             version="true"
+             doctitle="Alias-i LingPipe ${version}"
+             windowtitle="LingPipe API">
+      <packageset dir="src">
+        <include name="com/aliasi/**"/>
+        <exclude name="com/aliasi/test/**"/>
+      </packageset>
+      <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
+    </javadoc>
+  </target>
+
+  <target name="test-compile"
+          depends="jar"
+          description="Compiles test classes to build/testClasses.">
+    <mkdir dir="build/testClasses"/>
+    <delete dir="build/lingpipe-${version}-test.jar"/>
+    <javac optimize="on"
+           debug="yes"
+           debuglevel="source,lines,vars"
+           destdir="build/testClasses"
+           includeAntRuntime="false">
+      <!-- <compilerarg value="-Xlint:all"/> not yet delinted, still lots of deprecated test ops -->
+      <classpath refid="classpath.test"/>
+      <src path="src"/>
+      <include name="com/aliasi/test/**"/>
+    </javac>
+  </target>
+
+
+
+  <target name="test"
+          depends="clean,test-compile"
+          description="Cleans, recompiles LingPipe Jar, then runs unit tests.">
+    <junit printsummary="withOutAndErr"
+           haltonfailure="on"
+           showoutput="off"
+           filtertrace="off"
+           fork="true"
+           maxMemory="1024M">
+      <classpath refid="classpath.test"/>
+      <formatter type="brief" usefile="false"/>
+      <batchtest fork="yes">
+        <fileset dir="src">
+          <include name="com/aliasi/test/unit/**/*Test.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+
+  <target name="test1"
+          depends="jar,test-compile"
+          description="Runs single unit test specified by test.class property.">
+    <junit printsummary="withOutAndErr"
+           haltonfailure="on"
+           showoutput="off"
+           filtertrace="off"
+           fork="true"
+           maxMemory="1024M">
+      <classpath refid="classpath.test"/>
+      <formatter type="brief" usefile="false"/>
+      <test name="com.aliasi.test.unit.${test.class}Test"/>
+    </junit>
+  </target>
+  <!-- e.g. -Dtest.class=classify.ClassifierEvaluator -->
+
+
+
+  <target name="validate-xml"
+          depends="clean"
+          description="Checks all released .xml files, but not (x)html.">
+    <!-- lenient checks for structure of elts/entities,
+         but doesn't require DTDs, root specs, etc. -->
+    <xmlvalidate failonerror="no" lenient="yes" warn="yes">
+      <fileset dir="." includes="**/*.xml" excludes="build/**,docs/api/**"/>
+    </xmlvalidate>
+  </target>
+
+
+  <target name="nonstrict-math"
+          depends=""
+          description="Converts all math to non-strict math.  Recompile afterward.">
+    <replace dir="."
+              summary="yes"
+              includes ="**/*.java"
+              excludes="build.xml">
+       <replacetoken><![CDATA[java.lang.StrictMath]]></replacetoken>
+       <replacevalue><![CDATA[java.lang.Math]]></replacevalue>
+     </replace>
+     <replace dir="."
+              summary="yes"
+              includes ="**/*.java"
+              excludes="build.xml">
+       <replacetoken><![CDATA[strictfp ]]></replacetoken>
+       <replacevalue><![CDATA[]]></replacevalue>
+     </replace>
+  </target>
+
+  <target name="strict-math"
+          depends=""
+          description="Converts all math to strict math.  Recompile afterward.">
+     <replace dir="."
+              summary="yes"
+              includes ="**/*.java"
+              excludes="build.xml">
+       <replacetoken><![CDATA[java.lang.Math]]></replacetoken>
+       <replacevalue><![CDATA[java.lang.StrictMath]]></replacevalue>
+     </replace>
+     <replace dir="."
+              summary="yes"
+              includes ="**/*.java"
+              excludes="build.xml">
+       <replacetoken><![CDATA[class ]]></replacetoken>
+       <replacevalue><![CDATA[class strictfp ]]></replacevalue>
+     </replace>
+  </target>
+
+  <target name="update-version"
+          depends=""
+          description="Replaces lingpipe versions in demo linkings.">
+
+     <replace dir="."
+              summary="yes"
+              token="lingpipe-${previous_version}"
+              value="lingpipe-${version}"
+              includes ="**/*.sh **/*.bat **/build.xml **/*.html **/*.txt"
+              excludes="build.xml">
+     </replace>
+
+     <!-- 
+     <replace dir="."
+              summary="yes"
+              includes ="**/*.java"
+              excludes="build.xml">
+       <replacetoken><![CDATA[LingPipe v. 3.9]]></replacetoken>
+       <replacevalue><![CDATA[LingPipe v. 4.1.0]]></replacevalue>
+     </replace>
+
+     <replace dir="."
+              summary="yes"
+              includes ="**/*.sh **/*.bat **/build.xml **/*.html **/*.txt"
+              excludes="build.xml">
+       <replacetoken><![CDATA[LingPipe&nbsp;4.0.1]]></replacetoken>
+       <replacevalue><![CDATA[LingPipe&nbsp;4.1.0]]></replacevalue>
+     </replace>
+
+     <replace dir="."
+              summary="yes"
+              includes ="**/*.java"
+              excludes="build.xml">
+       <replacetoken><![CDATA[(C) 2003-2010]]></replacetoken>
+       <replacevalue><![CDATA[(C) 2003-2011]]></replacevalue>
+     </replace>
+
+     <replace dir="."
+              summary="yes"
+              includes ="**/*.html"
+              excludes="build.xml">
+       <replacetoken><![CDATA[&#169; 2003&ndash;2010 &nbsp;]]></replacetoken>
+       <replacevalue><![CDATA[&#169; 2003&ndash;2011 &nbsp;]]></replacevalue>
+     </replace>
+
+     <replace dir="demos/"
+              summary="yes"
+              includes ="**/*.sh **/*.bat **/build.xml **/*.html **/*.txt"
+              excludes="build.xml">
+       <replacetoken><![CDATA[servlet-api-6.0.24.jar]]></replacetoken>
+       <replacevalue><![CDATA[servlet-api-6.0.26.jar]]></replacevalue>
+     </replace>
+     -->
+  </target>
+
+
+  <target name="site"
+          depends="clean,jars,javadoc"
+          description="Generates LingPipe web site at build/lingpipe-${version}-website.tar.gz">
+      <tar destfile="lingpipe-${version}.tar.gz"
+           compression="gzip">
+        <tarfileset dir="."
+                    prefix="/lingpipe-${version}"
+                    mode="775">
+          <exclude name="**/build/**"/>
+          <exclude name="cd/**"/>
+          <exclude name="lingpipe-${version}.tar.gz"/>
+        </tarfileset>
+      </tar>
+      <tar destfile="build/lingpipe-${version}-website.tar.gz"
+           compression="gzip">
+        <tarfileset dir="."
+                    prefix="/lingpipe-${version}-website"
+                    mode="775">
+          <exclude name="**/build/**"/>
+          <exclude name="cd/**"/>
+        </tarfileset>
+      </tar>
+  </target>
+
+
+
+  <target name="cd"
+          depends="site"
+          description="Generates entire LingPipe CD data.  See notes in build.xml for more info.">
+    <copy toDir="build/cd"
+          file="cd/read-me.html"/>
+    <copy todir="build/cd/jre">
+      <fileset dir="cd/jre"/>
+    </copy>
+    <mkdir dir="build/cd-temp-site"/>
+    <untar src="build/lingpipe-${version}-website.tar.gz"
+           dest="build/cd-temp-site"
+           compression="gzip"/>
+    <mkdir dir="build/cd/lingpipe-${version}-website"/>
+    <move todir="build/cd/">
+      <fileset dir="build/cd-temp-site"/>
+    </move>
+    <!-- no room for tarball on mini CD, which is confusing for users -->
+    <delete file="build/cd/lingpipe-${version}-website/lingpipe-${version}.tar.gz"/>
+    <!-- WARNING: the cd/jre directory is not
+         distributed/cvs-ed with LingPipe.  To run, the
+         directory structure from the top should be:
+            $lingpipe/cd/jre/win/j2re-1_4_2_08-windows-i586-p.exe
+            $lingpipe/cd/jre/linux/j2re-1_4_2_08-linux-i586.bin
+         These may be downloaded from Sun at:
+         http://java.sun.com/j2se/1.4.2/download.html
+    -->
+  </target>
+
+</project>
+
+

@@ -1,0 +1,605 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Installation</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">Installation</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../index.html">home</a></li>
+
+<li><a href="demos.html">demos</a></li>
+
+<li><a href="licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="download.html">lingpipe core</a></li>
+<li><a href="models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a class="current" href="install.html">install</a></li>
+<li><a href="../demos/tutorial/read-me.html">tutorials</a></li>
+<li><a href="../docs/api/index.html">javadoc</a></li>
+<li><a href="book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="bugs.html">bugs</a></li>
+<li><a href="sandbox.html">sandbox</a></li>
+<li><a href="competition.html">competition</a></li>
+<li><a href="citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="contact.html">contact</a></li>
+
+<li><a href="about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+<div id="content" class="content">
+
+
+<h2>Installation Steps</h2>
+
+<div class="sidebar">
+<h2>Downloading LingPipe</h2>
+<p>
+LingPipe is available on the web:
+</p>
+<ul>
+<li><a href="../web/download.html">Download LingPipe</a></li>
+</ul>
+</div>
+
+<h3><a href="#instLingPipe">Installing LingPipe</a></h3>
+<p>LingPipe needs to be downloaded and unpacked and it's ready
+to use.</p>
+
+<h3><a href="#devLingPipe">Building and Developing with LingPipe</a></h3>
+<p>This section explains how to develop with the
+LingPipe API, and also how to compile and test
+the build from source.
+</p>
+
+<h3><a href="#instJava">Installing Java</a></h3>
+<p>LingPipe requires Java 5 Standard Edition or later.</p>
+
+<h3><a href="#instAnt">Installing Ant</a></h3>
+<p>Ant only needs to be downloaded and installed if
+you are using it for development and testing.
+</p>
+
+
+<a name="instLingPipe"></a>
+<h2>Installing LingPipe</h2>
+
+<div class="sidebar">
+<h2>Windows Compression</h2>
+<p>
+For help, see the section below:
+</p>
+<ul>
+<li>
+<a href="#uncompress">Windows Compression</a>
+</li>
+</ul>
+</div>
+
+
+<h3>Downloading LingPipe</h3>
+<p>
+The first step is to download.  This can be
+done from the:
+</p>
+<ul>
+<li><a href="download.html">LingPipe Download Page</a></li>
+</ul>
+
+<h3>Unpacking LingPipe</h3>
+<p>
+Unpack the gzipped tar file into a new directory, which we will
+henceforth call <code class="var">LingPipeDir</code>.
+</p>
+
+<h3>Installing Java</h3>
+<p>
+LingPipe requires a Java 5 (aka 1.5) or greater JVM installation to
+run and the JDK to compile.
+If necessary, see the:
+</p>
+<ul>
+<li><a href="#instJava">Installing Java Instructions</a></li>
+</ul>
+
+<h2>Running Demos</h2>
+
+<h3>GUI Demos</h3>
+
+<p>LingPipe runs demos in a graphical user interface (GUI) demos out
+of the box.  For details, see:
+</p>
+<ul>
+<li>
+<a href="demo-gui.html">GUI Demo Instructions</a>
+</li>
+</ul>
+
+
+<h3>Command-Line Demos</h3>
+
+<div class="sidebar">
+<h2>Windows Command Line</h2>
+<p>
+For help, see the section below:
+</p>
+<ul>
+<li>
+<a href="#windows-commands">
+Windows
+Command Line</a>
+</li>
+</ul>
+</div>
+
+<p>
+LingPipe also runs demos through a command-line interrface.
+In this way, LingPipe can be used in applications
+without any Java coding. For details, see:
+</p>
+<ul>
+<li>
+<a href="demo-cmd.html">Command-line Demos Instructions</a>
+</li>
+</ul>
+
+
+<a name="devLingPipe"></a>
+<h2>Developing with LingPipe</h2>
+
+<h3>API Documentation</h3>
+<p>
+Complete API documentation is available at:
+</p>
+<ul>
+<li><a href="../docs/api/index.html">LingPipe JavaDoc</a></li>
+</ul>
+
+<p>LingPipe provides all of its functionality in the form of
+an application program interface (API).  Much of this functionality
+is described in the form of tutorials.  For details:
+</p>
+<ul>
+<li>
+<a href="../demos/tutorial/read-me.html">API Tutorials</a>
+</li>
+</ul>
+
+<p>
+Please note that some links in the tutorials will not work unless the javadoc has been created.  See below for instructions on generating the javadoc.
+</p>
+
+<h3>Compiling LingPipe</h3>
+
+<p>
+LingPipe is distributed with a build script for Ant.  Although
+LingPipe may be compiled directly, we highly recommend installing
+the Apache Ant build tool; see
+</p>
+<ul>
+<li><a href="#instAnt">Installing Ant</a></li>
+</ul>
+
+<p>
+LingPipe is built from the directory it was
+unpacked in, <code class="var">LingPipeDir</code>,
+by invoking a single Ant build target:
+</p>
+
+<pre class="code">
+&gt; cd <span class="var">LingPipeDir/trunk</span>
+&gt; ant compile
+</pre>
+
+<p>
+Ant knows, by means of a file naming convention, to invoke LingPipe's
+top-level build file,
+<a class="code" href="../build.xml">build.xml</a>.
+</p>
+
+<p>
+Compilation produces the directory <code class="var">LingPipeDir</code>/<code>build/classes</code>, which
+contains the compiled LingPipe classes (as well as some other resources).
+</p>
+
+<p>
+We also recommend that you generate the javadoc:
+</p>
+
+<pre class="code">
+&gt; cd <span class="var">LingPipeDir/trunk</span>
+&gt; ant javadoc
+</pre>
+
+<h3>List of Ant Targets</h3>
+
+<p>
+The additional Ant development targets are listed in the
+following table.
+</p>
+
+<table>
+<tr><th align="left" colspan="2" scope="colgroup" class="title">Ant Targets</th></tr>
+<tr><th align="left" scope="col">Target</th>
+    <th align="left" scope="col">Description</th></tr>
+<tr><th><code>clean</code></th>
+    <td>Removes all of the automatically generated components
+        from the distribution.  These can be regenerated through
+        the Ant targets described below.  This target removes the
+        following automatically generated items:
+        <ul>
+        <li>the <code>build</code> directory,</li>
+        <li>the top-level <a href="../lingpipe-4.1.0.jar"><code>lingpipe-4.1.0.jar</code></a>
+            LingPipe jar file,</li>
+        <li>the javadoc generated in <code>docs/api</code>,</li>
+        <li>all automatically generated content in the demos by recursively
+            calling the target <code>clean</code> in <a href="../demos/build.xml"><code>demos/build.xml</code></a>.</li>
+        </ul>
+        There are ant targets to recreate each of these.</td></tr>
+<tr><th scope="row"><code>compile</code></th>
+    <td>Compiles a version of LingPipe to the
+        <code>build/classes</code>
+        directory.  This target does <i>not</i> recursively build the demos.
+     </td></tr>
+<tr><th scope="row"><code>javadoc</code></th>
+    <td>Generated the javadoc for LingPipe and places
+        the index in <a href="../docs/api/index.html"><code>docs/api/index.html</code></a>
+        from the distribution.</td></tr>
+<tr><th scope="row"><code>jar</code></th>
+    <td>Generates a jar (library of compiled code) for
+        LingPipe and puts it in the top level file
+        <a href="../lingpipe-4.1.0.jar"><code>lingpipe-4.1.0.jar</code></a>.
+        To actually use the new jar in the distribution, it should be moved
+        up to the top level parallel to the build file.  This target will
+        compile if necessary.  Note that this will overwrite the existing
+        jar distributed with LingPipe.
+        </td></tr>
+<tr><th scope="row"><code>test</code></th>
+    <td>Runs the LingPipe unit tests.
+        Testing is carried out
+        against the top level jar file.         This target will compile
+        and create the jar if necessary.
+        </td></tr>
+<tr><th scope="row"><code>test1</code></th>
+    <td>Runs a unit test on a single class.  This target
+        will compile and create the jar if necessary.
+        Invoke with system property <code>test.class</code>
+        set to the name of LingPipe package and class to test.
+        For example:
+        <pre>     ant test1
+     -Dtest.class=classify.ClassifierEvaluatorTest</pre>
+        The target will prefix <code>com.aliasi.test.unit</code>
+        and postfix <code>Test</code>, invoking the test case
+        <code>com.aliasi.test.unit.classify.ClassifierEvaluatorTest</code>
+        for the above example.
+        </td></tr>
+<tr><th scope="row"><code>tar</code></th>
+    <td>Creates the LingPipe tarball for distribution.  It
+        will be created in the file <code>build/lingpipe-4.1.0.tar.gz</code>.
+        This target will create the jar and the web site if necessary.
+        </td></tr>
+<tr><th scope="row"><code>web</code></th>
+    <td>Generates the public LingPipe web pages as
+        published at <a href="http://alias-i.com/lingpipe"><code>http://alias-i.com/lingpipe</code></a>.
+        These will be created in the directory <code>docs/api</code>
+        and the home page will be created in <a href="../docs/api/index.html"><code>docs/api/index.html</code></a>.
+        This target will create the tarball if necessary, as it is included
+        in the web page.
+        </td></tr>
+<tr><th scope="row"><code>cd</code></th>
+    <td>Generates the public LingPipe distribution CD,
+        as distributed at all your favorite conferences.
+        This task will generate the web site if necessary,
+        as it is included with the distribution.
+
+        <br /><br /><em>Warning:</em> The Java Runtime Engines are
+        not distributed with LingPipe.  In
+        order to create the CD image, the following
+        paths need to exist with the correct files in them
+        for the relevant JRE installers:
+
+        <ul>
+        <li><code class="var">LingPipe</code><code>/cd/jre/win/j2re-1_4_2_08-windows-i586-p.exe</code></li>
+        <li><code class="var">LingPipe</code><code>/cd/jre/linux/j2re-1_4_2_08-linux-i586.bin</code></li>
+        </ul>
+
+
+        See the <a href="#instJava">Installing Java</a> section
+        of this document for information on where to find these files
+        on Sun's download pages.
+
+        </td></tr>
+</table>
+
+<a name="instJava"></a>
+<h2>Installing Java</h2>
+
+<div class="sidebar">
+<h2>Server versus Client JVM</h2>
+<p>
+There are two virtual machines distributed by Sun, the
+server and client.  The server JVM is much faster
+for larger jobs because it does on-the-fly code unfolding and optimization
+based on runtime performance statistics.
+</p>
+<p>
+32-bit JRE distributions only contains the
+client virtual machine; 32-bit JDK distributions
+contain both the client and server VM.
+</p>
+<p>
+The 64-bit JRE and JDK distributions
+only contain the server VM.
+</p>
+<p>
+To test if the server version is installed:
+</p>
+<pre class="code">
+&gt; java -server -version
+</pre>
+</div>
+
+
+
+<p>
+We recommend installing one of the latest versions of Sun's Java 6 Standard
+Edition (Java 6 SE).  The exact install depends on operating system and
+intended usage.
+</p>
+
+<h3>Downloading Java</h3>
+
+<p>
+The active versions of Java are:
+</p>
+
+<ul>
+<li><a href="http://java.sun.com/j2se/1.5.0/download.jsp">Sun's JDK 5</a></li>
+<li><a href="http://java.sun.com/javase/6/">Sun's JDK 6</a></li>
+<li><a href="http://java.sun.com/features/jdk/7/">Sun's JDK 7</a></li>
+</ul>
+
+<p>
+Java 5 has reached its end of life, and Java 7 has not
+yet been released as of June 2010, so we recommend version 6.
+</p>
+
+
+<h3>Checking the Java Install</h3>
+
+<p>
+To test that an appropriate Java is installed, or the
+instructions below worked, run the following command:
+</p>
+
+<pre class="code">
+&gt; java -version
+</pre>
+
+<p>
+The result should be a version numbered 1.5.0 or higher.
+</p>
+
+<h3>Java End User Install</h3>
+
+<p>
+End users only need the Java 5 (or later) Runtime
+Engine (JRE).  It contains everything you need to run LingPipe.
+You will need to choose the appropriate installation
+for your platform.  Make sure it's installed by following the
+instructions above.
+</p>
+
+
+<h3>Java Developer Install</h3>
+
+<p>Developers will need to install the Java 5 (or later) Standard Edition
+Software Development Kit (SDK).  You will need to choose the
+appropriate installation for your platform.
+</p>
+
+<h3>Java Documentation Install</h3>
+
+<p>
+Sun bundles their Java API documentation separately and you will also
+need to download and unzip it if you want to read it.  You can
+test it with a web browser.
+</p>
+
+<a name="instAnt"></a><a name="ant"></a>
+<h2>Installing Ant</h2>
+
+<p>
+Ant is an Apache project used for scripting Java builds.  Quoting from
+Ant's home page, &quot;[Ant] is kind of like Make, but without Make's
+wrinkles&quot;.  LingPipe is distributed with a complete set of Ant
+build files.
+</p>
+
+<p>The Ant home page is on the Apache site:
+</p>
+
+<ul>
+<li>
+<a href="http://ant.apache.org/">Ant Home Page</a></li>
+</ul>
+
+<p>The download page is here:
+</p>
+
+<ul>
+<li>
+<a href="http://ant.apache.org/bindownload.cgi">Ant Download Page</a>
+</li>
+</ul>
+
+
+<p>
+This is set up like most Apache pages to automatically mirror in
+random rotation.  About halfway down the page you will see a bulleted
+list of hot links for the actual download; e.g.  the gzipped tar
+version is linked as <code>apache-ant-<i>version</i>-bin.tar.gz</code>.
+</p>
+
+<p>
+Some of the demos may also require additional jars, such as
+ones to run Tomcat web deploys, etc.  Many of these are distributed
+in the <code>demos/lib</code> subdirectory of LingPipe.
+</p>
+
+
+<a name="uncompress"></a>
+<h2>Uncompressing in Windows: Zip, GZIP, Tar, etc.</h2>
+
+
+<p>
+If you are a Windows user and don't have a utility for untarring,
+un-gzipping and un-zipping, we would recommend one of
+the following packages:
+</p>
+
+<ul>
+<li> <a href="http://www.cygwin.com/">CygWin</a>: A fairly complete
+Unix-like environment for Windows.  It's what we use here at Alias-i
+for development when we're on a Windows box.
+</li>
+<li> <a href="http://www.winzip.com/">WinZip</a>: A GUI tool for
+unpacking.  It's not free, but does come with a free trial version.
+<i>Warning:</i> It doesn't scale as well as the command line versions
+to really big files (over 2GB).
+</li>
+</ul>
+
+<a name="windows-commands"></a>
+<h2>The Windows Command Interpreter</h2>
+
+<p>
+Windows can be used from the command line using the DOS shell.  There
+are two standard ways to start it.  From the start menu:
+</p>
+
+<pre class="code">
+Start &gt;&gt; Programs &gt;&gt; Accessories &gt;&gt; Command Prompt
+</pre>
+
+<p>
+Or from the Run box, which can be invoked from the start menu:
+</p>
+
+<pre class="code">
+Start &gt;&gt; Run
+</pre>
+
+<p>
+or by holding down the windows key (if you have one) and the letter
+<code>r</code>.  When the Run window pops up, enter
+<code>cmd</code> into the text box labeled <code>Open:</code> and
+press the <code>OK</code> button.
+</p>
+
+<p>
+The size of the window can be changed by right clicking on
+its top title bar and selecting <code>Properties</code>.  Font size
+can also be changed.  Lucida Console is good for coding because
+it's clear and narrow.  We would also suggest the quick edit
+and insert modes from the options menu.
+</p>
+
+<p>
+For more information see:
+</p>
+
+<ul>
+<li>
+<a href="http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/cmd.mspx">MS Windows Command Line Documentation</a>
+</li>
+</ul>
+
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+

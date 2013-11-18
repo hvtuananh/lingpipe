@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Named Entity Demo</title>
+<meta http-equiv="Content-type" 
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language" 
+      content="en"/>
+<link href="css/lp-site.css" 
+      title="lp-site"
+      type="text/css" 
+      rel="stylesheet" />
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1>
+<h1 id="pagetitle">Named Entity Demo</h1>
+<a id="logo" 
+   href="http://alias-i.com/"
+  ><img src="img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../index.html">home</a></li>
+
+<li>
+  <a class="current" href="demos.html">demos</a>
+  <ul>
+    <li>
+      demo instructions
+      <ul>
+        <li><a href="demo-web.html">web</a></li>
+        <li><a href="demo-gui.html">gui</a></li>
+        <li><a href="demo-cmd.html">command line</a></li>
+      </ul>
+    </li>
+    <li>
+      list of demos
+      <ul>
+        <li><a href="demo-sentence.html">sentences</a></li>
+        <li><a href="demo-pos.html">parts of speech</a></li>
+        <li><a class="current" href="demo-ne.html">named entities</a></li>
+        <li><a href="demo-coref.html">coreference</a></li>
+        <li><a href="demo-chinese-words.html">chinese words</a></li>
+        <li><a href="demo-echo.html">echo &amp; transcoding</a></li>
+      </ul>
+    </li>
+  </ul>
+</li>
+
+<li><a href="licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="download.html">lingpipe core</a></li>
+<li><a href="models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="install.html">install</a></li>
+<li><a href="../demos/tutorial/read-me.html">tutorials</a></li>
+<li><a href="../docs/api/index.html">javadoc</a></li>
+<li><a href="book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="bugs.html">bugs</a></li>
+<li><a href="sandbox.html">sandbox</a></li>
+<li><a href="competition.html">competition</a></li>
+<li><a href="citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="contact.html">contact</a></li>
+
+<li><a href="about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<h2>About the Named Entity Demo</h2>
+
+<div class="sidebar">
+<h2>Named Entity Tutorial</h2>
+<p>
+There is a tutorial covering part of speech tagging
+at the API level at:
+</p>
+<ul>
+<li>
+<a href="../demos/tutorial/ne/read-me.html">Named Entity Tutorial</a>
+</li>
+</ul>
+</div>
+
+
+<p>
+Named entity recognition finds mentions of things in text.  The
+interface in LingPipe provides character offset representations
+as chunkings.  
+</p>
+
+<h3>Genre-Specific Models</h3>
+<p>
+Named entity recognizers in LingPipe are trained from a corpus of
+data.  The examples below extract mentions of people, locations or
+organizations in English news texts, and mentions of genes and other
+biological entities of interest in biomedical research literature.
+</p>
+
+<h3>Language-Specific Models</h3>
+<p>
+Although we're only providing English data here, there is training
+data available (usually for research purposes only) in a number of
+languages, including Arabic, Chinese, Dutch, German, Greek, Hindi,
+Japanese, Korean, Portuguese and Spanish.  Many of these training
+sets may be purchased for commercial applications.  There are
+additional biology-based corpora, most of which are available with
+unrestricted licensing.
+</p>
+
+
+<h3>LingPipe's Recognizers</h3>
+<p>
+LingPipe provides three statistical named-entity recognizers:
+</p>
+<table>
+<tr><th rowspan="2"><code>com.aliasi.chunk.</code></th>
+    <th rowspan="2">Size</th>
+<th colspan="2">1st-best</th><th colspan="2">n-best</th><th colspan="2">confidence</th></tr>
+<tr><th>speed</th><th>accuracy</th><th>speed</th><th>accuracy</th><th>speed</th><th>accuracy</th></tr>
+<tr><td><code>TokenShapeChunker</code></td>
+<td><b>small</b></td>
+<td><b>fast</b></td><td>medium</td>
+<td colspan="4">n/a</td></tr>
+<tr><td><code>CharLmHmmChunker</code></td>
+<td>medium</td>
+<td><b>fast</b></td><td>low</td>
+<td>medium</td><td>medium</td>
+<td>slow</td><td><b>high</b></td>
+</tr>
+<tr><td><code>CharLmRescoringChunker</code></td>
+<td>very large</td>
+<td>slow</td><td><b>high</b></td>
+<td>slower</td><td><b>high</b></td>
+<td>slowest</td><td>low</td>
+</tr>
+</table>
+
+<h3>Sentence Annotation Included</h3>
+<p>
+The demos use the appropriate sentence models.  See
+the <a href="demo-sentence.html">Sentence Demo</a>
+for more information.
+</p>
+
+<div class="sidebar">
+<h2>Named Entity Demo Implementation</h2>
+<p>
+The part-of-speech demo implementation is in:
+</p>
+<ul><li>
+<a href="../demos/generic/src/com/aliasi/demo/demos/NamedEntityDemo.java"><code>demo/demos/NamedEntityDemo.java</code></a>
+</li></ul>
+<p>
+Like every demo, this implements:
+</p>
+<ul><li>
+<a href="../demos/generic/src/com/aliasi/demo/framework/StreamDemo.java"><code>demo/framework/StreamDemo.java</code></a>
+</li></ul>
+<p>
+The demos and framework are in:
+</p>
+<ul><li>
+<code>$lingpipe/demos/generic</code>
+</li></ul>
+</div>
+
+
+
+<h3>Named Entity XML Markup</h3>
+
+<h4>First-best output</h4>
+<p>
+Entities are marked as in MUC, with an <code>ENAMEX</code>
+element with attribute <code>TYPE</code> indicating the
+kind of entity.
+</p>
+
+<h4>N-best output</h4>
+<p>
+Each analysis is marked with a tag <code>analysis</code>,
+with attribute <code>jointLog2Prob</code> providing
+the joint log (base 2) probability of the analysis, and
+<code>rank</code> providing the rank on the n-best list
+(numering from zero), e.g. 
+<code>
+&lt;analysis&nbsp;jointLog2Prob=&quot;-39.9&quot;&nbsp;rank=&quot;5&quot;&gt;</code>.
+Within each analysis, tokens are tagged as for first-best output.
+</p>
+
+<h4>Per tag confidence output</h4>
+<p>
+Each token and its analyses are wrapped with
+an <code>nBestEntities</code> element.  Following
+the text content is a sequence of <code>ENAMEX</code>
+elements, marking types, conditional probabilities of
+the entity given the text, and start/end position
+markers, as well as confidence rank and the text of the entity.
+</p>
+
+
+
+<h2>Named Entity Demo on the Web</h2>
+
+<p>
+The demos are hosted on the web at the following URLs:
+</p>
+
+<h3>English News: MUC6 Corpus (CharLmRescoringChunker)</h3>
+<pre class="code">
+<a href="http://lingpipe-demos.com:8080/lingpipe-demos/ne_en_news_muc6/textInput.html"><code>http://lingpipe-demos.com:8080/lingpipe-demos/ne_en_news_muc6/textInput.html</code></a>
+</pre>
+
+<h3>English Biomedical Text: GeneTag Corpus (CharLmHmmChunker)</h3>
+<pre class="code">
+<a href="http://lingpipe-demos.com:8080/lingpipe-demos/ne_en_bio_genetag/textInput.html"><code>http://lingpipe-demos.com:8080/lingpipe-demos/ne_en_bio_genetag/textInput.html</code></a>
+</pre>
+
+<h3>English Biomedical Text: GENIA Corpus (TokenShapeChunker)</h3>
+<pre class="code">
+<a href="http://lingpipe-demos.com:8080/lingpipe-demos/ne_en_bio_genia/textInput.html"><code>http://lingpipe-demos.com:8080/lingpipe-demos/ne_en_bio_genia/textInput.html</code></a>
+</pre>
+
+
+
+<p>
+For detailed information about using web demos, including web form,
+file upload and web service instructions, see the <a
+href="demo-web.html">web demo instructions</a>
+</p>
+
+<h2>Named Entity Demo via GUI</h2>
+
+<p>
+To launch the demo in a GUI, first change directories to the
+command directory and then invoke the demo batch script. <em>Note:</em> Parameters are set in the GUI, not as arguments to the launch script.
+</p>
+
+<h3>Windows Operating System</h3>
+
+<h4>English News: MUC6 Corpus (CharLmRescoringChunker)</h4>
+<pre class="code">
+&gt; cd %LINGPIPE_HOME%\demos\generic\bin
+&gt; gui_ne_en_news_muc6.bat 
+</pre>
+
+<h4>English Biomedical: GeneTag Corpus (CharLmChunker)</h4>
+<pre class="code">
+&gt; cd %LINGPIPE_HOME%\demos\generic\bin
+&gt; gui_ne_en_bio_genetag.bat 
+</pre>
+
+<h4>English Biomedical: GENIA Corpus (TokenShapeChunker)</h4>
+<pre class="code">
+&gt; cd %LINGPIPE_HOME%\demos\generic\bin
+&gt; gui_ne_en_bio_genia.bat 
+</pre>
+
+<h3>Unix-like Operating Systems</h3>
+
+<h4>English News: MUC6 Corpus (CharLmRescoringChunker)</h4>
+<pre class="code">
+&gt; cd %LINGPIPE_HOME%\demos\generic\bin
+&gt; sh gui_ne_en_news_muc6.sh
+</pre>
+
+<h4>English Biomedical: GeneTag Corpus (CharLmChunker)</h4>
+<pre class="code">
+&gt; cd %LINGPIPE_HOME%\demos\generic\bin
+&gt; sh gui_ne_en_bio_genetag.sh
+</pre>
+
+<h4>English Biomedical: GENIA Corpus (TokenShapeChunker)</h4>
+<pre class="code">
+&gt; cd %LINGPIPE_HOME%\demos\generic\bin
+&gt; sh gui_ne_en_bio_genia.sh
+</pre>
+
+<p>
+For detailed information about running demos in a GUI,
+see the <a href="demo-gui.html">GUI demo instructions</a>
+</p>
+
+<h2>Named Entity Demo via Shell Command</h2>
+
+<p>Shell commands may be run over single files, all of the files
+in a directory, or using standard input/output.  
+</p>
+
+<h3>Running over a Directory</h3>
+
+<h4>English News: MUC6 Corpus (CharLmRescoringChunker)</h4>
+<pre class="code">
+&gt; cd $LINGPIPE/demos/generic/bin
+&gt; cmd_ne_en_news_muc6.bat -inDir=../../data/testdir -outDir=/testout
+</pre>
+
+<h4>English Biomedical: GeneTag Corpus (CharLmChunker)</h4>
+<pre class="code">
+&gt; cd $LINGPIPE/demos/generic/bin
+&gt; cmd_ne_en_bio_genetag.bat -inDir=../../data/testdir -outDir=/testout
+</pre>
+
+<h4>English Biomedical: GENIA Corpus (TokenShapeChunker)</h4>
+<pre class="code">
+&gt; cd $LINGPIPE/demos/generic/bin
+&gt; cmd_ne_en_bio_genia.bat -inDir=../../data/testdir -outDir=/testout
+</pre>
+
+<h3>Running a Single File</h3>
+<h4>English News: MUC6 Corpus (CharLmRescoringChunker)</h4>
+<pre class="code">
+&gt; cd $LINGPIPE/demos/generic/bin
+&gt; cmd_ne_en_news_muc6.bat -inFile=../../data/testdir/foo.txt -outFile=foo.out.xml
+</pre>
+<p>
+The other genres are handled the same way,
+with different suffixes in place of <code>news_muc6</code>.
+</p>
+
+
+<h3>Running through a Pipe (Standard input/output)</h3>
+<h4>English News: MUC6 Corpus (CharLmRescoringChunker)</h4>
+<pre class="code">
+&gt; cd demos/generic/bin
+&gt; echo See Spot. See Spot run. | cmd_ne_en_news_muc6.bat
+</pre>
+<p>
+The other genres are handled the same way,
+with different suffixes in place of <code>general_brown</code>.
+</p>
+
+<h3>Running in Unix-like Operating Systems</h3>
+<p>
+For unix-like operating systems such as Unix,
+Solaris, Linux, or Macintosh OS X:
+</p>
+<ul>
+<li>Replace path backward slashes
+(<code>\</code>) with forward slashes (<code>/</code>), and
+</li>
+<li>substitute <code>.sh</code>
+for the <code>.bat</code> suffix in the command.
+</li>
+</ul>
+
+
+
+
+<p>
+For detailed information about running demos from the command line,
+see the <a href="demo-cmd.html">command line demo instructions</a>
+</p>
+
+
+<h2>Named Entity Demo Scripts</h2>
+
+<p>
+The following scripts are available in
+<code>$LINGIPE/demos/generic/bin</code> for running the demo.  Note
+that each script comes in four flavors, distinguishing
+command line from GUI, and the Windows DOS shell from the Unix shell.
+</p>
+
+<table class="demolist">
+<tr><th>Language</th>
+    <th>Genre</th>
+    <th>Corpus</th>
+    <th>Mode</th>
+    <th>Windows DOS</th>
+    <th>Unix/Linux/Mac sh</th></tr>
+<tr><td rowspan="2">English</td>
+    <td rowspan="2">General</td>
+    <td rowspan="2">MUC 6</td>
+    <td>Command</td>
+    <td><a href="../demos/generic/bin/cmd_ne_en_news_muc6.bat"><code>cmd_ne_en_news_muc6.bat</code></a></td>
+    <td><a href="../demos/generic/bin/cmd_ne_en_news_muc6.sh"><code>cmd_ne_en_news_muc6.sh</code></a></td>
+</tr>
+<tr><td>GUI</td>
+    <td><a href="../demos/generic/bin/gui_ne_en_news_muc6.bat"><code>gui_ne_en_news_muc6.bat</code></a></td>
+    <td><a href="../demos/generic/bin/gui_ne_en_news_muc6.sh"><code>gui_ne_en_news_muc6.sh</code></a></td>
+</tr>
+<tr><td rowspan="2">English</td>
+    <td rowspan="2">Biomedical</td>
+    <td rowspan="2">GeneTag</td>
+    <td>Command</td>
+    <td><a href="../demos/generic/bin/cmd_ne_en_bio_genetag.bat"><code>cmd_ne_en_bio_genetag.bat</code></a></td>
+    <td><a href="../demos/generic/bin/cmd_ne_en_bio_genetag.sh"><code>cmd_ne_en_bio_genetag.sh</code></a></td>
+</tr>
+<tr><td>GUI</td>
+    <td><a href="../demos/generic/bin/gui_ne_en_bio_genetag.bat"><code>gui_ne_en_bio_genetag.bat</code></a></td>
+    <td><a href="../demos/generic/bin/gui_ne_en_bio_genetag.sh"><code>gui_ne_en_bio_genetag.sh</code></a></td>
+</tr>
+<tr><td rowspan="2">English</td>
+    <td rowspan="2">Biomedical</td>
+    <td rowspan="2">GENIA</td>
+    <td>Command</td>
+    <td><a href="../demos/generic/bin/cmd_ne_en_bio_genia.bat"><code>cmd_ne_en_bio_genia.bat</code></a></td>
+    <td><a href="../demos/generic/bin/cmd_ne_en_bio_genia.sh"><code>cmd_ne_en_bio_genia.sh</code></a></td>
+</tr>
+<tr><td>GUI</td>
+    <td><a href="../demos/generic/bin/gui_ne_en_bio_genia.bat"><code>gui_ne_en_bio_genia.bat</code></a></td>
+    <td><a href="../demos/generic/bin/gui_ne_en_bio_genia.sh"><code>gui_ne_en_bio_genia.sh</code></a></td>
+</tr>
+</table>
+
+
+<h2>Named Entity Demo Parameters</h2>
+
+<p>
+The following is a complete list of parameters for the demo.  
+</p>
+
+<h3>Demo-Specific Parameters</h3>
+<p>
+The following parameter is specific to the named entity demo (though
+also found in the part-of-speech demo).
+</p>
+<table>
+<tr><th>Parameter</th>
+    <th>Description</th>
+    <th>Usage Constraints</th></tr>
+<tr><td><code>resultType</code></td>
+    <td>Form of results</td>
+    <td>Values determine output:
+        <ul><li>firstBest</li>
+            <li>nBest</li>
+            <li>conf</li></ul>
+    </td></tr>
+
+</table>
+
+<h3>General Demo Parameters</h3>
+
+<p>
+These parameters apply to every version (web/GUI/command) of every demo.
+</p>
+
+<table>
+<tr><th>Parameter</th>
+    <th>Description</th>
+    <th>Usage Constraints</th></tr>
+<tr><td><code>inCharset</code></td>
+    <td>Input character set</td>
+    <td rowspan="2">Optional.  Defaults to platform default.</td></tr>
+<tr><td><code>outCharset</code></td>
+    <td>Output character set</td></tr>
+<tr><td><code>contentType</code></td>
+    <td>Input content type</td>
+    <td>May be one of:
+       <ul><li><code>text/plain</code></li> 
+           <li><code>text/html</code></li>
+           <li><code>text/xml</code></li>
+       </ul>
+       Defaults to <code>text/plain</code>.</td></tr>
+<tr><td><code>removeElts</code></td>
+    <td>Element tags to remove</td>
+    <td rowspan="3">Optional. May only be used with <code>contentType=text/html</code>
+        or <code>contentType=text/xml</code>.  Each value may be
+        comma-separated list.  If neither of these are
+        specified, all text content is processed.</td></tr>
+<tr><td><code>includeElts</code></td>
+    <td>Elements to annotate</td></tr>
+</table>
+
+<h3>Command-Line Only Parameters</h3>
+
+<p>
+These parameters apply to every command-line demo, but are not
+relevant for the GUI or web versions of the demos.
+</p>
+
+
+<table>
+<tr><th>Parameter</th>
+    <th>Description</th>
+    <th>Usage Constraints</th></tr>
+<tr><td><code>inFile</code></td>
+    <td>Readable input file</td>
+    <td rowspan="2">May not be used with <code>inDir</code>. 
+                    If either is not specified, defaults to standard input or output.</td>
+    </tr>
+<tr><td><code>outFile</code></td>
+    <td>Writeable output file</td>
+    </tr>
+<tr><td colspan="3" class="separator"></td></tr>
+<tr><td><code>inDir</code></td>
+    <td>Readable input directory</td>
+    <td rowspan="2">May not be used with <code>inFile</code> or <code>outFile</code>.
+        If used, <code>inDir</code> and <code>outDir</code> must both be specified.</td></tr>
+<tr><td><code>outDir</code></td>
+    <td>Writeable output directory</td></tr>
+</table>
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+

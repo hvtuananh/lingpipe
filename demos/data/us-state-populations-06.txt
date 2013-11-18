@@ -1,0 +1,52 @@
+Alabama 4599000
+Alaska 670000
+Arizona 6166000
+Arkansas 2811000
+California 36458000
+Colorado 4753000
+Connecticut 3505000
+Delaware 853000
+District of Columbia 58200
+Florida 18090000
+Georgia 9364000
+Hawaii 1285000
+Idaho 1466000
+Illinois 12832000
+Indiana 6314000
+Iowa 2982000
+Kansas 2764000
+Kentucky 4206000
+Louisiana 4288000
+Maine 1322000
+Maryland 5616000
+Massachusetts 6437000
+Michigan 10096000
+Minnesota 5167000
+Mississippi 2911000
+Missouri 5843000
+Montana 945000
+Nebraska 1768000
+Nevada 2496000
+New Hampshire 1315000
+New Jersey 8725000
+New Mexico 1955000
+New York 19306000
+North Carolina 8857000
+North Dakota 636000
+Ohio 11478000
+Oklahoma 3579000
+Oregon 3701000
+Pennsylvania 12441000
+Rhode Island 1068000
+South Carolina 4321000
+South Dakota 782000
+Tennessee 6039000
+Texas 23508000
+Utah 2550000
+Vermont 624000
+Virginia 7643000
+Washington 6396000
+West Virginia 1818000
+Wisconsin 5557000
+Wyoming 515000
+

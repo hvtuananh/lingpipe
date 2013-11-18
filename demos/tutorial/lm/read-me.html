@@ -1,0 +1,1481 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Character Language Model Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">Character LM Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a class="current" href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<h2>What are Character Language Models?</h2>
+
+<p>
+Character language models estimate the likelihood of a given text.
+They are trained using samples of text and then are able to match
+other text that is like the text they saw in training.
+</p>
+
+<h3>What's in this Tutorial?</h3>
+
+
+<p>
+This tutorial shows how to tune and evaluate character language models
+on a corpus.  The tutorial may be run on data supplied with the
+LingPipe demos.
+</p>
+
+<h3>Online Training and Evaluation</h3>
+
+<p>
+This tutorial illustrates how language model training
+and evaluation may be interleaved with dynamic language
+models.  Language models may be compiled through
+LingPipe's generic compilable interface; the compiled
+models are relatively small in memory and very fast
+to evaluate.
+</p>
+
+<h3>Scaling to Large Corpora</h3>
+<p>
+The motivation for LingPipe's implementation is to be
+able to scale to large training data sizes.  We show
+performance on two widely available multi-gigabyte
+corpora:
+</p>
+<ul>
+<li>MEDLINE: Abstracts of biomedical research articles.
+Distributed by the United States National Center for Biotechnology
+Information. 8 billion
+characters in abstract bodies.
+</li>
+<li>Gigaword: Newspaper articles.
+Distributed by the Linguistic Data Consortium at the
+University of Pennsylvania. 9 billion characters
+in article bodies.
+</li>
+</ul>
+
+
+
+<h2>Applications</h2>
+
+<p>
+Character language models are used in LingPipe for a broad range of
+applications.
+</p>
+
+<h3>Classification</h3>
+
+<p>
+For classification, character LMs model the type of
+text being classified. We provide two tutorials in
+which character language models are used implicitly
+for classification:
+</p>
+
+<ul>
+<li><a href="../classify/read-me.html">Classification by Topic Tutorial</a>:
+Character language models are trained on newsgroups of
+varying topic and and used to classify new messages based on
+those topics.
+</li>
+<li><a href="../sentiment/read-me.html">Classification by Sentiment
+Tutorial</a>: Character language models are trained on sentences
+which are objective (statements of fact) versus subjective
+(statements of opionion), and used to classify whether other
+statements are objective or subjective.  They are also trained
+on movie reviews that are positive or negative, and used to
+classfiy other reviews.
+</li>
+</ul>
+
+<p>
+They may also be used for classification by language
+or any other distinction.
+</p>
+
+<h3>Tagging</h3>
+
+<p>
+Two of the taggers in LingPipe use character language
+models to learn the forms of words used in various
+ways.
+</p>
+
+<ul>
+<li>
+<a href="../posTags/read-me.html">Part-of-Speech Tutorial</a>:
+Character language models represent the forms of
+words: nouns, verbs, adjectives, etc.
+</li>
+<li>
+<a href="../ne/read-me.html">Named Entity Recognition Tutorial</a>:
+Character language models represent the forms of content
+items like person names, company names or gene
+or disease names.
+</li>
+</ul>
+
+<h3>Spelling Correction</h3>
+
+<p>
+Character language models represent the kinds of
+queries people are likely to make over a corpus
+by modeling the corpus.
+</p>
+
+<ul>
+<li><a href="../querySpellChecker/read-me.html">Spelling Correction Tutorial</a>
+</li>
+</ul>
+
+<h2>Running the Demo</h2>
+
+<p>
+To run the tutorial out of the box, cd to the lingpipe/demos/tutorial/lm directory and run the command:
+</p>
+
+<pre class="code">
+&gt; ant demo
+</pre>
+
+<p>
+which prints the following output as well as writing it to the file
+lingpipe/demos/tutorial/lm/demo-out-8.txt:
+</p>
+
+<pre class="code">
+RUN PARAMETERS
+CORPUS NAME=medsamp
+FILE EXTENSION=medsamp2005.xml
+INPUT DIRECTORIES=[../../data/]
+TEXT PARSER CLASS=com.aliasi.corpus.parsers.MedlineTextParser
+MAX TRAINING CHARS=9223372036854775807
+MAX NGRAM=8
+NUM CHARS=256
+LAMBDA FACTORS=[2.0,  8.0,  32.0]
+SAMPLE SIZE=5000
+SAMPLE FREQUENCY=1
+PRINT FREQUENCY=5000
+REPORT WRITTEN TO FILE=demo-out-8.txt
+
+LEARNING CURVE
+#CHARS, ELAPSED(s), TOTAL_MEM(MB), FREE_MEM(MB), TOT-FREE(MB),
+MEAN(2.0), DEV(2.0), MEAN(8.0), DEV(8.0), MEAN(32.0), DEV(32.0)
+# Visiting directory=../../data
+ 5000, 1, 232, 225,  7,    5.771, 3.474,    5.530, 2.916,    5.736, 2.404
+10000, 2, 232, 220, 12,    3.210, 3.483,    3.041, 2.562,    3.507, 2.002
+15000, 2, 232, 215, 17,    1.908, 3.066,    1.967, 2.139,    2.614, 1.632
+20000, 2, 232, 212, 20,    3.307, 3.779,    2.920, 2.695,    3.148, 2.074
+25000, 3, 232, 207, 25,    2.570, 3.500,    2.432, 2.537,    2.832, 2.019
+30000, 3, 232, 202, 30,    3.054, 3.595,    2.705, 2.537,    2.933, 1.972
+35000, 3, 232, 198, 34,    3.137, 3.565,    2.773, 2.609,    2.958, 2.086
+40000, 4, 232, 195, 37,    3.207, 3.698,    2.847, 2.706,    3.035, 2.174
+45000, 4, 232, 190, 42,    3.463, 3.915,    3.051, 2.903,    3.180, 2.366
+50000, 4, 232, 185, 47,    2.940, 3.685,    2.660, 2.734,    2.911, 2.247
+55000, 4, 232, 180, 52,    2.936, 3.524,    2.626, 2.587,    2.853, 2.130
+60000, 5, 232, 176, 55,    2.735, 3.480,    2.480, 2.547,    2.724, 2.080
+65000, 5, 232, 172, 60,    2.848, 3.605,    2.578, 2.692,    2.802, 2.229
+
+N-GRAM COUNTS
+N, #Unique, #Total, %
+0    , 1, 65752,  1.000
+1,    83, 65752,  0.999
+2,  1413, 65705,  0.978
+3,  5960, 65658,  0.909
+4, 14179, 65611,  0.784
+5, 23478, 65564,  0.642
+6, 31633, 65517,  0.517
+7, 38508, 65470,  0.412
+8, 43928, 65423,  0.329
+
+TOP N-GRAMS
+N, (N-GRAM,Count)*
+0,  &quot;&quot;,65752
+1,  &quot; &quot;,9536  &quot;e&quot;,6567  &quot;t&quot;,4668  &quot;i&quot;,4266  &quot;a&quot;,4071
+2,  &quot;e &quot;,1625  &quot;s &quot;,1099  &quot; t&quot;,1070  &quot;in&quot;,1032  &quot;th&quot;,1013
+3,  &quot; th&quot;,696  &quot;the&quot;,635  &quot;he &quot;,552  &quot;ed &quot;,465  &quot; of&quot;,432
+4,  &quot; the&quot;,548  &quot;the &quot;,471  &quot; of &quot;,427  &quot;tion&quot;,357  &quot; and&quot;,296
+5,  &quot; the &quot;,468  &quot; and &quot;,287  &quot;ation&quot;,210  &quot;tion &quot;,197  &quot; of t&quot;,122
+6,  &quot; of th&quot;,121  &quot;ation &quot;,115  &quot;of the&quot;,113  &quot;f the &quot;,104  &quot; with &quot;,101
+7,  &quot; of the&quot;,113  &quot;of the &quot;,103  &quot;patient&quot;,65  &quot; patien&quot;,62  &quot;ion of &quot;,62
+8,  &quot; of the &quot;,103  &quot; patient&quot;,62  &quot; in the &quot;,57  &quot;tion of &quot;,55  &quot;patients&quot;,45
+</pre>
+
+<p>
+The first few lines print out the parameters, most of which are
+specified in the <a href="build.xml">build.xml</a> file.  These
+parameters include the name of a corpus, a path and pattern for file
+extraction, the name of a text parser class to extract text, a limit
+on the max number of training characters before stopping, an n-gram
+size specification, a specification of the number of characters in the
+corpus and test sets, hyperparameters for the model in the form of
+lambda factors (more on these later), along with sample size and
+frequency information, and finally, a path to a file to which results
+are concatenated. After the parameters come the output reports, which
+we discuss later in detail.
+</p>
+
+
+<h2>Getting started with <code>AbstractCommand</code></h2>
+
+<p>
+The code for this example is in the single file <a
+href="src/TrainLM.java">src/TrainLM.java</a>.  The first thing to note is
+that the class extends <code>AbstractCommand</code>.  The abstract
+command class provides methods for parsing command-line arguments that
+it gathers through its constructor and making them available at
+run time in various types with various error-checking provided.  The
+<code>main(String[])</code> method simply constructs a new instance
+with the command-line arguments as an argument and calls the <code>run()</code>
+method on the constructed class:
+</p>
+
+<pre class="code">
+public static void main(String[] args) {
+    new TrainLM(args).run();
+}</pre>
+
+<p>
+This is the usual pattern for <code>AbstractCommand</code> extensions
+and can be seen throughout the <a
+href="../read-me.html">command tutorials</a>.  The first
+lines of the constructor call the superclass constructor with the
+static default parameters properties object:
+</p>
+
+<pre class="code">
+public TrainLM(String[] args) {
+    super(args,DEFAULT_PARAMS);
+...
+}</pre>
+
+<p>
+As usual with abstract commands, constants are used for flag
+and property parameter names, and default values are set
+on a <code>Properties</code> instance to be passed to the
+<code>AbstractCommand(String[],Properties)</code> constructor,
+as shown above:
+</p>
+
+<pre class="code">
+static final String CORPUS_NAME_PARAM = &quot;corpusName&quot;;
+...
+static final String LAMBDA_FACTORS_PARAM = &quot;lambdaFactors&quot;;
+...
+static final String REPORT_FILE_PARAM = &quot;reportFile&quot;;
+static final Properties DEFAULT_PARAMS = new Properties();
+static {
+    DEFAULT_PARAMS.setProperty(MAX_NGRAM_PARAM,&quot;5&quot;);
+    DEFAULT_PARAMS.setProperty(SAMPLE_SIZE,&quot;1000&quot;);
+    ...
+}
+</pre>
+
+<p>
+This just says that the default maximum n-gram is 5, the
+default sample size is 1000 characters, and so on.
+</p>
+
+<p>A quick look at the <a href="build.xml">build.xml</a> file
+shows how the parameters are invoked with the <code>java</code> Ant task:
+</p>
+
+<pre class="code">
+&lt;java classname=&quot;TrainLM&quot;
+         fork=&quot;true&quot;&gt;
+   &lt;classpath refid=&quot;classpath.standard&quot;/&gt;
+
+   &lt;arg value=&quot;-corpusName=medsamp&quot;/&gt;
+   ...
+   &lt;arg value=&quot;-lambdaFactors=2.0, 8.0, 32.0&quot;/&gt;
+   ...
+   &lt;arg value=&quot;-reportFile=demo-out-8.txt&quot;/&gt;
+   &lt;arg value=&quot;../../data/&quot;/&gt;
+&lt;/java&gt;
+</pre>
+
+<p>
+The ellipses contain further parameters in the build file.  This would
+translate into a one-line command:
+</p>
+
+<pre class="code">
+java TrainLM \
+     -corpusName=medsamp ... &quot;-lambdaFactors=2.0, 8.0, 32.0&quot; ... \
+     -reportFile=demo-out-8.txt ../../data/</pre>
+
+<p>
+Lines in the code that access these values are as follows:
+</p>
+
+<pre class="code">
+File outFile = getArgumentFile(REPORT_FILE_PARAM);
+...
+mNGram = getArgumentInt(MAX_NGRAM_PARAM);
+...
+String[] lambdaNames = getCSV(LAMBDA_FACTORS_PARAM);
+</pre>
+
+<p>
+Each of these assignments uses a different accessor inherited from
+<code>AbstractCommand</code>; of particular note is the method
+<code>getCSV(String)</code> which parses an argument as a
+comma-separated list.  All of these methods will throw an illegal
+argument exception if the parameter is not defined either by default
+or in the command invocation.
+</p>
+
+<p>
+All of the parameters above are specified on the command
+line as <code>-<i>paramName</i>=<i>value</i></code>.  The abstract
+command also allows an arbitrary number of unmarked arguments,
+such as the path <code>../../data/</code> in the above invocation.
+These are accessed as follows:
+</p>
+
+<pre class="code">
+for (int i = 0; i &lt; numBareArguments(); ++i) {
+    File dir = new File(getBareArgument(i));
+</pre>
+
+<p> The only other issue of note for <code>AbstractCommand</code> is
+that it specifies an abstract method <code>run()</code> that does
+not take any arguments, return any values, or throw any checked
+exceptions.  This calls for an implementation of the following
+form:
+</p>
+
+<pre class="code">
+public void run() {
+    try {
+      train();
+    } catch (Exception e) {
+        println(&quot;Exception=&quot; + e);
+        e.printStackTrace(System.out);
+        e.printStackTrace(mPrinter);
+    } finally {
+        Streams.closeWriter(mPrinter);
+    }
+}
+</pre>
+
+<p>
+All exceptions are caught and their stack-trace printed both to the
+file (through <code>mPrinter</code>) and to <code>System.out</code>
+(which is the standard console output unless it's been reset).  And
+there is a <code>finally</code> block to close the print writer
+that is writing to a file, making sure the file handle is released
+if there is an exception in processing locally.
+</p>
+
+
+<h2>Getting started with <code>Parser</code> and <code>Handler</code></h2>
+
+<div class="sidebar">
+<h2>LingMed MEDLINE Parser</h2>
+<p>As of LingPipe 4.0, the MEDLINE parser has moved
+from LingPipe proper to the LingMed sandbox project.
+</p>
+<p>
+The jar <code>lingmed-1.3.jar</code> is
+included in the <code>$LINGPIPE/demos/lib</code> directory
+as part of the LingPipe distribution and linked by this
+demo in the ant <code>build.xml</code> file.
+</p>
+<p>See the <a href="../../../web/sandbox.html">LingPipe Sandbox</a>
+page for information on how to download the LingMed source
+and documentation.
+</p>
+</div>
+
+
+<p>
+The <code>com.aliasi.corpus.Parser</code> abstract class and
+<code>com.aliasi.corpus.Handler</code> interfaces follow the same
+pattern as the <code>org.xml.sax.XMLParser</code> and
+<code>org.xml.sax.ContentHandler</code> interfaces for parsing XML
+documents with SAX.  Each parser will contain a handler to which it
+supplies callbacks derived from parsing an input source.  LingPipe's
+arrangement is more generic than SAX in that the parser interface
+abstracts over a range of different handler interfaces (when LingPipe
+converts to generics, this will be generic).
+</p>
+
+<p>For this demo, we're interested in parsers that provide events for
+a text handler.  With an <code>com.aliasi.corpus.ObjectHandler&lt;E&gt;</code>,
+there is a single method for performing an arbitrary operation on
+an object:
+</p>
+
+<pre class="code">
+public void handle(E e);
+</pre>
+
+<p>In our case, we set <code>E</code> to be <code>CharSequence</code>
+for handling text, yielding the instantiated method:</p>
+
+<pre class="code">
+public void handle(CharSequence cSeq);
+</pre>
+
+
+
+<p>
+A text parser is a <code>Parser</code> that performs callbacks to its
+contained handler, in this case an instance of
+<code>TextHandler</code>.  In our running example, a
+<code>TextHandler</code> implementation will perform language model
+training -- the exact implementation is considered in the next
+section.
+</p>
+
+<p>On the command line, we specify the name of the class that
+implements the text parser:
+</p>
+
+<pre class="code">
+-textParser=com.aliasi.corpus.parsers.MedlineTextParser
+</pre>
+
+<p>
+This is a parser that knows how to extract the text of abstracts from
+MEDLINE citations in XML format; the XML will be provided through
+files (found through command-line specification of directory and
+file suffix).
+</p>
+
+<p>
+The text parser is constructed through the
+<code>com.aliasi.util.Reflection</code> helper class:
+</p>
+
+<pre class="code">
+String textParserClassName
+    = getExistingArgument(TEXT_PARSER_PARAM);
+mTextParser
+    = (Parser&lt;ObjectHandler&lt;CharSequence&gt;&gt;) Reflection
+               .newInstance(textParserClassName)
+...
+</pre>
+
+
+
+<h2>Training the Estimator</h2>
+
+<p>
+The actual estimator is declared as a member variable:
+</p>
+
+<pre class="code">
+NGramProcessLM mLM;
+</pre>
+
+<p>
+and set in the constructor using command-line parameters:
+</p>
+
+<pre class="code">
+mLM = new NGramProcessLM(mNGram,mNumChars);
+</pre>
+
+<p>
+This is the basic language model estimator class; it knows
+how to train a language model given text samples.  The
+parameters in its constructor are the n-gram size and
+the total number of characters in the training and test
+collections.
+</p>
+
+<p>The actual work of training a language model is performed
+by an inner class implementing <code>TextHandler</code>:
+</p>
+
+<pre class="code">
+class TrainingHandler implements ObjectHandler&lt;CharSequence&gt; {
+    public void handle(CharSequence cSeq) {        ...
+        mLM.train(cSeq);
+    }
+}
+</pre>
+
+<p>
+The ellipses are filled with code that perform a learning curve
+evaluation versus various parameter settings for the model.
+</p>
+
+<p>The training text handler is assigned to the text parser using the
+generic <code>setHandler(Handler)</code> method:
+</p>
+
+<pre class="code">
+mTextHandler = new TrainingHandler();
+...
+mTextParser.setHandler(mTextHandler);
+</pre>
+
+<p>The actual training files are extracted from the command line into
+an array and passed to the method <code>trainFile(File)</code>:
+</p>
+
+<pre class="code">
+File[] files = ...
+for (int j = 0; j &lt; files.length; ++j)
+    trainFile(files[j]);
+</pre>
+
+<p>
+This method simply branches to create an input source based on
+whether the file's suffix indicates it's gzipped:
+</p>
+
+<pre class="code">
+void trainFile(File file) throws IOException {
+    String fileName = file.getName();
+    if (fileName.endsWith(".gz"))
+        trainGZipFile(file);
+    else
+        trainTextFile(file);
+}
+</pre>
+
+<p>
+Training a text file is as simple as converting the file name
+to a URL (using the utility in <code>com.aliasi.util.Files</code>
+and wrapping it in an input source to be passed to the parser:
+</p>
+
+<pre class="code">
+void trainTextFile(File file) throws IOException {
+    String url = Files.fileToURLName(file);
+    InputSource in = new InputSource(url);
+    mTextParser.parse(in);
+}
+</pre>
+
+<p>
+Gzipped files are only a bit more complex, constructing
+their input source through the streamed gzipped decoder:
+</p>
+
+<pre class="code">
+void trainGZipFile(File file) throws IOException {
+    System.out.println("# Training gzip file=" + file
+                       + &quot; [char count=&quot; + mCharCount + &quot;]&quot;);
+    FileInputStream fileIn = null;
+    BufferedInputStream bufIn = null;
+    GZIPInputStream gzipIn = null;
+    try {
+       fileIn = new FileInputStream(file);
+       bufIn = new BufferedInputStream(fileIn);
+       gzipIn = new GZIPInputStream(bufIn);
+       InputSource in = new InputSource(gzipIn);
+       mTextParser.parse(in);
+    } finally {
+       Streams.closeInputStream(gzipIn);
+       Streams.closeInputStream(bufIn);
+       Streams.closeInputStream(fileIn);
+    }
+}</pre>
+
+<p>
+Note that the streams are closed using the exception-swallowing
+close-method in the <code>com.aliasi.util.Streams</code> class.
+</p>
+
+<h2>Online Learning Curve Estimation</h2>
+
+
+
+<p>
+With more training data, our language models become more accurate in
+the sense of providing better estmiates of the likelihood of a
+character given some previous characters.  The example run above
+shows a plot of performance versus amount of training data and
+parameter settings.  The n-gram model actually provides
+n-gram estimates for all n up to the maximum specified in the model's
+constructor.  The hyperparameters are a comma-separated value on the
+command line; in the demo target, <code>&quot;-lambdaFactors=2.0, 8.0,
+32.0&quot;</code>.
+</p>
+
+<h3>Technical Note</h3>
+<p>These parameters determine
+the relative weight of higher-order n-grams to lower order n-grams.
+The interpolation also depends on the
+number of training events seen for an outcome (the more, the higher
+the weight), and the number of outcomes seen for a given context (the
+more, the lower the weight for that context). The JavaDoc
+contains precise mathematical definitions.  We need to
+run some experiments in order to tune the hyperparameter setting.
+</p>
+
+
+
+<p>
+The hyperparameters are extracted into a <code>double[]</code>-typed
+member variable <code>mLambdas</code>.  The full handler code for the
+training handler is:
+</p>
+
+<div style="clear: both"> </div>
+
+<pre class="code">
+public void handle(CharSequence cSeq) {
+    char[] cs = cSeq.toString().toCharArray();
+    int start = 0;
+    int length = cSeq.length();
+    for (int i = 1; i &lt;= length; ++i) {
+        ++mCharCount;
+        if (mCharCount &gt; mMaxTrainingCharCount)
+            exit();
+        if ((mCharCount % mSampleFrequency) != 0)
+            continue;
+        for (int j = 0; j &lt; mLambdas.length; ++j)
+            mSamples[j][mSampleIndex]
+                = -mLM.log2ConditionalEstimate(cs,start,
+                                               i,nGram,
+                                               mLambdas[j]);
+            ++mSampleIndex;
+            if (mSampleIndex == mSamples[0].length) {
+                report();
+                mSampleIndex = 0;
+            }
+        }
+        mLM.train(cSeq);
+    }
+}</pre>
+
+<p>
+This method is simply iterating through the characters passed
+into training before performing the training.  For each character,
+it increments the overall character counter <code>mCharCount</code>.
+The second line checks if we've exceeded the maximum counts
+and calls the top-level <code>exit()</code> method if so.
+The next line says to simply go on if the character count is
+not an even multiple of the sample frequency.  Finally, for
+characters being sampled, an estimate is computed for each
+hyperparameter value.  The method called on the language model is:
+</p>
+
+<pre class="code">
+mLM.log2ConditionalEstimate(cs,start,i,mNGram,mLambdas[j])
+</pre>
+
+<p>
+This returns the log (base 2) of the estimate of character <code>cs[i-1]</code>
+given the characters <code>cs[start]...cs[i-2]</code>, with the global
+n-gram length and the <code>j</code>-th hyperparameter.
+</p>
+
+<p>These estimates are stored in the two dimensional
+<code>double</code> array <code>mSamples</code>, indexed by
+hyperparameter and sample index.  The sample index counter is
+incremented, and if it the sample buffer is full (the sampel index is
+equal to the length of the array), then a report is generated and the
+sample index is reset.  Finally, after all the estimation is carried
+out on the characters being handled, they are used for training.
+</p>
+
+<pre class="code">
+void report() {
+    print(Long.toString(mCharCount));
+    print(&quot;, &quot; + ((System.currentTimeMillis() - mStartTime)/1000l));
+    long totalMem = mRuntime.totalMemory();
+    long freeMem = mRuntime.freeMemory();
+    print(&quot;, &quot; + totalMem/1000000l);
+    print(&quot;, &quot; + freeMem/1000000l);
+    print(&quot;, &quot; + (totalMem-freeMem)/1000000l);
+    for (int i = 0; i &lt; mLambdas.length; ++i) {
+        double xEntropy = Statistics.mean(mSamples[i]);
+        double dev = Statistics.standardDeviation(mSamples[i]);
+        print(&quot;,   &quot; + decimalFormat(xEntropy) + &quot;,&quot; + decimalFormat(dev));
+    }
+    println(&quot;&quot;);
+}
+</pre>
+
+<p>
+This method reports on a single line.  First, the number of
+characters, then elapsed time in seconds.  The next three reports are
+for total, free and used memory in megabytes.  Then, for each
+hyperparameter, the mean and deviation of the samples are computed
+using the methods in <code>com.alias.stats.Statistics</code>.  The
+mean of log (base 2) sample estimates is known as the sample
+cross-entropy.  The <code>print(String)</code> method called here simply
+calls a print to both standard output and the contained file.
+</p>
+
+
+<h2>Final Counts Structure Report</h2>
+
+<p>
+The n-gram language models work by keeping track of all substring
+counts up to the specified length.  These are stored in a trie
+structure, <code>TrieCharSeqCounter</code>, for easy access.  The
+second report in the output above is for n-gram counts at the
+end of training.  There are columns for the n-gram length,
+number of unique n-grams seen of that length, total number of
+n-grams seen of that length, and the percentage of n-grams
+that were seen a second time.  This percentage is an indication
+of how often the character being estimated had been previously
+observed in the same context.  For instance, the 5-gram row
+indicates 18,221 unique 5-grams and 58108 total 5-grams, which
+means that 68.6% of the 5-gram cases being estimated after
+65,000 characters had previously been seen.   The reason there
+aren't as many longer n-grams as shorter n-grams is due to boundary
+conditions on the text.  For instance, the text &quot;abcde&quot; has
+4 bigrams, 3 trigrams, 2 4-grams and 1 5-gram.  The code to extract
+this depends on a single method:
+</p>
+
+<pre class="code">
+TrieCharSeqCounter counter = mLM.substringCounter();
+long[][] uniqueTotals = counter.uniqueTotalNGramCount();
+</pre>
+
+<p>
+which extracts all the counts through the substring counter.  This
+array indexes by n-gram length, providing pairs of unique counts
+and total coounts; they're just printed in a loop:
+</p>
+
+<pre class="code">
+for (int i = 0; i &lt; uniqueTotals.length; ++i) {
+    long unique = uniqueTotals[i][0];
+    long total = uniqueTotals[i][1];
+    double avg = 1.0 - ((double)unique)/(double)total;
+    println(i + &quot;, &quot; + unique + &quot;, &quot; + total + &quot;, &quot; + decimalFormat(avg));
+}
+</pre>
+
+<p>
+Note that the single character n-gram unique count is 83, indicating
+that there are 83 distinct characters in the model.
+</p>
+
+<h2>Top N-grams</h2>
+
+<p>
+The next report is just the top 5 n-grams of each order and their
+counts. These are presented in CSV-form, with quotes around each
+entry and all contained quotes escaped.  The code to extract the
+top n-grams is just a single call to the character sequence counter:
+</p>
+
+<pre class="code">
+TrieCharSeqCounter seqCounter
+    = mLM.substringCounter();
+for (int i = 0; i &lt;= mNGram; ++i) {
+    ObjectToCounter topNGrams
+        = seqCounter.topNGrams(i,5);
+    ...
+</pre>
+
+<p>
+The result is returned as an instance of
+<code>com.aliasi.util.ObjectToCounter</code>, which provides a
+mutable mapping of objects to counts.  Among its features is
+the ability to extract the keys (n-grams) ordered by count:
+</p>
+
+<pre class="code">
+Object[] keysByCount = topNGrams.keysOrderedByCount();
+</pre>
+
+<p>
+It is then a simple matter to loop over the keys and print the
+keys in comma-separated-value format (quoted and with internal
+quotes escaped):
+</p>
+
+<pre class="code">
+for (int j = 0; j &lt; keysByCount.length; ++j) {
+    String nGram = keysByCount[j].toString();
+    int count = topNGrams.getCount(keysByCount[j]);
+    String csvNGram
+        = '&quot;' + nGram.replaceAll(&quot;\&quot;&quot;,&quot;\\\&quot;&quot;) + '&quot;';
+    ...
+</pre>
+
+
+<h2>Running Larger Data Sets: Gigaword and MEDLINE</h2>
+
+<p>
+The <a href="build.xml">build.xml</a> build file contains two additional
+targets, <code>medline</code> and <code>gigaword</code>.
+For both of these demos, the data should be downloaded and stored in
+gzipped format and the ant targets modified to point to the download
+location that contains the gzipped data files.
+</p>
+
+<h3>Time and Space</h3>
+
+<p>With large n-gram lengths, these jobs will take hours to
+run and require gigabytes of memory.
+For example, running MEDLINE 8-grams on the full set of
+MEDLINE abstracts without pruning required an
+8GB Java heap.  They can be run for smaller samples or shorter n-grams
+with less memory.
+</p>
+
+<h3>Pruning</h3>
+
+<p>
+In order to train on very large amounts of data, the models may be
+pruned incrementally.  This is done by retrieving the sequence counter
+for the language model and calling its <code>prune(int)</code> method.
+This will remove all sequence counts below the specified value.  This
+usually reduces the size of the model substantially even with the
+smallest possible threshold, 2.  Pruning efficiency follows
+from <a
+href="http://en.wikipedia.org/wiki/Zipf%27s_law">Zipf's Law</a>,
+which says that the frequency of a word (or in our case, sequence
+of characters) is inversely proportional to its rank (ordered
+by frequency).
+</p>
+
+<h2>Generating Pretty Graphs</h2>
+
+<div class="sidebar">
+<h2>R Rocks</h2>
+<p>The alternative to the standalone gnuplot program
+is <a href="http://www.r-project.org/">R</a>, a
+GNU-licensed statistical computation and graphics
+package, with extensive libraries.
+</p>
+</div>
+
+<p>The report lines are formatted as comma-separated values (CSV) to
+enable exporting to a spreadsheet or to our favorite free, open source
+graphing package, <a href="http://www.gnuplot.info/">Gnuplot</a>.  For
+instance, the graphs in the whitepaper reference were generated this
+way by combining reports for different n-gram lengths into a single
+plot.
+</p>
+
+
+<h2>Scaling Token Language Models</h2>
+
+<div class="sidebar">
+<h2>Map-Reduce with Hadoop</h2>
+<p>Time will limit the amount of data read on a single
+processor.  The code introduced here may be adapted
+for use as the map and reduce steps of a map-reduce
+implementation such as the open source Java implementation
+in Apache's Lucene <a href="http://hadoop.apache.org/">Hadoop</a>.
+</p>
+</div>
+
+<p>This demo contains code to serialize token language models to
+files.  It also contains code to merge files produced in this way.
+Because neither stage requires much memory, the two functions
+may be used together to scale tokenized language models to
+arbitrary amounts of data.</p>
+
+<h3>Serializing Token Language Models</h3>
+
+<p>The serialization and merge functionality is provided in <a
+href="src/TokenNGramFiles.java"><code>src/TokenNGramFiles.java</code></a>.</p>
+
+<p>To illustrate the three public static methods in
+<code>TokenNGramFiles</code>, we have provided a demo main method in
+<a href="src/DemoTokenNGramFiles.java"><code>src/DemoTokenNGramFiles.java</code></a>.
+</p>
+
+<h4>Running the Demo</h4>
+
+<p>The demo may be run from ant using:</p>
+
+<pre class="code">
+$ ant tok-io
+</pre>
+
+<p>The output is provided in four gzipped files:
+</p>
+
+<pre class="code">
+$ ls *.gz
+temp1.lm.gz  temp12.lm.gz  temp2.lm.gz  tempIo.lm.gz
+</pre>
+
+<p>where <code>temp1.lm.gz</code> and <code>temp2.lm.gz</code>
+contain the counts for sequences in the even and odd
+numbered lines of the input respectively, where <code>temp12.lm.gz</code>
+contains counts merged through files, and <code>tempIo.lm.gz</code>
+is the result of reading in and then printing back out
+the merged file.</p>
+
+<p>The input arguments for the demo are:</p>
+
+<pre class="code">
+  &lt;arg value=&quot;A TrieCharSeqCounter stores counts of sub strings of strings.&quot;/&gt;
+  &lt;arg value=&quot;zz zz zz xx&quot;/&gt;
+
+  &lt;arg value=&quot;A TrieCharSeqCounter stores counts of sub strings of strings.&quot;/&gt;
+  &lt;arg value=&quot;aa aa aa aa aa bb bb bb cc cc dd&quot;/&gt;
+</pre>
+
+<p>To inspect the output, we first unzip the files:</p>
+
+<pre class="code">
+demos/tutorial/lm&gt; gunzip *.gz
+</pre>
+
+<p>Here are the contents of files 1, 2 and 3:</p>
+
+<table>
+<tr><th>1</th><th>2</th><th>12</th></tr>
+<tr>
+<td valign="top"><pre>
+ 13
+&lt;S&gt; 3
+&lt;S&gt; aa 1
+&lt;S&gt; aa bb 1
+&lt;S&gt; cc 1
+&lt;S&gt; cc dd 1
+aa 1
+aa bb 1
+aa bb bb 1
+bb 2
+bb bb 1
+bb bb cc 1
+bb cc 1
+bb cc dd 1
+cc 4
+cc &lt;S&gt; 1
+cc dd 3
+cc dd &lt;S&gt; 1
+cc dd cc 2
+dd 3
+dd &lt;S&gt; 1
+dd cc 2
+dd cc &lt;S&gt; 1
+dd cc dd 1
+</pre></td>
+<td valign="top"><pre>
+ 12
+&lt;S&gt; 3
+&lt;S&gt; dd 2
+&lt;S&gt; dd ee 2
+dd 4
+dd &lt;S&gt; 1
+dd dd 1
+dd dd &lt;S&gt; 1
+dd ee 2
+dd ee dd 1
+dd ee ff 1
+ee 4
+ee &lt;S&gt; 1
+ee dd 1
+ee dd dd 1
+ee ee 1
+ee ee &lt;S&gt; 1
+ee ff 1
+ee ff ee 1
+ff 1
+ff ee 1
+ff ee ee 1
+</pre></td>
+<td valign="top"><pre>
+ 25
+&lt;S&gt; 6
+&lt;S&gt; dd 2
+&lt;S&gt; dd ee 2
+bb 2
+cc 4
+cc dd 3
+cc dd cc 2
+dd 7
+dd &lt;S&gt; 2
+dd cc 2
+dd ee 2
+ee 4
+</pre></td>
+</tr>
+</table>
+
+<p>The counts for the even rows (0 and 2) are in column 1, those
+for the odd rows (1 and 3) in column 2, and the merged counts,
+pruned to a minimum count of 2, is shown in the third column.
+</p>
+
+<h4>Code Walkthrough</h4>
+
+<p>The demo code for carrying all of this out is contained
+in a short main method in <code>DemoTokenNGramFiles</code>:
+</p>
+
+<pre class="code">
+public static void main(String[] args) throws IOException {
+    ...
+}
+</pre>
+
+<p>The first step simply defines the tokenizer factory to use
+and constructs a tokenized language model:</p>
+
+<pre class="code">
+  TokenizerFactory tokenizerFactory
+    = IndoEuropeanTokenizerFactory.INSTANCE;
+  TokenizedLM lm1 = new TokenizedLM(tokenizerFactory,3);
+</pre>
+
+<p>This will store token sequences up to length 3 based on the
+Indo-European tokenizer factory.  Of course, other tokenizer
+factories, such as ones based on customized regular expressions,
+will return different results.  The use of this tokenizer factory
+is just for simplicity here.</p>
+
+<p>Then the language model is trained on the odd input lines:</p>
+
+<pre class="code">
+  for (int i = 0; i &lt; args.length; i += 2)
+      lm1.handle(args[i]);
+</pre>
+
+<p>Next, the model is written to the file <code>temp1.lm.gz</code>
+using a static method from <code>TokenNGramFiles</code>:
+</p>
+
+<pre class="code">
+  File file1 = new File("temp1.lm.gz");
+  TokenNGramFiles.writeNGrams(lm1,file1,0,3,1,"UTF-8");
+</pre>
+
+<p>The (unzipped) contents written to <code>temp1.lm.gz</code> is
+shown in column 1 of the table above.  The parameters <code>0,3</code>
+indicate the length of n-grams to store, here 0-grams to 3-grams.  The
+<code>1</code> argument indicates the minimum count for n-grams to be
+stored.  The string <code>&quot;UTF-8&quot;</code> specifies UTF-8
+encoded Unicode as a character encoding.  </p>
+
+<p>In the second step, the second LM is trained on the
+odd-numbered lines and written to file in the same way.</p>
+
+<pre class="code">
+  TokenizedLM lm2 = new TokenizedLM(tokenizerFactory,3);
+  for (int i = 1; i &lt; args.length; i += 2)
+      lm2.train(args[i]);
+  File file2 = new File("temp2.lm.gz");
+  TokenNGramFiles.writeNGrams(lm2,file2,0,3,1,"UTF-8");
+</pre>
+
+<p>After writing out the n-grams computed from alternating
+lines of the input, they are merged using the method
+<code>TokenNGramFiles.merge()</code>:</p>
+
+<pre class="code">
+  File file12 = new File("temp12.lm.gz");
+  TokenNGramFiles.merge(Arrays.asList(file1,file2),
+                        file12,
+                        "UTF-8",
+                        2, false);
+</pre>
+
+<p>The merged n-grams are written (in gzipped form) to
+<code>temp12.lm.gz</code>.  The arguments to the <code>merge()</code>
+method consist of a list of files to merge (which may be of any
+size), followed by a target file and encoding, followed by
+a minimum count for pruning and a boolean flag indicating
+whether to delete the input files after the merge completes.
+Here, we left the input files so they could be inspected.
+</p>
+
+<p>After unzipping, the contents of the merged file are shown
+in the third column of the table above.  Note that any string
+with combined count lower than 2 is removed.  The string
+<code>dd &lt;S&gt;</code> has count 1 in both files, which
+gives it a combined count of 2, so it is preserved in the output.
+</p>
+
+<p>The fourth stage of the demo reads the combined file into
+a new language model using <code>TokenNGramFiles.addNGrams()</code>:</p>
+
+<pre class="code">
+  TokenizedLM lmIo
+      = new TokenizedLM(tokenizerFactory, 3,
+                        lm1.unknownTokenLM(), lm1.whitespaceLM(), lm1.lambdaFactor(),
+                        false);
+  TokenNGramFiles.addNGrams(file12,"UTF-8",lmIo,0);
+  File fileIo = new File("tempIo.lm.gz");
+  TokenNGramFiles.writeNGrams(lmIo,fileIo,1,3,2,"UTF-8");
+</pre>
+
+<p>First, a tokenized language model is created using the six-argument
+constructor.  This is done so that the final argument can be specified
+as <code>false</code>, so that boundaries are not auto-incremented
+during construction.  This allows exactly the count of n-grams in the
+files to be read.  The same tokenizer factory is used as before, the
+maximum n-gram is still 3.  For convenience, we use the same unknown
+token, whitespace and interpolation variables as in the first model
+(these are specified by default as constants when the two-argument
+constructor was used).</p>
+
+<p>Next, the <code>addNGrams()</code> method is called, which reads
+the counts from the specified file using the specified encoding
+and adds them to the specified language model after pruning
+at the specified level.</p>
+
+<p>For inspection, we finally write the n-grams from this new
+model as before to <code>tempIo.lm.gz</code>.  The result is
+identical to <code>temp12.lm.gz</code> (as verified by the
+<code>diff</code> command), the contents of which
+are in the third column of the table above.
+</p>
+
+<h4>Warning on Tokenizers</h4>
+
+<p>Tokens must not contain unicode characters with code points at or
+below <code>U+0020</code> (e.g. no spaces, line feeds, or carriage
+returns in tokens).</p>
+
+
+<h3>MEDLINE Token N-Grams</h3>
+
+<p>In this section, we illustrate the class that performs
+map-reduce-like processing for scaling indexers,
+<code>TokenNGramIndexer</code>, the code for which is in <a
+href="src/TokenNGramIndexer.java"><code>src/TokenNGramIndexer.java</code></a>.
+</p>
+
+<p>For an interface, the class implements
+<code>corpus.TextHandler</code>, which provides a single void
+<code>handle()</code> method accepting a character slice.  The text is
+tokenized and buffered in an in-memory language model.  Before an
+in-memory character threshold is passed, the model is written out to
+level zero file.  When the number of files of a given level exceeds a
+threshold, they are merged into a file of the next level (which may
+implicate further merges, all of which are carried out
+simultaneously).  In the end, the remaining files are merged into a
+single output file.  In this way, token n-gram counts may be scaled to
+arbitrary inputs, with the only limit being processing time (which may
+be further distributed over multiple machines, leading to a final
+meta-merge).</p>
+
+<h4>MEDLINE Demo Data</h4>
+
+<p>Although this code was built to count n-grams in all of MEDLINE,
+this demo will restrict attention to the reasonably sized public
+samples available from:</p>
+
+<ul>
+<li><a href="ftp://ftp.nlm.nih.gov/nlmdata/sample/medline/">MEDLINE Samples</a></li>
+</ul>
+
+<p>It will contain the current year sample files.
+For 2009, there are seven sample files, named <code>medsamp2009a.xml.gz</code>
+through <code>medsamp2009b.xml.gz</code>, ranging in size from 4 to 20 megabytes
+(gzipped), most of which is irrelevant XML for this demo.</p>
+
+<p>For parsing MEDLINE, we use the LingPipe package
+<code>com.aliasi.medline</code>, which contains a full object-oriented
+MEDLINE parser, <code>medline.MedlineParser</code>, which
+sends citations to a <code>medline.MedlineHandler</code>.  We will
+simply extract the text from a citation and send it to the
+indexer.</p>
+
+<h4>Running the Demo</h4>
+
+<p>The demo may be run from ant, using the following command
+(warning: takes half an hour on a decent but not state
+of the art notebook circa 2009):</p>
+
+<pre class="code">
+$ ant med-n
+
+MEDLINE Sample Data Directory=c:\data\medline\samples
+Index Directory=temp-medline-idx
+ Data File=c:\data\medline\samples\medsamp2009a.xml.gz
+ Data File=c:\data\medline\samples\medsamp2009b.xml.gz
+ ...
+
+</pre>
+
+<p>After the task is run, the index will be in the
+specified index directory in gzipped format, just like
+the output of the previous demos.  For the 2009 MEDLINE
+release, that's a 25,443,818 byte gzipped file of counts
+at level <code>5_1</code>.  It may be read
+back into models, etc.</p>
+
+<h4>Code Walkthrough</h4>
+
+<p>The MEDLINE-specific portion of the demo is in <a
+href="src/MedlineNGrams.java"><code>src/MedlineNGrams.java</code></a>.
+The main method starts by setting up the directories
+and parameters for the token n-gram indexer:
+</p>
+
+<pre class="code">
+public static void main(String[] args)
+    throws IOException, SAXException {
+
+    File medlineDir = new File(args[0]);
+    File indexDir = new File(args[1]);
+</pre>
+
+<p>The data directory containing the gzipped MEDLINE files
+and the index directory to which files are written are
+given as fixed command-line arguments.  Next, the other
+parameters are assigned:</p>
+
+<pre class="code">
+    int maxCharsBuffered = 4 * 1024 * 1024;
+    int maxFilesPerLevel = 2;
+    TokenizerFactory tokenizerFactory
+        = IndoEuropeanTokenizerFactory.INSTANCE;
+    int nGramOrder = 5;
+    String encoding = "UTF-8";
+</pre>
+
+<p>Then the indexer itself is created, based
+on all of these parameters:</p>
+
+<pre class="code">
+    final TokenNGramIndexer indexer
+            = new TokenNGramIndexer(maxCharsBuffered,
+                                    maxFilesPerLevel,
+                                    tokenizerFactory,
+                                    nGramOrder,
+                                    indexDir,encoding);
+</pre>
+
+<p>We also create a sentence chunker before parsing,
+which like the indexer is final to allow incorporation
+into an upcoming anonymous inner class:
+</p>
+
+<pre class="code">
+    final Chunker sentenceChunker
+        = new SentenceChunker(tokenizerFactory,
+                              new MedlineSentenceModel());
+</pre>
+
+<p>Note the use of a special model for MEDLINE sentence
+chunking given in <code>com.aliasi.sentences.MedlineSentenceModel</code>.
+</p>
+
+<p>The work is done in a MEDLINE citation handler, with
+a handle method and a do-nothing delete which will not
+be called here.</p>
+
+<pre class="code">
+    MedlineHandler medlineHandler = new MedlineHandler() {
+        public void handle(MedlineCitation citation) {
+            ...
+        }
+        public void delete(String id) { }
+    }
+</pre>
+
+<p>The handle method just grabs the text of each sentence
+from the title and body and sends it to the indexer:</p>
+
+<pre class="code">
+        Article article = citation.article();
+        String title = article.articleTitleText();
+        char[] cs = title.toCharArray();
+        <b>indexer.handle(cs,0,cs.length);</b>
+
+        Abstract abstrct = article.abstrct();
+        if (abstrct == null) return;
+        String text = abstrct.textWithoutTruncationMarker();
+        Chunking sentenceChunking
+            = sentenceChunker.chunk(text);
+        Set&lt;Chunk&gt; sentenceChunks
+            = sentenceChunking.chunkSet();
+        for (Chunk chunk : sentenceChunks) {
+            int start = chunk.start();
+            int end = chunk.end();
+            String sentence = text.substring(start,end);
+            cs = sentence.toCharArray();
+            <b>indexer.handle(cs,0,cs.length);</b>
+         }
+         ...
+</pre>
+
+<p>The rest of the code simply parses the files
+out of their gzipped distribution format and sends them
+to LingPipe's MEDLINE parser, with the handler defined
+above attached.  It looks as follows, with the gory
+details of selecting the file, creating the input
+source, and cleaning up in an orderly fashion elided:</p>
+
+<pre class="code">
+        MedlineParser parser = new MedlineParser(includeRawXml);
+        parser.setHandler(medlineHandler);
+        for (File file : ...) {
+            ...
+            InputSource in = new InputSource(...);
+            in.setEncoding("UTF-8");
+            parser.parse(in);
+         }
+         indexer.close();
+         int minFinalCount = 2;
+         indexer.optimize(minFinalCount);
+</pre>
+
+<h4>Token N-Gram Indexer</h4>
+
+<p>The rest of the work is done in the token n-gram indexer, the code
+for which is in <a
+href="src/TokenNGramIndexer.java"><code>src/TokenNGramIndexer.java</code></a>.
+It contains the methods required to buffer n-grams in a tokenized LM
+and write to the file system when necessary.  It also carries out
+merges if the number of files at a given level would exceed the
+maximum allowed.  All of these operations simply call the
+token n-gram files commands in <code>TokenNGramFiles</code>.</p>
+
+
+
+<h2>References</h2>
+
+<ul>
+
+<li> Bob Carpenter. 2005. <a
+href="http://www.colloquial.com/carp/Publications/acl05soft-carpenter.pdf">Scaling
+high-order character language models to gigabytes.</a> Proceedings of
+the 2005 Assocation for Computational Linguistics Software Workshop.
+[All the gory details with comparisons to other approaches.]
+</li>
+
+
+<li>Manning, Chris and Hinrich Schuetze. 2000.
+<i>Foundations of Statistical Natural Language Processing.</i>
+MIT Press. Chapter 6: N-gram models over sparse data.
+</li>
+
+</ul>
+
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>

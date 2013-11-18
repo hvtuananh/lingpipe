@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<project name="Alias-i LingPipe Tutorials Build" default="jars" basedir=".">
+
+  <target name="clean">
+    <ant dir="chineseTokens" target="clean"/>
+    <ant dir="classify" target="clean"/>
+    <ant dir="cluster" target="clean"/>
+    <ant dir="crf" target="clean"/>
+    <ant dir="db" target="clean"/>
+    <ant dir="em" target="clean"/>
+    <ant dir="hyphenation" target="clean"/>
+    <ant dir="interestingPhrases" target="clean"/>
+    <ant dir="langid" target="clean"/>
+    <ant dir="lm" target="clean"/>
+    <ant dir="ne" target="clean"/>
+    <ant dir="posTags" target="clean"/>
+    <ant dir="querySpellChecker" target="clean"/>
+    <ant dir="sentences" target="clean"/>
+    <ant dir="sentiment" target="clean"/>
+    <ant dir="stringCompare" target="clean"/>
+    <ant dir="svd" target="clean"/>
+    <ant dir="logistic-regression" target="clean"/>
+    <ant dir="wordSense" target="clean"/>
+  </target>
+
+  <target name="jars">
+    <ant dir="chineseTokens" target="jar"/>
+    <ant dir="classify" target="jar"/>
+    <ant dir="cluster" target="jar"/>
+    <ant dir="crf" target="jar"/>
+    <ant dir="db" target="jar"/>
+    <ant dir="em" target="jar"/>
+    <ant dir="hyphenation" target="jar"/>
+    <ant dir="interestingPhrases" target="jar"/>
+    <ant dir="langid" target="jar"/>
+    <ant dir="lm" target="jar"/>
+    <ant dir="ne" target="jar"/>
+    <ant dir="posTags" target="jar"/>
+    <ant dir="querySpellChecker" target="jar"/>
+    <ant dir="sentences" target="jar"/>
+    <ant dir="sentiment" target="jar"/>
+    <ant dir="stringCompare" target="jar"/>
+    <ant dir="svd" target="jar"/>
+    <ant dir="logistic-regression" target="jar"/>
+    <ant dir="wordSense" target="jar"/>
+  </target>
+
+</project>

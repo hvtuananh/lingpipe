@@ -1,0 +1,154 @@
+<project name="LingPipe Demos" 
+         default="compile" 
+         basedir=".">
+
+  <property file="build.properties"/>
+
+  <property name="app.name"      
+            value="lingpipe-demos"/>
+
+  <property name="manager.url"
+            value="http://localhost:8080/manager/" />
+  <property name="manager.username"
+            value="admin"/>
+  <property name="manager.password"
+            value="admin"/>
+
+  <path id="classpath.standard">
+    <pathelement location="../../lingpipe-4.1.0.jar"/>
+    <pathelement location="../lib/commons-fileupload-1.2.1.jar" />
+    <pathelement location="../lib/commons-io-1.4.jar" />  <!-- is anyone using this? -->
+    <pathelement location="../lib/nekohtml-1.9.14.jar" />
+    <pathelement location="../lib/servlet-api-6.0.26.jar" />
+    <pathelement location="../lib/xml-apis-2.9.1.jar" />
+    <pathelement location="../lib/xercesImpl-2.9.1.jar" />
+    <pathelement location="build/classes"/>
+    <pathelement location="../"/>  <!-- for demos/models -->
+   </path>
+
+  <target name="clean">
+    <delete dir="build"/>
+    <delete file="lingpipe-demos.jar"/>
+  </target>
+
+  <target name="compile">
+    <mkdir dir="build/classes"/>
+    <javac includeAntRuntime="false"   srcdir="src"
+           destdir="build/classes"
+           debug="yes"
+           deprecation="yes"
+           optimize="yes">
+        <compilerarg value="-Xlint:all"/>
+    <classpath refid="classpath.standard"/>
+    </javac>
+    <copy file="../../web/img/logo-small.gif"
+          toDir="build/classes/com/aliasi/demo/framework"/>
+  </target>
+
+  <target name="jar" depends="compile">
+    <jar destfile="lingpipe-demos.jar">
+      <fileset dir="build/classes" includes="**/*.class"/>
+      <fileset dir="build/classes" includes="**/*.gif"/>
+    </jar>
+  </target>
+
+
+  <target name="demoClient" depends="jar"> <!-- deploy -->
+    <java classname="com.aliasi.demo.framework.DemoClient"
+          fork="true">
+      <compilerarg value="-Xlint:all"/>
+    <classpath refid="classpath.standard"/>
+      <arg value="-serverUrl=http://localhost:8080/lingpipe-demo/echo/response.xml"/>
+      <arg value="-inputFile=temp.txt"/>
+      <arg value="-outputFile=temp.out.txt"/>
+    </java>
+  </target>
+
+
+   <!-- war layout is:
+         /(plain old web content **/*.html, **/*.jpg, etc.)
+         /WEB-INF/web.xml
+         /WEB-INF/lib/*.jar       (includes models.jar)
+         /META-INF/context.xml
+      
+      all but jars copied from ./web
+
+   -->
+  <target name="war" depends="jar">
+    <mkdir dir="build/war"/>
+    <copy todir="build/war">
+      <fileset dir="web"/>
+    </copy>
+
+    <mkdir dir="build/war/WEB-INF/lib"/>
+    <copy todir="build/war/WEB-INF/lib">
+      <fileset file="lingpipe-demos.jar"/> 
+      <fileset file="../../lingpipe-4.1.0.jar"/>
+      <fileset file="../lib/commons-fileupload-1.2.1.jar"/>
+      <fileset file="../lib/commons-io-1.4.jar"/>
+      <fileset file="../lib/nekohtml-1.9.14.jar"/>
+      <fileset file="../lib/xml-apis-2.9.1.jar"/>
+      <fileset file="../lib/xercesImpl-2.9.1.jar"/>
+    </copy>
+
+    <jar destfile="build/war/WEB-INF/lib/models.jar">
+      <fileset dir="../">
+        <include name="models/**"/>
+      </fileset>
+    </jar>
+
+    <jar destfile="build/${app.name}.war">
+      <fileset dir="build/war"/>
+    </jar>
+  </target>
+
+  <!-- 
+       for deploy and unremove targets
+       copy Tomcat5.5/server/lib/catalina-ant.jar
+            to $ANT_HOME/lib/ 
+
+       then open URL: ${manager.url}/${app.name}/url-pattern
+       where url-pattern is defined in web/WEB-INF/web.xml
+       e.g. manager.url= http://localhost:8080/manager/
+            app.name = lingpipe-demo
+            url-pattern = /helloWorld
+            URL = http://localhost:8080/manager/lingpipe-demo/helloWorld
+   -->
+  
+  <!-- 
+       takes a ton of memory: require to up memory with 
+       set ANT_OPTS=-Xmx1G
+   --> 
+
+  <target name="deploy" depends="war">
+    <taskdef name="deploy" 
+             classname="org.apache.catalina.ant.DeployTask"/>
+    <deploy url="${manager.url}" 
+            username="${manager.username}" 
+            password="${manager.password}" 
+            path="/${app.name}" 
+            war="build/${app.name}.war"/>
+  </target>
+
+  <target name="undeploy">
+    <taskdef name="undeploy" 
+             classname="org.apache.catalina.ant.UndeployTask"/>
+    <undeploy url="${manager.url}" 
+              username="${manager.username}" 
+              password="${manager.password}" 
+              path="/${app.name}"/>
+  </target>
+
+  <target name="redeploy" depends="undeploy,deploy"/>
+
+  <target name="stop-tomcat">
+    <taskdef name="stop" 
+             classname="org.apache.catalina.ant.StopTask"/>
+    <stop url="${manager.url}"
+          username="${manager.username}"
+          password="${manager.password}"
+          path="/${app.name}"/>
+  </target>
+
+</project>
+

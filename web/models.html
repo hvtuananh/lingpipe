@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Download Models</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="css/lp-site.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet" />
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">Download Models</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../index.html">home</a></li>
+
+<li><a href="demos.html">demos</a></li>
+
+<li><a href="licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="download.html">lingpipe core</a></li>
+<li><a class="current" href="models.html">models</a></li>
+</ul>
+
+</li>
+
+<li>docs
+<ul>
+<li><a href="install.html">install</a></li>
+<li><a href="../demos/tutorial/read-me.html">tutorials</a></li>
+<li><a href="../docs/api/index.html">javadoc</a></li>
+<li><a href="book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="bugs.html">bugs</a></li>
+<li><a href="sandbox.html">sandbox</a></li>
+<li><a href="competition.html">competition</a></li>
+<li><a href="citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="contact.html">contact</a></li>
+
+<li><a href="about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<h2>License</h2>
+
+<h3>LingPipe License</h3>
+<p>
+Before downloading, please read the terms of:
+</p>
+<ul>
+<li>
+<a href="licensing.html"
+ >LingPipe's Royalty-Free License</a>
+</li>
+</ul>
+
+<p>
+LingPipe is also available under a
+<a href="licensing.html">commercial license</a>.
+</p>
+
+<h3>Model Licenses</h3>
+<p>
+Note that the models themselves are often subject to additional
+licensing restrictions inherited from the corpora from which
+they were trained.  These restricted models are themselves
+often available for commercial purposes by contract to the original
+creator of the data, or through Alias-i. All models, to the best of
+our knowledge, allow research use.
+</p>
+
+
+<h2>Download LingPipe</h2>
+
+<p>
+In order to run these models, you must download LingPipe:
+</p>
+<ul><li>
+<a href="download.html">LingPipe Core Download Page</a>
+</li></ul>
+<p>
+This includes a compiled jar file, complete source, javadoc, demos, etc..
+</p>
+
+<h2>Where to Put Models</h2>
+<p>
+Models should be downloaded to the following directory
+in order to ensure the demos that require them may find them:
+</p>
+<pre class="code">
+$lingpipe/demos/models
+</pre>
+
+
+
+<h2>Download LingPipe Models</h2>
+
+
+
+<div class="sidebar">
+<h2>What are Models?</h2>
+<p>
+For each language, genre, and training corpus,
+LingPipe is able to generate a range of models
+based on task (e.g. named-entity recognition or
+part-of-speech tagging) and training parameters.
+These models are then loaded at run time by LingPipe
+where they provide language-, genre- and task-specific
+details to the core LingPipe API.
+</p>
+</div>
+
+
+<div class="sidebar">
+<h2>Model Naming Convention</h2>
+<p>
+The models are all serialized objects.  A name
+such as <code>ne-en-news-muc6.TokenShapeChunker</code>
+indicates that the task is named-entity recognition
+(<code>ner</code>), the language is English (<code>en</code>),
+the genre of text it applies to is news (<code>news</code>),
+and the corpora on which it was trained is the MUC-6 corpus
+(<code>muc6</code>).  The file suffix is the (unqualified)
+name of the class of object represented in the model.
+</p>
+</div>
+
+<h3>Part of Speech Tagging</h3>
+
+<h4>English Biomedical: GENIA</h4>
+<ul>
+<li>
+<a href="../demos/models/pos-en-bio-genia.HiddenMarkovModel"
+>pos-en-bio-genia.HiddenMarkovModel</a>
+<span class="smallnote">(5.9MB)</span>
+</li>
+</ul>
+
+<h4>English Biomedical: MedPost</h4>
+<ul>
+<li>
+<a href="../demos/models/pos-en-bio-medpost.HiddenMarkovModel"
+>pos-en-bio-medpost.HiddenMarkovModel</a>
+<span class="smallnote">(4.9MB)</span>
+</li>
+</ul>
+
+<h4>English General: Brown</h4>
+<ul>
+<li>
+<a href="../demos/models/pos-en-general-brown.HiddenMarkovModel"
+>pos-en-general-brown.HiddenMarkovModel</a>
+<span class="smallnote">(12.5MB)</span>
+</li>
+</ul>
+
+<h3>Named Entity Recognition</h3>
+
+<h4>English News: MUC-6</h4>
+<ul>
+<li>
+<a href="../demos/models/ne-en-news-muc6.AbstractCharLmRescoringChunker"
+>ne-en-news-muc6.AbstractCharLmRescoringChunker</a>
+<span class="smallnote">(16.0MB)</span>
+</li>
+</ul>
+
+<h4>English Genes: GeneTag</h4>
+<ul>
+<li>
+<a href="../demos/models/ne-en-bio-genetag.HmmChunker"
+>ne-en-bio-genetag.HmmChunker</a>
+<span class="smallnote">(6.7MB)</span>
+</li>
+</ul>
+
+<h4>English Genomics: GENIA</h4>
+<ul>
+<li>
+<a href="../demos/models/ne-en-bio-genia.TokenShapeChunker"
+>ne-en-bio-genia.TokenShapeChunker</a>
+<span class="smallnote">(9.8MB)</span>
+</li>
+</ul>
+
+
+<h3>Chinese Word Segmentation</h3>
+
+<h4>Academia Sinica Version SIGHAN 2005</h4>
+<ul>
+<li>
+<a href="../demos/models/words-zh-as.CompiledSpellChecker"
+>words-zh-as.CompiledSpellChecker</a>
+<span class="smallnote">(30.5MB)</span>
+</li>
+</ul>
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+

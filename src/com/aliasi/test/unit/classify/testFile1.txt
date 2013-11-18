@@ -1,0 +1,14 @@
+ Status Legend:
+
+Step 1: Your order has been successfully submitted. Your credit/debit card has not yet been charged. Please allow 1-2 business days for your order to process and ship.
+
+Step 2: Verification and fraud prevention measures are complete. Your credit/debit card has not yet been charged.
+
+Step 3: Your credit/debit card has been successfully charged. Please note that you may no longer make changes to your order.
+
+Step 4: Your order contents are packaged and sealed.
+
+Step 5: Your order has shipped. You may view your tracking information by clicking the applicable "View" link above. Your tracking number(s) will also be sent via email to your Newegg.com login.
+
+Void: Your order is cancelled. Void orders are null and cannot be re-processed. If you need to re-order as a result, please do so on our website. If you have any questions or concerns, please contact us for help. 
+

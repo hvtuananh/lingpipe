@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+
+<project name="LingPipe Tutorial - Clustering" default="compile" basedir=".">
+
+<path id="classpath.standard">
+  <pathelement location="build/classes"/>
+  <pathelement location="../../../lingpipe-4.1.0.jar"/>
+</path>
+
+<target name="clean">
+  <delete dir="build"/>
+  <delete file="cluster.jar"/>
+</target>
+
+<target name="compile">
+  <mkdir dir="build/classes"/>
+  <javac includeAntRuntime="false"   optimize="on"
+         debug="yes"
+         debuglevel="source,lines,vars"
+         destdir="build/classes">
+    <compilerarg value="-Xlint:all"/>
+    <classpath refid="classpath.standard"/>
+    <src path="src/"/>
+  </javac>
+</target>
+
+<target name="jar"
+        depends="compile">
+  <jar destfile="cluster.jar">
+    <fileset dir="build/classes"
+             includes="**/*.class"/>
+  </jar>
+</target>
+
+<target name="city"
+        depends="compile">
+  <java classname="City"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+  </java>
+</target>
+
+<target name="string-edits"
+        depends="compile">
+  <java classname="StringEdits"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="a,aaa,aaaaaa,aaaaaaaaaa"/>
+    <arg value="10"/>
+  </java>
+</target>
+
+<target name="score"
+        depends="compile">
+  <java classname="ClusterScoreDemo"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+  </java>
+</target>
+
+<target name="four-news"
+        depends="compile">
+  <java classname="TokenCosineDocCluster"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="../../data/fourNewsGroups/4news-train"/>
+  </java>
+</target>
+
+<target name="john-smith"
+        depends="compile">
+  <java classname="TokenCosineDocCluster"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="../../data/johnSmith"/>
+  </java>
+</target>
+
+<target name="lda-fixed"
+        depends="compile">
+  <java classname="LdaFixed"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+  </java>
+</target>
+
+<property name="wormbase.gz"
+          value="2007-12-01-wormbase-literature.endnote.gz"/>
+
+<target name="lda-worm"
+        depends="compile">
+  <java classname="LdaWormbase"
+        maxmemory="1G"
+        fork="true">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+    <arg value="${wormbase.gz}"/>     <!-- gzipped flat file of abstracts -->
+  </java>
+</target>
+
+<target name="lda-topic-sim"
+        depends="compile">
+  <java classname="LdaTopicSimilarity"
+        maxmemory="1G"
+        fork="true">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+    <arg value="${wormbase.gz}"/>     <!-- gzipped flat file of abstracts -->
+  </java>
+</target>
+
+
+</project>

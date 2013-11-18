@@ -1,0 +1,62 @@
+<project name="Senseval Tutorial" default="compile" basedir=".">
+
+  <property name="senseval.dir"
+            location="e:/data/senseval3/unpacked/english"/>
+  <property name="train.file"
+            location="${senseval.dir}/EnglishLS.train"/>
+  <property name="train.dictionary.file"
+            location="${senseval.dir}/EnglishLS.dictionary.xml"/>
+  <property name="test.file"
+            location="${senseval.dir}/EnglishLS.test"/>
+  <property name="answer.file"
+            location="systemAnswer.txt"/>
+  <property name="classifier.id"
+            value="0"/>
+
+  <path id="classpath.standard">
+    <pathelement location="wordSense.jar"/>
+    <pathelement location="../../../lingpipe-4.1.0.jar"/>
+  </path>
+
+  <target name="clean">
+    <delete dir="build"/>
+    <delete file="wordSense.jar"/>
+  </target>
+
+  <target name="compile">
+    <mkdir dir="build/classes"/>
+    <javac includeAntRuntime="false"   optimize="on"
+           debug="yes"
+           debuglevel="source,lines,vars"
+           destdir="build/classes">
+      <compilerarg value="-Xlint:all"/>
+      <classpath refid="classpath.standard"/>
+      <src path="src/"/>
+    </javac>
+  </target>
+
+  <target name="jar"
+          depends="compile">
+    <jar destfile="wordSense.jar">
+      <fileset dir="build/classes"
+               includes="**/*.class"/>
+    </jar>
+  </target>
+
+
+  <target name="run"
+          depends="jar">
+    <java classname="Senseval3"
+          maxmemory="2G"
+          fork="true">
+      <jvmarg value="-server"/>
+      <classpath refid="classpath.standard"/>
+      <arg value="${train.dictionary.file}"/>
+      <arg value="${train.file}"/>
+      <arg value="${test.file}"/>
+      <arg value="${answer.file}"/>
+      <arg value="${classifier.id}"/> <!-- classifier id -->
+    </java>
+  </target>
+
+</project>

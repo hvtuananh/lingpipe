@@ -1,0 +1,1384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Chinese Tokenization and Word Segmentation Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">Chinese Word Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a class="current" href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+
+
+<div id="content" class="content">
+
+<h2>Why are Chinese Words Hard?</h2>
+
+<p>
+Unlike Western languages, Chinese is written without spaces between
+words.  Thus to run any word- or token-based linguistic processing on
+Chinese, it is first necessary to determine word boundaries.  This
+tutorial shows how to segment Chinese into words based on LingPipe's
+spelling corrector.
+</p>
+
+<h3>How's it Done?</h3>
+
+<p>
+The basic idea is
+to treat the lack of space between tokens as spelling
+&quot;mistakes&quot; which the spelling corrector will
+&quot;correct&quot; with the insertion of spaces.
+</p>
+
+<h3>Who Thought of Doing it This Way?</h3>
+
+<p>
+This is just another way of looking at the
+compression-based approach of Bill Teahan
+et al.'s. See the references for more details.
+</p>
+
+<h2>1. Downloading Training Corpora</h2>
+
+<p>
+Luckily for us, there are three publicly available training corpora
+for Chinese segmentation made available as part of the <a
+href="http://www.sighan.org/bakeoff2003/">First International Chinese
+Word Segmentation Bakeoff</a>.  The <a
+href="http://www.sighan.org/bakeoff2005/">Second Bakeoff</a> was held
+in 2005, but the training data is not publicly available.  All further
+discussion will be of the first bakeoff.  These bakeoffs are sponsored
+by <a href="http://www.sighan.org">SigHan</a>, the Chinese special
+interest group (SIG) of the <a
+href="http://www.aclweb.org/">Association for Computational
+Linguistics</a> (ACL).
+</p>
+
+<p>Step one for the tutorial is to download the test and training data
+from the six links below (after noting that the data are made
+available <i>for research purposes only</i> as stated on
+<a href="http://www.sighan.org/bakeoff2003/alldata.html">this page</a>):
+</p>
+
+<table>
+<tr><th class="title" colspan="6">First International Chinese Word Segmentation Bakeoff Data Links &amp; Content</th></tr>
+<tr><th>Corpus Creator</th>
+    <th>Training</th>
+    <th>Testing</th>
+    <th>Encoding</th>
+    <th># Train Words</th>
+    <th># Test Words</th>
+</tr>
+<tr><th>Academia Sinica (AS)</th>
+    <td><a href="http://www.sighan.org/bakeoff2003/as_training.zip">Training Data (11.8M)</a>
+(<a href="http://sighan.cs.uchicago.edu/bakeoff2003/as_training.zip">mirror</a>)
+</td>
+    <td><a href="http://www.sighan.org/bakeoff2003/as-testref.txt">Testing Data (60K)</a>
+(<a href="http://sighan.cs.uchicago.edu/bakeoff2003/as-testref.txt">mirror</a>)
+</td>
+    <td><code>CP950</code></td>
+    <td>5.8M</td>
+    <td>12K</td>
+</tr>
+<tr><th>HK CityU (HK)</th>
+    <td><a href="http://www.sighan.org/bakeoff2003/cityu_training.zip">Training Data (500K)</a>
+(<a href="http://sighan.cs.uchicago.edu/bakeoff2003/cityu_training.zip">mirror</a>)
+</td>
+    <td><a href="http://www.sighan.org/bakeoff2003/hk-testref.txt">Testing Data (150K)</a>
+(<a href="http://sighan.cs.uchicago.edu/bakeoff2003/hk-testref.txt">mirror</a>)
+</td>
+    <td><code>CP936</code></td>
+    <td>240K</td>
+    <td>35K</td>
+</tr>
+<tr><th>Peking University (PK)</th>
+    <td>Training Data (2.3M) [no longer live]</td>
+    <td>Testing Data (90K) [no longer live]</td>
+    <td><code>Big5_HKSCS</code></td>
+    <td>1.1M</td>
+    <td>17K</td>
+</tr>
+</table>
+
+<p>Place all six of these files (without unzipping the
+<code>.zip</code> files) into a directory.  We'll call the directory
+containing the data <code>dataDir</code> after the Ant property we
+will use to specify it.</p>
+
+
+<h2>2. Running the Evaluations</h2>
+
+<p>
+Once the code is compiled, there are three ant tasks which can be used
+to run the evaluations.  Running these scripts produces standard output
+as well as a file of official evaluation results.
+</p>
+
+<p>To run the Hong Kong City University training sets, first cd
+to the demo directory:</p>
+
+<pre class="code">
+cd lingpipe/demos/tutorial/chineseTokens
+</pre>
+
+<p>
+Then you can either run the evaluation from Ant by specifying the
+location of the data directory on the command line
+</p>
+
+<pre class="code">
+ant -DdataDir=<i>dataDir</i> run-cityu
+</pre>
+
+<p>
+or directly via the following command (with the name you chose for
+your data directory substituted for <code><i>dataDir</i></code>, and replacing the colons ":" with semicolons ";" if you are using Windows):
+</p>
+
+<pre class="code">
+java -cp "../../../lingpipe-4.1.0.jar;zhToksDemo.jar" ChineseTokens <i>dataDir</i> cityu hk cityu.out Big5_HKSCS 5 5.0 5000 256 0.0 0.0
+</pre>
+
+<p>
+For example, on my machine, we downloaded the six files to
+<code>e:\data\chineseWordSegBakeoff03</code>, so we can run as follows
+(please be patient during compilation -- it takes eight minutes or so on my
+desktop):
+</p>
+
+<pre class="code">
+&gt; java -cp "../../../lingpipe-4.1.0.jar;zhToksDemo.jar" ChineseTokens e:\data\chineseWordSegBakeoff03 cityu hk cityu.out Big5_HKSCS 5 5.0 5000 256 0.0 0.0
+CHINESE TOKENS DEMO
+    Data Directory=e:\data\chineseWordSegBakeoff03
+    Train Corpus Name=cityu
+    Test Corpus Name=hk
+    Output File Name=e:\data\chineseWordSegBakeoff03\cityu.out.segments
+    Known Tokens File Name=e:\data\chineseWordSegBakeoff03\cityu.out.knownWords
+    Char Encoding=Big5_HKSCS
+    Max N-gram=5
+    Lambda factor=5.0
+    Num chars=5000
+    Max n-best=256
+    Continue weight=0.0
+    Break weight=0.0
+Training Zip File=e:\data\chineseWordSegBakeoff03\cityu_training.zip
+Compiling Spell Checker
+Testing Results. File=e:\data\chineseWordSegBakeoff03\hk-testref.txt
+  # Training Toks=23747  # Unknown Test Toks=1855
+  # Training Chars=3649  # Unknown Test Chars=89
+Token Length, #REF, #RESP, Diff
+    1, 16867, 17267, 400
+    2, 15058, 14740, -318
+    3, 2126, 2072, -54
+    4, 703, 721, 18
+    5, 82, 112, 30
+    6, 71, 85, 14
+    7, 19, 29, 10
+    8, 12, 15, 3
+    9, 5, 5, 0
+Scores
+  EndPoint: P=0.9748424085113665 R=0.9777148415150475 F=0.9762765121759623
+     Chunk: P=0.935963260881967 R=0.9387212129881276 F=0.9373402082470399
+</pre>
+
+<h3>Reading the Output</h3>
+
+<p>
+Hopefully this output is fairly easy to interpret.  The first few
+lines just parrot back the input parameters.  We will describe these
+as we go through the code in the demo.  Then there's a note to say
+that the training is being done using the specified zip file.
+Training the language model is fairly quick.  There's a bit of a wait
+after the message that says the spell checker is being compiled.
+That's because highly branching character language models like those
+for Chinese are slow to compile in LingPipe (this may be optimized in
+a later version -- the slowness derives from repeatedly summing the
+counts of the daughter of a node).  Then there's a note to say testing
+is going on and echoing the test file.
+</p>
+
+<h3>Descriptive Token Statistics</h3>
+
+<p>
+The next two lines provide a report on the number of training tokens
+and characters, along with the number of unknown test tokens and test
+characters.  A token is said to be &quot;unknown&quot; if it appears
+in the test data without appearing in the training data.  There were
+89 unknown characters and 1855 unknown tokens in the Hong Kong City
+University test data.
+</p>
+
+<p>
+A file is also populated with the known tokens, one per line.  These
+are put in the file indicated in the output, which goes in the data
+directory with a suffix <code>.knownWords</code>.
+</p>
+
+<p>
+The next few lines provide histograms of token length in the
+reference (training data) and response (system output), as well as the
+difference.  For instance, the training data contained 15,058 tokens
+of length two, whereas the output produced only 14,740 tokens, a
+difference of -318.  Our system is producing too many outputs of
+length 1 and too few outputs of length 2 and 3, and then too many
+outputs again of lengths longer than 3.
+</p>
+
+<h3>Precision and Recall Results</h3>
+
+<p>
+In addition to all of these descriptive statistics, two sets of
+precision, recall and f-measure scores are presented for the run.  The
+first of these measures precision and recall of endpoints.  The second
+measures the precision and recall of the words themselves.  (This is
+the same pair of evaluations as we used in the <a
+href="../sentences/read-me.html">sentence demo</a>.  Our chunk scores
+are computed the same way as the official scoring script from the
+bakeoff, for which the top scoring system on this corpus had scores of
+P=0.934, R=0.947, F=0.940 (vs. our P=0.936, R=0.939, F=0.937).
+Interestingly, computing binomial confidence intervals for these
+results yields a 95% confidence interval of +/-0.003).  Thus we
+conclude that our approach is a reasonable one (though we also knew
+about Bill Teahan's paper cited in the references below).
+</p>
+
+
+<h3>Official Scoring Script</h3>
+
+<p>The run also produces an output file <code>cityu.out</code>, as
+specified on the command line.  This file acts as official output;
+it's what would be sent back to the organizers if we were in time
+to actually enter the bakeoff.
+</p>
+
+<p>We've included the original scoring script with this distribution.
+It can be run on the output relative to a dictionary of known and
+unknown words.  To run it, the following invocation works, assuming
+you have the Perl scripting language installed along with the command
+<code>diff</code> (these are typically installed with Linux
+distributions; we'd recommend the <a
+href="http://www.cygwin.org">CygWin</a> distribution of unix tools for
+MS Windows users).
+</p>
+
+<p>
+With Perl installed, it's easy to run the official script. It's just:
+</p>
+
+<pre class="code">
+perl bin\score.pl <i>knownWords</i> <i>responseSegments</i> <i>testFile</i>
+</pre>
+
+<p>
+which for our output named <code>cityu.out</code> and data directory
+<code>e:\data\chineseWordSegBakeoff03</code> yields the command:
+</p>
+
+<pre class="code">
+perl bin\score.pl e:\data\chineseWordSegBakeoff03\cityu.out.knownWords e:\data\chineseWordSegBakeoff03\hk-testref.txt e:\data\chineseWordSegBakeoff03\cityu.out.segments
+</pre>
+
+<p>
+This prints an analysis per test sentence with the actual diff of the
+response and reference segments.  speak Chinese, so it's all Greek to
+us.  Looking at the tail of the file shows us this:
+</p>
+
+<pre class="code">
+SUMMARY:
+TOTAL INSERTIONS:       738
+TOTAL DELETIONS:        635
+TOTAL SUBSTITUTIONS:    1507
+TOTAL NCHANGE:  2880
+TOTAL TRUE WORD COUNT:  34955
+TOTAL TEST WORD COUNT:  35058
+TOTAL TRUE WORDS RECALL:        0.939
+TOTAL TEST WORDS PRECISION:     0.936
+F MEASURE:      0.937
+OOV Rate:       0.071
+OOV Recall Rate:        0.542
+IV Recall Rate: 0.969
+</pre>
+
+<p>
+In particular, note that the recall and precision figures reportied
+here matches our own chunk-level precision, recall, and f measures,
+namely P=0.930,R=0.939 and F=0.937.  The script further goes on
+to calculate performance on out-of-vocabulary words; the out of
+vocabulary rate is 7 percent (same as what we calculated), and
+the performance on out-of-vocabulary tokens is only 54.2%.  The
+top-scoring system for the bakeoff had an out-of-vocabularly recall
+of 62.5%.
+</p>
+
+
+<h3>Running Other Corpora</h3>
+
+<p>
+The other corpora can be run in exactly the same way.  All that is
+necessary to change are the names of the corpora, the name of the
+character encoding, and the output files in the command.  Note that
+the other corpora are larger and take more time to process.  Here are
+the results of running these corpora with zero edit costs, a large
+enough n-best not to make search errors, and length 5 n-grams (the
+best performing n-gram size in the evaluation run by Bill Teahan; see
+the references).  In other words, these are completely &quot;out of
+the box&quot; settings.  We'll discuss tuning later.
+</p>
+
+<table>
+<tr><th class="title" colspan='8'>Chunk-Level Scoring</th></tr>
+<tr><th rowspan='2' valign='bottom'>Corpus</th>
+    <th colspan='3'>Default LingPipe Results</th>
+    <th colspan='4'>Winning Closed Bakeoff Result</th></tr>
+<tr>
+    <th>Prec</th>
+    <th>Rec</th>
+    <th>F</th>
+    <th>Prec</th>
+    <th>Rec</th>
+    <th>F</th>
+    <th>Winning Site</th></tr>
+
+<tr><th>HK City Uni</th>
+    <td><b>0.936</b></td> <td>0.937</td> <td>0.937</td>
+    <td>0.934</td> <td><b>0.947</b></td> <td><b>0.940</b></td>
+    <td>Ac Sinica</td></tr>
+
+<tr><th>Beijing U</th>
+    <td>0.930</td> <td>0.926</td> <td>0.928</td>
+    <td><b>0.940</b></td> <td><b>0.962</b></td> <td><b>0.951</b></td>
+    <td>Inst. of Comp. Tech, CAS</td></tr>
+
+<tr><th>Academia Sinica</th>
+    <td>0.960</td> <td><b>0.969</b></td> <td><b>0.964</b></td>
+    <td><b>0.966</b></td> <td>0.956</td> <td>0.961</td>
+    <td>UC Berkeley</td></tr>
+</table>
+
+<p>
+The results in bold are the best scoring for the respective category.
+The results have a 95 percent confidence interval of roughly +/-0.003
+(differing slightly by performance and amount of training data as
+described in the Sproat and Emerson paper cited below).  For two of
+the three corpora, Hong Kong City University's and Academia Sinica's,
+LingPipe's F-score was not significantly different than that of the
+winner of the bakeoff's.
+</p>
+
+<p>Their official bakeoff also had an &quot;open&quot; category that
+allowed external resources to be used for training.  There was not an
+open system submitted for the Academia Sinica corpus that performed
+better than the closed submissions. The best open-system f-measures
+for the HK corpus was 0.956, and the best for the PK corpus was 0.959,
+both significantly better than the closed entries.
+</p>
+
+<p>The Academia Sinica is the largest corpus at 5.1M training data,
+and the results on that corpus are similar to what is reported in Bill
+Teahan's paper (cited in the references) for the proprietary RocLing
+corpus.  Our conclusion is that LingPipe's out-of-the-box performance
+is state of the art for pure learning based systems.
+</p>
+
+
+<h2>3. Inspecting The Code</h2>
+
+<p>
+The code for the demo is contained in a single file: <a
+href="src/ChineseTokens.java"><code>src/ChineseTokens.java</code></a>.
+</p>
+
+<h3>Main and Run</h3>
+
+<p>
+The main program simply creates a new instance from the arguments
+and calls its run method:
+</p>
+
+
+<pre class="code">
+public static void main(String[] args) {
+    try {
+        new ChineseTokens(args).run();
+    } catch (Throwable t) {
+        System.out.println("EXCEPTION IN RUN:");
+        t.printStackTrace(System.out);
+    }
+}</pre>
+
+<p>Throwables are caught and their stack traces dumped for debugging.
+</p>
+
+<p>Rather than using a more complex command-line framework, such
+as LingPipe's <code>util.AbstractCommand</code>, we just pass all
+the arguments to the constructor for parsing which just sets
+a bunch of member variables of the appropriate type:
+</p>
+
+<pre class="code">
+public ChineseTokens(String[] args) {
+    mDataDir = new File(args[0]);
+    mTrainingCorpusName = args[1];
+    mTestCorpusName = args[2];
+    mOutputFile = new File(mDataDir,args[3]+".segments");
+    mKnownToksFile = new File(mDataDir,args[3]+".knownWords");
+    mCharEncoding = args[4];
+    mMaxNGram = Integer.parseInt(args[5]);
+    mLambdaFactor = Double.parseDouble(args[6]);
+    mNumChars = Integer.parseInt(args[7]);
+    mMaxNBest = Integer.parseInt(args[8]);
+    mContinueWeight = Double.parseDouble(args[9]);
+    mBreakWeight = Double.parseDouble(args[10]);
+}
+</pre>
+
+<p>
+The run method just calls the three worker methods in order:
+</p>
+
+<pre class="code">
+void run() throws ClassNotFoundException, IOException {
+    compileSpellChecker();
+    testSpellChecker();
+    printResults();
+}
+</pre>
+
+
+<h3>Training and Compiling</h3>
+
+<p>The first worker method encapsulates the training and compilation
+of a spell checker.
+</p>
+
+
+<h4>Constructing a Trainer</h4>
+
+<p>
+In order to train and compile the spelling checker, we first
+construct a training instance out of an n-gram process language
+model and a weighted edit distance:
+</p>
+
+<pre class="code">
+void compileSpellChecker() throws IOException, ClassNotFoundException {
+    NGramProcessLM lm
+        = new NGramProcessLM(mMaxNGram,mNumChars,mLambdaFactor);
+    WeightedEditDistance distance
+        = new ChineseTokenizing(mContinueWeight,mBreakWeight);
+    TrainSpellChecker trainer
+         = new TrainSpellChecker(lm, distance,null);
+    ...
+</pre>
+
+<p>
+The n-gram process language model represents the source model
+for the noisy-channel spelling decoder.  It is parameterized
+by the n-gram size, the number of characters in the underlying
+training and test set, and an interpolation factor.  These are
+all described in the <a href="../lm/read-me.html">Language
+Modeling Tutorial</a>.  Each of them may be used to tune
+performance as indicated below.
+</p>
+
+<p>The spell checking trainer is constructed from the language model
+and a weighted edit distance.  In this case, the edit distance is an
+instance of the inner class
+<code>ChineseTokens.ChineseTokenizing</code>.  This is just a
+generalization of the LingPipe constant
+<code>CompiledSpellChecker.TOKENIZING</code> that allows for non-zero
+insert and delete weights.  Until we consider tunining in the last
+section, we will use an instance of <code>ChineseTokenizing</code>
+that is identical to <code>CompiledSpellChecker.TOKENIZING</code>.
+That is, the cost of matching is zero, the cost of inserting a single
+space character is zero, and all other edit costs are negative
+infinity.  In the generalized edit distance, the weights for matching
+(continuing a token) and inserting a space (ending a token) may be
+non-zero negative numbers.
+</p>
+
+<p>The final argument to the <code>TrainSpellChecker</code>
+constructor is <code>null</code>, meaning that the edits are not going
+to be restricted to producing tokens in the training data.
+</p>
+
+<h4>Providing Training Instances</h4>
+
+<p>The training process itself is just a matter of looping through
+the lines of the entries in the zip file:
+</p>
+
+<pre class="code">
+FileInputStream fileIn = new FileInputStream(trainingFile);
+ZipInputStream zipIn = new ZipInputStream(fileIn);
+ZipEntry entry = null;
+while ((entry = zipIn.getNextEntry()) != null) {
+    String[] lines = extractLines(zipIn,mTrainingCharSet,mTrainingTokenSet);
+    for (int i = 0; i &lt; lines.length; ++i)
+        trainer.handle(lines[i]);
+}
+Streams.closeInputStream(zipIn);
+</pre>
+
+<p>
+The <code>extractLines(InputStream,Set,Set)</code> takes the input
+stream from which to read the lines and two sets.  The sets are used
+to accumulate the characters and tokens found in the training sets
+(and later in the test sets).  The extractor is also responsible for
+normalizing the whitespace to single space characters between tokens
+and a single line-final space character:
+</p>
+
+<pre class="code">
+while ((refLine = bufReader.readLine()) != null) {
+    String trimmedLine = refLine.trim() + " ";
+    String normalizedLine = trimmedLine.replaceAll("\\s+"," ");
+</pre>
+
+<p>
+The point is to get the normalized lines to the trainer while
+accumulating some statistics.
+</p>
+
+
+<h4>Compiling and Configuring the Spell Checker</h4>
+
+<p>After the trainer has been trained on all the lines, the spell
+checker is compiled in-memory in one line using the
+<code>compile(Compilable)</code> method in
+<code>util.AbstractExternalizable</code>:
+</p>
+
+<pre class="code">
+mSpellChecker
+    = (CompiledSpellChecker) AbstractExternalizable.compile(trainer);
+</pre>
+
+<p>
+The spell checker is tuned by the following series of set method
+calls:
+</p>
+
+<pre class="code">
+mSpellChecker.setAllowInsert(true);
+mSpellChecker.setAllowMatch(true);
+mSpellChecker.setAllowDelete(false);
+mSpellChecker.setAllowSubstitute(false);
+mSpellChecker.setAllowTranspose(false);
+
+mSpellChecker.setNumConsecutiveInsertionsAllowed(1);
+
+mSpellChecker.setNBest(mMaxNBest);
+</pre>
+
+<p>
+This tells the spell checker that only insert and match edits are
+allowed, thus saving it the time of inspecting other edits.  The
+second-to-last method call limits the number of consecutive insertions
+to one; this is because we only care about single-character inserts of
+spaces.  The last method call establishes the maximum number of
+hypotheses carried over after finishing processing of a character.
+Higher values cause less search errors whereas lower values are
+faster.  This value would typically be tuned by empirically tuning it
+to be as low as possible without causing search errors.
+</p>
+
+<h4>Compiling to and Reading from a File</h4>
+
+<p>
+If memory is at a premium or if the model is going to be reused,
+it may be written to a file rather than compiled in memory.  To write
+a model to a file, it must be wrapped in an object output stream:
+</p>
+
+<pre class="code">
+File compiledModelFile = ...;
+
+OutputStream out = new FileOutputStream(compiledModelFile)
+DataOutput dataOut = new DataOutputStream(out);
+trainer.compileTo(dataOut);
+</pre>
+
+<p>
+The model may then be read back in by reversing the
+process:
+</p>
+
+<pre class="code">
+InputStream in = new FileInputStream(compiledModelFile);
+ObjectInput objIn = new ObjectInputStream(in);
+mSpellChecker = (CompiledSpellChecker) objIn.readObject();
+</pre>
+
+<p>
+After it is read back in, it can have its runtime parameters
+set as illustrated above.
+</p>
+
+<h3>Tokenizing</h3>
+
+<p>
+The single execution of the main in <code>ChineseTokens</code> runs a
+performance evaluation after training the models.  The original SigHan
+bakeoff data is divided into a zip file of training data files and a
+single test file in the same format.  The lines are extracted from the
+test file in the same way as the training files and then handed off
+one-by-one to the method <code>test(String)</code>.  The test method
+starts as follows:
+</p>
+
+<pre class="code">
+void test(String reference) throws IOException {
+    String testInput = reference.replaceAll(" ","");
+
+    String response = mSpellChecker.didYouMean(testInput);
+    response += ' ';
+    ...
+</pre>
+
+<p>
+This simply removes all the spaces from the testinput using the java
+string method <code>replaceAll</code>.  It is then supplied to the
+spell checker and the first-best &quot;correction&quot; is returned
+and set into a variable.  A final space is appended to match
+the input format and make evaluating simpler.
+</p>
+
+
+<h3>Evaluation</h3>
+
+<p>
+The following code is a repetition of the first three lines of the
+<code>test(String)</code> method:
+</p>
+
+<pre class="code">
+    String testInput = reference.replaceAll(" ","");
+    String response = mSpellChecker.didYouMean(testInput);
+    response += ' ';
+</pre>
+
+
+
+<h4>Bakeoff Output</h4>
+
+<p>
+The next two lines simply write output in the &quot;official&quot;
+output format.
+</p>
+
+<pre class="code">
+    mOutputWriter.write(response);
+    mOutputWriter.write("\n");
+</pre>
+
+<p>
+This is the format that will serve as input to the official scoring
+script.  Note that the output writer was allocated to use the
+same character encoding as the corpus, a requirement of the bakeoff
+format.
+</p>
+
+<h4>Break Point Evaluation</h4>
+
+<p>
+The first evaluation in the demo is of break points.
+</p>
+
+<pre class="code">
+    Set&lt;Integer&gt; refSpaces = getSpaces(reference);
+    Set&lt;Integer&gt; responseSpaces = getSpaces(response);
+    prEval("Break Points",refSpaces,responseSpaces,mBreakEval);
+</pre>
+
+<p>
+These three lines just get a set of <code>Integer</code> indices
+of token-final characters in the original input or output.  For
+example:
+</p>
+
+<pre class="code">
+getSpaces(&quot;XXX X XXXX XX&quot;) = { 2, 3, 7, 9 }
+getSpaces(&quot;XXXXXX XX XX&quot;) = { 5, 7, 9}
+</pre>
+
+<p>
+The call to the <code>prEval</code> method in the third line
+adds the number of true positives, false positives and
+false negatives to the break evaluation.  Here's the method:
+</p>
+
+<pre class="code">
+void prEval(String evalName, Set&lt;Integer&gt; refSet, Set&lt;Integer&gt; responseSet,
+            PrecisionRecallEvaluation eval) {
+    for (E e : refSet)
+        eval.addCase(true,responseSet.contains(e));
+
+    for (E e : responseSet)
+        if (!refSet.contains(e))
+            eval.addCase(false,true);
+}
+</pre>
+
+<p>
+This first loops over the reference cases, testing whether or not the
+case is in the response set.  It either calls
+<code>eval.addCase(true,true)</code>, adding a true positive case
+appearing in the reference and response, or it calls
+<code>eval.addCase(true,false)</code>, adding a false negative case
+appearing in the reference but not the response.  The last loop is
+through the response set, and it adds a case
+<code>eval.addCase(false,true)</code> for a false positive for a
+case that is in the response set but not in the reference set.
+</p>
+
+<p>At the end of the run, the precision-recall evaluation object
+can be queried for the precision, recall and f-measure (among other
+statistics):
+</p>
+
+<pre class="code">
+System.out.println("  EndPoint:"
+                   + " P=" + mBreakEval.precision()
+                   + " R=" + mBreakEval.recall()
+                   + " F=" + mBreakEval.fMeasure());
+</pre>
+
+<p>
+This evaluation result tends to be much higher than the chunk
+evaluation.  The reason for this is that chunks that mismatch
+can lead to multiple false positives and false negatives.
+</p>
+
+<h4>Chunk Evaluation</h4>
+
+<p>
+The evaluation of chunking proceeds in the same way:
+</p>
+
+<pre class="code">
+    Set&lt;Tuple&lt;Integer&gt;&gt; refChunks = getChunks(reference,mReferenceLengthHistogram);
+    Set&lt;Tuple&lt;Integer&gt;&gt; responseChunks = getChunks(response,mResponseLengthHistogram);
+    prEval("Chunks",refChunks,responseChunks,mChunkEval);
+</pre>
+
+<p>The method to extract the chunks is a little trickier because
+it also computes the histogram of token lengths for the reference
+and response, as seen above in the method calls:
+</p>
+
+<pre class="code">
+static Set&lt;Tuple&lt;Integer&gt;&gt; getChunks(String xs, ObjectToCounter&lt;Integer&gt; lengthCounter) {
+    Set&lt;Tuple&lt;Integer&gt;&gt; chunkSet = new HashSet&lt;Tuple&lt;Integer&gt;&gt;();
+    String[] chunks = xs.split(" ");
+    int index = 0;
+    for (int i = 0; i &lt; chunks.length; ++i) {
+        int len = chunks[i].length();
+        Object chunk = Tuple.create(new Integer(index),
+                                    new Integer(index+len));
+        chunkSet.add(chunk);
+        index += len;
+        lengthCounter.increment(new Integer(len));
+    }
+    return chunkSet;
+}
+</pre>
+
+<p>
+Here we just split the original input on single spaces, and then add
+tuples to the return set consisting of tuples (ordered pairs of
+objects) with values given by the start and end indices of the chunk.
+For instance:
+</p>
+
+<pre class="code">
+ref = &quot;XXX X XXXX XX&quot;
+resp = &quot;XXXXXX XX XX&quot;
+
+getChunks(ref) = { (0,2), (2,3), (3,7), (7,9) }
+getChunks(resp) =  { (0,5), (5,7), (7,9)}
+</pre>
+
+<p>
+In this case, there is one true positive, <code>(7,9)</code>,
+three false negatives, <code>(0,2)</code>, <code>(2,3)</code>,
+and <code>(3,7)</code>, and
+two false positives, <code>(0,5)</code> and <code>(5,7)</code>.
+</p>
+
+<p>
+Note that the index variable keeps the index into the original
+character sequence without spaces.
+</p>
+
+<h4>Token Length Histogram</h4>
+
+<p>
+Finally note the increment of the length counter, which provides the
+final histogram output of token lengths.  This is used in the final
+print out to print the token length histograms using the following
+code:
+</p>
+
+<pre class="code">
+System.out.println("Token Length, #REF, #RESP, Diff");
+for (int i = 1; i &lt; 10; ++i) {
+    Integer iObj = new Integer(i);
+    int refCount = mReferenceLengthHistogram.getCount(iObj);
+    int respCount = mResponseLengthHistogram.getCount(iObj);
+    int diff = respCount-refCount;
+    System.out.println("    " + i + ", " + refCount
+                       + ", " + respCount + ", " + diff);
+}
+</pre>
+
+<p>
+This prints the reference coutns, response counts, and the error
+in terms of a difference.
+</p>
+
+
+<h2>A Statistical Tokenizer Factory</h2>
+
+<p>
+The demo up to this point has just been concerned with an in-memory
+evaluation.  The file <a href="src/StatisticalTokenizerFactory.java"
+>src/StatisticalTokenizerFactory.java</a> contains a simple
+implementation of a tokenizer factory based on a compiled spell
+checker.  The implementation is simple, but not very efficient,
+because of its reliance on the regular-expression based tokenizer
+factory.  The code is only a few lines:
+</p>
+
+<pre class="code">
+public class StatisticalTokenizerFactory extends RegexTokenizerFactory {
+    private final CompiledSpellChecker mSpellChecker;
+
+    public StatisticalTokenizerFactory(CompiledSpellChecker spellChecker) {
+        super("\\s+"); // break on spaces
+        mSpellChecker = spellChecker;
+    }
+
+    public Tokenizer tokenizer(char[] cs, int start, int length) {
+        String input = new String(cs,start,length);
+        String output = mSpellChecker.didYouMean(input);
+        char[] csOut = output.toCharArray();
+        return super.tokenizer(csOut,0,csOut.length);
+    }
+}
+</pre>
+
+<p>
+It holds a compiled spell checker in a member variable that's assigned
+in the constructor.  The class extends
+<code>RegexTokenizerFactory</code>, and the call
+<code>super(&quot;\\s+&quot;)</code> in the constructor tells the
+parent to construct tokens by breaking on non-empty sequences of
+whitespaces.  The actual tokenizer just converts the input to a
+string, runs the spell checker on it, converts the output to a
+character array, and returns the result of the parent tokenizer
+factory.  This result is a tokenizer that separates on the spaces
+inserted by the spell checker as a part of the output.
+</p>
+
+<p>The character offsets in the tokenizer will refer to positions in
+the output variable; this could be changed by a tighter implementation
+of a statistical tokenizer factory that also avoided regular
+expressions by breaking directly on whitespaces.  The output is
+guaranteed to have only single spaces in the output.
+</p>
+
+<p>A word of warning is in order about using this tokenizer for
+tasks like information retrieval.  Because it relies on statistical
+context, the same sequence of characters might not always be tokenized
+the same way.  This can have dire consequences in tasks such
+as information retrieval if a query and corpus have different
+tokenizations.
+</p>
+
+
+<h2>Tuning Statistical Tokenizers</h2>
+
+<p>
+There are a number of performance tuning options that control
+both speed and accuracy.
+</p>
+
+<h3>N-best Size</h3>
+
+<p>
+The most important speed tuning factor is the size of the n-best list.
+This should be tuned to where it is as small as possible without
+causing too many search errors.
+</p>
+
+<h3>Pruning Language Models</h3>
+
+<p>
+With large training data sets, the models get very large.  The
+character language models underlying the spell checker may be
+pruned just as other language models are.
+</p>
+
+
+<h3>Language Model n-gram</h3>
+
+<p>
+The most significant tuning parameter that affects both accuracy and
+performance is the size of the n-grams stored in the source language
+model.  Five seems to be a good setting for this parameter.  Longer
+n-grams are not more accurate, shorter ones are less accurate.
+Shorter n-grams will result in smaller model files, which can
+seriously affect run-time memory consumption.
+</p>
+
+<h3>Language Model Interpolation</h3>
+
+<p>
+The interpolation paramemter in the language model affects the degree
+to which longer contexts are weighted against shorter contexts during
+language model interpolation.  This number is just a parameter in the
+Witten-Bell smoothing formula that also considers the number of
+possible outcomes and the number of instances seen.  In general, the
+lower this value, the less smoothing.  With less smoothing, the
+training corpus dominates the statistics.  With a higher value there
+is more smoothing, and more weight is given to possibilities that were
+not seen in the training data.
+</p>
+
+<h3>Edit Weights</h3>
+
+<p>
+It is most tempting to try to tune edit weights.  By making space
+insertion more costly than 0.0, we can force breaks to be relatively
+more expensive than continuing (matching) and thus favor longer
+tokens.  Similarly, by making matching more costly than 0.0, breaks
+are relatively less expensive than continuing, and thus we would favor
+shorter tokens.  These are fairly easy to implement by following the
+pattern provided by
+<code>spell.CompiledSpellChecker.TOKENIZING</code>.
+</p>
+
+<p>As an example, we have added a general such implementation as an
+embedded class called <code>ChineseTokenizing</code> in the demo.  The
+demo is configured so that the insert and match weights may be
+configured with the last two command-line arguments.
+</p>
+
+<p>Unfortunately, our token length errors tend to
+overestimate one-character tokens, underestimate length two- and
+three-character tokens, and then overestimate tokens longer than three
+characters.  A less naive length model might help here, but such
+a model is tricky to integrate with the decoder as is.
+</p>
+
+<p>Another issue arguing against modifying the edit weights
+significantly is the endpoint precision and recall, which are roughly
+balanced.  By increasing the insert (break) cost, end point recall
+would go down, even if precision increased.  Similarly, by increasing
+the match cost (continue), the end point precision is likely to
+increase at the cost of recall.
+</p>
+
+<h3>Dictionary Training</h3>
+
+<p>
+Given a dictionary of tokens, they may be added (followed by a single
+space) as training data just like the training data from the corpus,
+by using the method <code>handle(String)</code>.  The normalization here
+should be the same as that for the other lines, reducing all spaces
+to single spaces and ensuring there is no initial space and a single
+final space.
+</p>
+
+<h4>E-mail us with Better Settings</h4>
+
+<p>
+If you find settings that work better than ours, please let us know
+at <a href="mailto:lingpipe@alias-i.com">lingpipe@alias-i.com</a>.
+</p>
+
+
+<h2>SigHan 2005 Bakeoff</h2>
+
+<p>
+A week after writing the 2003 SigHan demo, the
+</p>
+
+<blockquote>
+<p>
+<a href="http://www.sighan.org/bakeoff2005/"
+        >Second International Chinese Word Segmentation Bakeoff</a>
+</p>
+</blockquote>
+
+<p>
+was held.  The organizers again distributed the data for research
+purposes after the bakeoff.  This section describes running
+LingPipe on that data.
+</p>
+
+<h3>Segmentation Standards</h3>
+
+<p>
+The segmentation standards for the four groups are
+linked from the following table.
+</p>
+<table>
+<tr><th>Corpus Creator</th><th>Word Segmentation Standards</th></tr>
+<tr><td>Academia Sinica</td><td><a href="http://www.sighan.org/bakeoff2005/data/as_spec.pdf">Segmentation Standard</a> (pdf)</td></tr>
+<tr><td>City University Hong Kong</td><td><a href="http://www.sighan.org/bakeoff2005/data/cityu_spec.pdf">Segmentation Standard</a> (pdf)</td></tr>
+<tr><td>Peking University</td><td><a href="http://www.sighan.org/bakeoff2005/data/pku_spec.pdf">Segmentation Standard</a> (pdf)</td></tr>
+<tr><td>Microsoft Research</td><td><a href="http://www.sighan.org/bakeoff2005/data/msr_spec.pdf">Segmentation Standard</a> (pdf)</td></tr>
+</table>
+
+
+
+<h3>Downloading Data</h3>
+
+<p>
+The data's available as a single <code>.zip</code> file:
+</p>
+
+<blockquote>
+<p>
+<a href="http://www.sighan.org/bakeoff2005/data/icwb2-data.zip"
+  >icwb2-data.zip</a> <span class="smallnote">[50MB]</span>
+</p>
+</blockquote>
+
+<p>
+This time, the organizers transcoded UTF8 versions of the input files.
+Our code runs straight off the zip, so you don't even need to unpack
+it.
+</p>
+
+<p>The zip file contains the following corpora:
+</p>
+
+<table>
+<tr> <th class="title" colspan='7'>2005 SigHan Bakeoff Data Zip File</th></tr>
+<tr> <th rowspan='2' valign='bottom'>Creator</th> <th colspan='3'>Train</th>
+                <th colspan='3'>Test</th></tr>
+<tr>  <th>Sentences</th>
+                             <th>Uniq Words</th> <th>Uniq Chars</th>
+                             <th>Sentences</th> <th>Uniq Unknown Words</th>
+                             <th>Uniq Unknown Chars</th></tr>
+<tr> <th>Academia Sinica</th> <td>708,953</td> <td>141,338</td> <td>6115</td>
+                              <td>14,432</td> <td>3227</td> <td>85</td></tr>
+<tr> <th>Microsoft</th> <td>86,924</td> <td>88,119</td> <td>5167</td>
+                              <td>3985</td> <td>1991</td> <td>12</td></tr>
+<tr> <th>HK City Uni</th> <td>54,019</td> <td>69,085</td> <td>4923</td>
+                              <td>1493</td> <td>1670</td> <td>60</td></tr>
+<tr> <th>Peking Uni</th> <td>19,056</td> <td>55,303</td> <td>4698</td>
+                              <td>1945</td> <td>2863</td> <td>91</td></tr>
+</table>
+
+
+
+<h3>Source Code</h3>
+
+<p>The source code to run the 2005 examples is in:
+</p>
+
+<blockquote>
+<p>
+<a href="src/ChineseTokens05.java">src/ChineseTokens05.java</a>
+</p>
+</blockquote>
+
+<p>
+It only differs from the earlier code in the way it
+constructs input streams from which to read the training
+and test data.
+</p>
+
+
+<h3>Running the Tests</h3>
+
+<p>
+There's an Ant task for each corpora in the task.  They're
+distinguished from the others by the suffix <code>05</code>.
+</p>
+
+<h3>The Results</h3>
+
+<p>
+The following table presents the LingPipe results as achieved by
+training character 5-grams in LingPipe.  These results would've put us
+in the &quot;closed&quot; category for the competition, meaning that
+the only linguistic information used to build the system was the
+training data (e.g. no dictionaries, no heuristic morphology, no POS
+taggers trained on other corpora).
+</p>
+
+<table>
+<tr><th class="title" colspan='9'>2005 SigHan Bakeoff Chunk-Level Scoring</th></tr>
+<tr><th rowspan='2' valign='bottom'>Corpus</th>
+    <th colspan='3'>Default LingPipe Results</th>
+    <th colspan='5'>Winning Bakeoff Result</th></tr>
+<tr>
+    <th>Prec</th>
+    <th>Rec</th>
+    <th>F</th>
+    <th>Prec</th>
+    <th>Rec</th>
+    <th>F</th>
+    <th>Closed</th>
+    <th>Winning Site</th></tr>
+
+<tr><th rowspan='2'>Academia Sinica</th>
+    <td rowspan='2'><b>0.956</b></td>
+    <td rowspan='2'><b>0.979</b></td>
+    <td rowspan='2'><b>0.968</b></td>
+    <td>0.951</td> <td>0.952</td> <td>0.952</td>
+    <td>Yes</td>
+    <td>Nara Inst</td></tr>
+
+<tr>
+    <td>0.950</td> <td>0.962</td> <td>0.956</td>
+    <td>No</td>
+    <td>Nat Uni Singapore</td></tr>
+
+
+<tr><th rowspan='2'>Microsoft Res</th>
+    <td rowspan='2'>0.962</td> <td rowspan='2'>0.967</td>
+    <td rowspan='2'>0.965</td>
+    <td><b>0.966</b></td> <td>0.962</td> <td>0.964</td>
+    <td>Yes</td>
+    <td>Stanford</td></tr>
+
+<tr>
+    <td>0.965</td> <td><b>0.980</b></td> <td><b>0.972</b></td>
+    <td>No</td>
+    <td>Harbin Inst</td></tr>
+
+<tr><th rowspan='2'>HK City Uni</th>
+    <td rowspan='2'>0.927</td> <td rowspan='2'>0.928</td>
+    <td rowspan='2'>0.928</td>
+    <td>0.946</td> <td>0.941</td> <td>0.943</td>
+    <td>Yes</td>
+    <td>Stanford</td></tr>
+
+<tr>
+    <td><b>0.956</b></td> <td><b>0.967</b></td> <td><b>0.962</b></td>
+    <td>No</td>
+    <td>Nat Uni Singapore</td></tr>
+
+<tr><th rowspan='2'>Peking Uni</th>
+    <td rowspan='2'>0.935</td> <td rowspan='2'>0.925</td>
+    <td rowspan='2'>0.930</td>
+    <td>0.946</td> <td>0.953</td> <td>0.950</td>
+    <td>Yes</td>
+    <td>Yahoo</td></tr>
+
+<tr>
+    <td><b>0.969</b></td> <td><b>0.968</b></td> <td><b>0.969</b></td>
+    <td>No</td>
+    <td>Nat Uni Singapore</td></tr>
+
+</table>
+
+<p>
+These results show a substantial amount of variation across corpora.
+Because most systems were applied to most corpora, this also represents
+a very diverse range of &quot;best&quot; approaches.  With more training
+data, the statistical confidence intervals are much smaller, especiall
+</p>
+
+<p>This was a nice bakeoff in that many of the cooks can add to their
+trophy cases.  The best overall system was Wei Jang's closed entry for
+Harbin Institute on the Microsoft corpus, with an F-measure of 0.972
+(and also represents a large error reduction over Jang's own closed
+submission for that corpus).  Hwee Tou Ng from the National University
+of Singapore swept the closed category for all three other corpora.
+Huihsin Tseng, a U. Colorado student, made an excellent showing as
+well, taking two of the closed categories while playing for his
+advisor's team (Stanford).
+</p>
+
+<p>LingPipe would've placed first in the closed category for two of
+the corpora: Academia Sinica and Microsoft Research.  Perhaps not
+coincidentally, these are the two largest corpora.  Surprisingly,
+LingPipe's closed results for the AS corpus are better than the best
+open results submitted to the bakeoff. I wonder if some of the other
+systems may have been confused by the mixture of unicode half-width
+spaces (<code>0x3000</code>) and regular ASCII single spaces
+(<code>0x0020</code>) in the AS corpus?  It required us to generalize
+our inter-token whitespace regular expression to
+<code>&quot;(\\s|\u3000)+&quot;</code>.
+</p>
+
+
+
+<h3>Official Results</h3>
+
+<p>
+The official results page is:
+</p>
+
+<blockquote>
+<p>
+<a href="http://www.sighan.org/bakeoff2005/data/results.php.htm"
+  >SigHan 2005 Official Results</a>
+</p>
+</blockquote>
+
+
+<h2>References</h2>
+
+<ul>
+
+<li> Teahan, William J., Yingying Wen, Rodger McNab and Ian
+H. Witten. 2000.  <a
+href="http://acl.ldc.upenn.edu/J/J00/J00-3004.pdf">A compression-based
+algorithm for Chinese word segmentation</a>.  <i>Computational
+Linguistics</i> <b>26</b>(3):375-393.
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; <small>Bill Teahan's paper motivated our
+approach, which is equivalent mathematically.  Unfortunately, their
+data isn't avaialble for a direct comparison.</small>
+</li>
+
+<li>Sproat, Richard and Thomas Emerson. 2003.  <a
+href="http://www.sighan.org/bakeoff2003/paper.pdf">The first
+international Chinese word segmentation bakeoff</a>.  In
+<i>Proceedings of the Second SigHan Workshop on Chinese Language
+Processing</i>.  Sapporo, Japan.
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; <small>This is the official report on the
+bakeoff, including descriptions of corpora and all system results.</small>
+</li>
+</ul>
+
+
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+

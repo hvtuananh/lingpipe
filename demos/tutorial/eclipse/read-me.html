@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Eclipse Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=UTF-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">Eclipse Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a class="current" href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<h2>What is Eclipse?</h2>
+<p>
+Eclipse is an <a
+href="http://en.wikipedia.org/wiki/Integrated_development_environment">integrated
+development environment</a> (IDE).  Although Eclipse has grown to be
+<a href="http://www.eclipse.org">all things to all programmers</a>, we
+will concentrate on its application as a Java development environment.
+</p>
+
+<h2>Overview</h2>
+
+<div class="sidebar">
+<h2>Why Eclipse?  Why Now?</h2>
+<p>
+I (Bob) don't like learning new tools.  Especially
+visual ones.  I get lost in the menus very easily.
+But I also hate repetitive work, and when faced with
+the refactoring of LingPipe to generics, Eclipse
+more than paid off the effort to understand and configure it.
+</p>
+</div>
+
+<p>
+After explaining how to download and unpack and start up Eclipse, we'll
+explain how to create a LingPipe project directly from it's ant file
+(with a little help on the classpath).  With a project in hand, we can
+use Eclipse to browse and edit code; the reverse indexing of code for
+browsing makes it easy to get a feel for a package.
+</p>
+<p>
+The real strength of Eclipse emerges in its refactoring capabilities.
+It automatically finds problems and better yet, can automatically fix
+the simple ones.  Eclipse is also useful for stepwise debugging.  A good
+way to get to know someone else's code is to step through it from the
+<code>main()</code> down to where something interesting happens.
+</p>
+
+<h2>Eclipse Version 3.4</h2>
+
+<p>
+This demo is based on Version 3.4 of Eclipse for 32-bit Windows.
+Eclipse 3.4 is also available for 32-bit and 64-bit linux,
+as well as Mac OS X.
+</p>
+
+<h2>Downloading and Unpacking</h2>
+
+<div class="sidebar">
+<h2>Eclipse Public License</h2>
+<p>
+Eclipse is distributed with source under its own (<a href="http://www.opensource.org/licenses/eclipse-1.0.php">Open Source Initiative certified</a>) license:
+</p>
+<ul>
+<li>
+<a href="http://www.eclipse.org/legal/epl-v10.html">Eclipse Public License - v 1.0</a>
+</li>
+</ul>
+</div>
+
+<p>
+Eclipse does not need to be installed; just download and unpack it.
+To download, go to the following URL:
+</p>
+
+<ul>
+<li>
+<a href="http://download.eclipse.org/eclipse/downloads/">Eclipse Downloads Home</a>
+</li>
+</ul>
+
+<p>
+Select the latest release, and click through on its number.
+</p>
+<p> If you are
+using an OS other than Windows, you'll need to follow the <code>Other
+downloads</code> link and select the download for the platform you're
+using.
+</p>
+
+<div class="sidebar">
+<h2>Tutorial Movie</h2>
+<p>
+Eclipse provides a movie version of installation instructions:
+</p>
+<ul>
+<li><a href="http://www.eclipse.org/downloads/download.php?r=1&amp;file=/technology/phoenix/demos/install-eclipse/install-eclipse.html">Installing the Eclipse SDK 3.2 Movie</a></li>
+</ul>
+</div>
+
+
+<p>
+Once you've downloaded, just decompress the zip file and place it
+somewhere convenient, which we'll call
+</p>
+<ul>
+<li><code>$ECLIPSE</code>.</li>
+</ul>
+<p>The
+root of the distribution contrains an executable that is run to
+startup Eclipse.
+</p>
+
+
+<h2>Running</h2>
+
+<p>
+In Windows, the executable is at the top of the distribution.
+You can double click it or run it as a command:
+</p>
+<pre class="code">
+$ECLIPSE/eclipse.exe
+</pre>
+
+<p>
+The first thing the wizard will ask you is to select a workspace for
+your projects.  Select somewhere convenient and let's call it
+</p>
+<ul>
+<li><code>$WORKSPACE</code>.</li>
+</ul>
+<p>
+After this, you will see the main Eclipse SDK window.
+</p>
+
+<h2>Configuring for JDK 1.5</h2>
+
+<div class="sidebar">
+<h2>Java Version Number Salad</h2>
+<p>
+OK, so which is it, Java 1.5, Java 5, or Java 2?  According to the <a
+href="http://java.sun.com/j2se/1.5.0/">home page</a>, the title is
+&quot;J2SE 5.0&quot;.  But the URL itself ends in <code>j2se/1.5.0</code>
+and the download is prefixed with <code>jdk-1_5_0</code>.
+</p>
+<p>
+Unfortunately, Java itself isn't much more helpful.  Running
+</p>
+<pre class="code">
+&gt; java -version
+</pre>
+<p>
+causes <code>java</code> to reply:
+</p>
+<pre class="code">
+java version "1.5.0"
+Java(TM) 2 Runtime Environment
+</pre>
+<p>Remember Java 2?  Or was that 1.2?</p>
+</div>
+
+
+<p>
+If your Eclipse came preconfigured like ours, you'll need to select
+from the main menu:
+</p>
+<ul>
+<li><code>Window &gt;&gt; Preferences</code>,</li>
+</ul>
+<p>
+then double click to expand the tree view subitem item:
+</p>
+<ul>
+<li><code>Java &gt;&gt; Installed JREs</code></li>
+</ul>
+<p>
+This will allow you to click the button:
+</p>
+<ul>
+<li><code>Add</code></li>
+</ul>
+<p>
+button to select a new JRE.
+</p>
+
+<p>
+Next, expand the tree view item:
+</p>
+<ul>
+<li><code>Java &gt;&gt; Compiler</code></li>
+</ul>
+<p>
+and then select from the compliance level pulldown:
+</p>
+<ul>
+<li><code>5.0</code></li>
+</ul>
+<p>
+which allows you to run
+Java 1.5 (see sidebar).
+</p>
+<p>
+Then select the button at the bottom of the Compiler panel:
+</p>
+<ul><li><code>Apply</code></li></ul>
+<p>button at the bottom of the Compiler
+panel.  This will pop up a warning dialog telling you the compiler
+settings changed (I think we knew that -- we just changed them).  It then
+tells you a full rebuild is required and asks you if you want to do it.
+Select from the popup warning menu the button
+</p>
+<ul>
+<li><code>No</code>.</li>
+</ul>
+<p>
+We'll build later.
+</p>
+
+<h2>Creating a LingPipe Project</h2>
+<p>
+To create a project, select from the main menu:
+</p>
+<ul><li><code>File &gt;&gt; New &gt;&gt;
+Project</code>.</li></ul>
+<p>
+This pops up the new project
+wizard, from which you should select from the list of wizards:
+</p>
+<ul><li><code>Java Project from Existing
+Ant Buildfile</code></li></ul>
+<p>from the list of wizards, then click on the button at the bottom
+of the wizard's window:
+</p>
+<ul><li><code>Next</code>.</li></ul>
+<p>Enter the name <code>LingPipe</code>
+into the text field:
+</p>
+<ul><li><code>Project Name</code>.</li></ul>
+<p>Next, provide a path to the <code>Ant Buildfile</code>
+directly, or by selecting the button:
+</p>
+<ul><li><code>Browse...</code>,</li></ul>
+<p>
+which, as the standard UI convention indicates through ellipses
+(<code>...</code>), will pop up a new dialog box; in this instance,
+a file browser.  Navigate and select:
+</p>
+<ul><li><code>$LINGPIPE/build.xml</code></li></ul>
+<p>where <code>$LINGPIPE</code> is the root directory of the
+LingPipe distribution.
+Eclipse's wizard will
+automatically find the javac includeAntRuntime="false"   task from ant to build LingPipe.
+</p>
+
+
+<h2>Fixing the Classpath</h2>
+<p>
+Eclipse is not smart enough in importing LingPipe's
+<code>build.xml</code> file to figure out the two ant targets,
+<code>compile</code> and <code>compile-test</code>.  To help it out,
+select from the main menu:
+</p>
+<ul><li><code>Project &gt;&gt; Properties</code>,</li></ul>
+<p>
+which pops up a properties dialog box in a separate window.  From
+the tree viewer control in the left panel, choose:
+</p>
+<ul><li><code>Java Build Path</code></li></ul>
+<p>
+This pops up the build path panel, from which
+you need to select the tab:
+</p>
+<ul><li><code>Libraries</code></li></ul>
+
+<p>In the libraries
+tabbed panel that pops up, click the button
+</p>
+<ul>
+<li><code>Add External JARs</code>,</li>
+</ul>
+<p>which
+will pop up a file selector window.
+Navigate to and double click
+</p>
+<ul><li><code>$LINGPIPE/lib/junit-3.8.1.jar</code></li></ul>
+<p>
+to open.
+Finally, click the button at the bottom of the properties
+dialog window:
+</p>
+<ul><li><code>OK</code></li></ul>
+<p>
+Now the project is all ready to go.
+</p>
+
+
+<h2>Exploring LingPipe's Code</h2>
+<p>
+Returning to the main Eclipse window, you'll see near the top left
+a tab:
+</p>
+<ul><li><code>Package Explorer</code></li></ul>
+<p>
+It's panel contains a tree viewer, one root item of which you should
+double click to expand:
+</p>
+<ul><li><code>Alias-i LingPipe</code></li></ul>
+<p>
+This tree viewer lets you walk the
+directory structure of LingPipe, viewing both libs and source
+code trees.
+</p>
+
+<h3>Package Browsing</h3>
+
+<p>Double click on the tree viewer to expand the source:
+</p>
+<ul><li><code>src</code></li></ul>
+<p>
+This will display all of the packages in LingPipe.
+As you will see, many of these are under
+<code>com.aliasi.test.unit</code> packages, which do not
+make up part of the standard LingPipe jar</p>
+
+<p>Select a package to expand and double click it:
+</p>
+<ul><li><code>com.aliasi.util</code></li></ul>
+
+<p>Now you will see the classes and interface making up the <code>util</code>
+package.  From this view, select and double click the interface:
+</p>
+<ul><li><code>Scored.java</code></li></ul>
+<p>
+This provides an expanded view of the <code>com.aliasi.util.Scored</code>
+interface.
+It contains two static final constants (both
+comparators), and two inner static classes (which are private).  You
+will also see a method declaration, which you may double click:
+</p>
+<ul><li><code>score()</code></li></ul>
+<p>
+This will open the file
+<code>$LINGPIPE/src/com/aliasi/util/Scored.java</code> for editing in
+the editor panel, showing a tab with the name of the file along the
+top.  This is an instance of the reverse indexing from components to
+the source which is so useful in IDEs.  B <code>Scored</code>
+interface.  Clicking on other components of a class or interface
+have the same behavior; they are hot links to the code.
+</p>
+
+<h3>Type Hierarchy Browsing</h3>
+
+<p>Before viewing the hierarchy, you need to create it.   You
+may do this from the package browser view just discussed.  In the
+package explorer, right click on
+</p>
+<ul><li><code>Alias-i LingPipe</code>></li></ul>
+<p>
+to pop up a context-sensitive menu and select the menu item:
+</p>
+<ul><li><code>Open Type Hiearchy</code></li></ul>
+<p>
+This
+switches the view from the <code>Package Explorer</code> to
+the <code>Hierarchy</code> tab. You'll then see a list of every
+class in LingPipe.
+</p>
+<p>One of the more useful aspects of Eclipse is the reverse indexing
+into code it does from the methods, constants, etc.  For instance,
+right clicking on a class or interface in the package explorer tab,
+such as
+</p>
+<ul><li><code>Scored</code></li></ul>
+<p>
+will pull up a context-senstivie menu from which if you select:
+</p>
+<ul><li><code>References &gt;&gt; Project</code>,</li></ul>
+<p>
+you will be presented with a list of all of the places in the the code
+that refer to the <code>Scored</code> interface.  These are shown in
+the search tab of a different panel on the main Eclipse SDK window.
+</p>
+<h3>Jar Browsing</h3>
+<p>
+The jars included in LingPipe's <code>lib</code> directory are
+displayed in collapsed form in the package tree viewer.  Clicking on
+the jar will explose the classes contained in the jar.  There should
+not only be the main library for Java, the <code>JRE_LIB</code>, but
+also the imported LingPipe jars, such as
+<code>xml-apis-2.9.0.jar</code>.
+</p>
+
+
+
+
+<h2>Building LingPipe</h2>
+<p>
+With our already imported ant build file, Eclipse already knows how to
+build our project.  Just select from the main menu <code>Project
+&gt;&gt; Build All</code> (and start to notice all the keyboard
+shortcuts while you're at it).  This will pop up a progress window,
+and when that's done, you'll likely get hundreds of warnings until we
+get around to cleaning up the code so there are no more warnings.
+</p>
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+

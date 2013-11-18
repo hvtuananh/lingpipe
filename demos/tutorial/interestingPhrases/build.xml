@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+
+<project name="LingPipe Tutorial - Interesting Phrases" default="compile" basedir=".">
+
+  <description>
+    Commands for interesting phrase detection using token language models
+  </description>
+
+  <path id="classpath.standard">
+    <pathelement location="../../../lingpipe-4.1.0.jar"/>
+    <pathelement location="interestingPhrases.jar"/>
+</path>
+
+  <target name="clean"
+          description="Clean build and distribution directories.">
+    <delete dir="build"/>
+    <delete file="interestingPhrases.jar"/>
+  </target>
+
+  <target name="compile"
+          depends=""
+          description="Compile the src code into the build directory.">
+    <mkdir dir="build/classes"/>
+    <javac includeAntRuntime="false"   optimize="on"
+           debug="yes"
+           debuglevel="source,lines,vars"
+           destdir="build/classes">
+      <compilerarg value="-Xlint:all"/>
+      <classpath refid="classpath.standard"/>
+      <src path="src/"/>
+    </javac>
+  </target>
+
+  <target name="jar"
+          depends="compile">
+    <jar destfile="interestingPhrases.jar">
+      <fileset dir="build/classes"
+               includes="**/*.class"/>
+    </jar>
+  </target>
+
+
+  <target name="interestingPhrases"
+          depends="jar"
+          description="Simple language model based categorizer">
+    <java classname="InterestingPhrases"
+          maxmemory="512M"
+          fork="true">
+      <classpath refid="classpath.standard"/>
+    </java>
+  </target>
+
+
+</project>

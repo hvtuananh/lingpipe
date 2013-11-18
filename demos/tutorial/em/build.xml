@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+
+<project name="LingPipe Tutorial - EM"
+         default="compile"
+         basedir=".">
+
+<path id="classpath.standard">
+  <pathelement location="em.jar"/>
+  <pathelement location="../../../lingpipe-4.1.0.jar"/>
+</path>
+
+<target name="clean">
+  <delete dir="build"/>
+  <delete file="em.jar"/>
+</target>
+
+<target name="compile">
+  <mkdir dir="build/classes"/>
+  <javac includeAntRuntime="false"   optimize="on"
+         debug="yes"
+         debuglevel="source,lines,vars"
+         destdir="build/classes">
+    <compilerarg value="-Xlint:all"/>
+    <classpath refid="classpath.standard"/>
+    <src path="src/"/>
+  </javac>
+</target>
+
+<target name="jar"
+        depends="compile">
+  <jar destfile="em.jar">
+    <fileset dir="build/classes"
+             includes="**/*.class"/>
+  </jar>
+</target>
+
+<property name="newsgroups.path"
+          value="e:\data\20news\unpacked"/>
+
+<target name="em"
+        depends="jar">
+  <java classname="EmTwentyNewsgroups"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${newsgroups.path}"/>
+  </java>
+</target>
+
+
+
+</project>

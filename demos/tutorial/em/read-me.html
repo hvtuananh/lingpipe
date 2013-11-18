@@ -1,0 +1,1159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Expectation Maximization (EM) Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">EM Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a class="current" href="../ne/read-me.html">named entity recognition</a></li>
+<li><a href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<h2>What is Expectation Maximization?</h2>
+
+<p>Expectation maximization (EM) is a very general technique for
+finding posterior modes of mixture models using a combination of
+supervised and unsupervised data.</p>
+
+<h3>This Tutorial</h3>
+
+<p>In this tutorial, we will explain the basic form of the EM
+algorithm, and go into depth on an application to classification
+using a multinomial (aka naive Bayes) classification model. 
+In particular, we will take a handful of labeled training data
+and use it to bootstrap a classifier using unlabeled training
+data to help with estimation.  
+</p>
+
+<p>In this tutorial, we replicate the basic EM results of Nigam,
+McCallum and Mitchell's (2006) paper describing EM for naive Bayes
+[see <a href="#references">references</a>].</p>
+
+<h3>The EM Algorithm</h3>
+
+<p>The EM algorithm iteratively computes expectations (the E step)
+given a current model, using them as training data to maximize a model
+estimate (the M step).  The reason it works is that the combination of
+an E and M step is guaranteed to reduce error, and because
+error is bounded at zero.  Therefore, the algorithm must converge.  </p>
+
+<h3>EM (Soft) Clustering</h3>
+
+<p>EM works when there is no supervised training data at all.
+An initial classifier needs to be built randomly (perhaps
+using a good seeding method like k-means++).</p>
+
+<p>Once the first model is initialized, EM deterministically hill
+climbs until it finds a set of parameters yielding a locally minimum
+error.  Standard operating procedure is to provide a number of
+different random starting point and choose the best result.</p>
+
+
+<h2>Traditional Naive Bayes</h2>
+
+<p>For EM, we use a traditional form of the so-called &quot;naive
+Bayes&quot; classifier.  Although there is nothing special about
+naive Bayes per se, it is a particularly simple model with which
+to illustrate EM.  It also performs well in practice.
+</p>
+
+<h3>LingPipe's Implementation</h3>
+
+<p>LingPipe implements the traditional naive Bayes algorithm
+in the class <a href="../../../docs/api/com/aliasi/classify/TradNaiveBayesClassifier.html"><code>classify.TradNaiveBayes</code></a>.  In the rest of this
+section, we'll explain how this class works.
+</p>
+
+
+<h3>Bags of Words</h3>
+
+<p>Naive Bayes text classifiers typically involve a so-called
+&quot;bag of words&quot; representation.  Specifically, this
+is a count of tokens occurring in some span of text; some may
+have count zero, some may have counts in the hundreds.  In LingPipe,
+these are pulled out using tokenizers, which are created
+from text sequences using tokenizer factories.  
+</p>
+
+
+<h3>Category Distribution</h3>
+
+<p>Categories are represented as strings, and each naive Bayes
+classifier fixes its set of categories at construction time.
+Naive Bayes estimates a multinomial distribution over
+categories, <code>p(cat)</code>.  This is sometimes called
+the prior distribution of categories, though shouldn't be 
+confused with Bayesian priors on model parameters.
+</p>
+
+<h3>Token Distribution in Categories</h3>
+
+<p>For each category <code>c</code>, naive Bayes estimates a
+multinomial distribution over words, which we write as
+<code>p(w|c)</code>, indicating the dependence of the probability of
+word <code>w</code> on category <code>c</code>.
+</p>
+
+<h3>Maixmum Likelihood Estimation</h3>
+
+<p>The maximum likelihood estimate of a naive Bayes model
+is computed by simple frequncies.  The category distribution
+is estimated by:
+</p>
+
+<pre class="code">
+p'(c) = freq(c) / <big>&Sigma;</big><sub>c'</sub> freq(c')
+</pre>
+
+<p>where <code>freq(c)</code> is the number of times
+the category <code>c</code> showed up in the training
+data, with the denominator being the total number of
+training instances (each instance has a unique category).
+</p>
+
+
+<p>The maximum likelihood estimates for words in a category
+are computed similarly:
+</p>
+
+<pre class="code">
+p'(w|c) = freq(w,c) / <big>&Sigma;</big><sub>w'</sub> freq(w',c)
+</pre>
+
+<p>where <code>freq(w,c)</code> is the number of times
+the word <code>w</code> appeared in a document labeled
+with category <code>c</code>.
+</p>
+
+
+<h3>Smoothing with Dirichlet (Additive) Priors</h3>
+
+<p>Maximum likelihood estimates provide estimates of zero
+probability for words that were not seen in a category
+during training.  To overcome this gross underestimation,
+it is common to smoothe the estimated distribution.
+A typical way of doing this corresponds to assigning
+a Dirichlet prior to the multinomial parameters (this
+is a typical Bayesian prior), then computing the
+maximum a posteriori (MAP) estimate instead of the
+maximum likelihood estimate.</p>
+
+<p>In practice, this works out to a technique introduced
+by Laplace, and known as additive smoothing.  The Dirichlet
+prior is parameterized by a prior number of counts per
+outcome.  For instance, we can take 0.5 as the prior
+number of counts for a category, then estimate:</p>
+
+<pre class="code">
+p&quot;(c) = (freq(c) + 0.5) / <big>&Sigma;</big><sub>c'</sub> (freq(c') + 0.5)
+</pre>
+
+<p>and similarly for the word in category estimates, which
+we might give a 0.01 prior count:
+</p>
+
+<pre class="code">
+p&quot;(w|c) = (freq(w,c) + 0.01) / <big>&Sigma;</big><sub>w'</sub> (freq(w',c) + 0.01)
+</pre>
+
+
+<h3>Inference</h3>
+
+<p>Given estimates of <code>p(c)</code> and <code>p(w|c)</code>,
+we can classify new texts consisting of a sequence of words
+<code>ws</code> as follows, using Bayes's rule (which is where
+the technique gets its name):
+</p>
+
+<pre class="code">
+p(c|ws) = p(ws|c) * p(c) / p(ws)
+</pre>
+
+<p>We expand out the probability of words assuming
+each word is generated independently (this is the naive
+assumption from which the technique gets its name), and
+hence the probabilty of all the words is the product of
+the probability of each word:</p>
+
+<pre class="code">
+p(ws|c) = <big>&Pi;</big><sub>i</sub> p(ws[i]|c)
+</pre>
+
+<p>In statistical terms, the naive assumption is that
+the distributions of words is a multinomial.</p>
+
+<p>We can compute the marginal <code>p(ws)</code> by summation
+over its probability in each category weighted by the probability
+of that category:
+</p>
+
+<pre class="code">
+p(ws) = <big>&Sigma;</big><sub>c'</sub> p(ws|c') * p(c')
+</pre>
+
+
+<h3>Attenuation of Naive Bayes</h3>
+
+<p>The reason naive Bayes is said to be naive is that it considers
+each word in the document to be independent.  In reality, we know word
+distributions per documents are much more dispersed than this simple
+multinomial model would indicate.  Particularly, if a word occurs
+once, it's much more likely to occur again, as are other topically
+related words.  For instance, if I mention baseball and pitching, the
+word &quot;hitting&quot; is much more likely to show up than it would
+be in a random document.  </p>
+
+<p>The result of this (clearly false) independence assumption is a
+kind of attenuation of answers.  If a word shows up ten times, it
+contributes <code>p(w|c)<sup>10</sup></code> to the total probability
+of the sequence of words.  As a result, the conditional inferences
+<code>p(c|ws)</code> tend toward 0 or 1 as the length of inputs
+increase.</p>
+
+<p>For instance, consider a model with two words <code>hee</code>
+and <code>haw</code>, and two categories, 
+<code>c1</code> and <code>c2</code>.  If we assume
+the model:
+</p>
+
+<pre class="code">
+p(c1) = p(c2) = 0.5
+
+p(hee|c1) = 0.8      p(hee|c2) = 0.5
+p(haw|c1) = 0.2      p(haw|c2) = 0.5
+</pre>
+
+<p>we can work out <code>p(c|hee)</code> as:
+</p>
+
+<pre class="code">
+p(hee,c1) = p(hee|c1) * p(c1) = 0.8 * 0.5 = 0.4
+p(hee,c2) = p(hee|c2) * p(c2) = 0.5 * 0.5 = 0.25
+
+p(c1|hee) = p(hee,c1) / p(hee,c1) + p(hee,c2)
+
+          = 0.4/(0.4 + 0.25) = .615
+
+p(c2|hee) = p(hee,c2) / p(hee,c1) + p(hee,c2)
+
+          = 0.25/(0.4 + 0.25) = .385
+</pre>
+
+<p>But now consider what happens with longer sequences
+of hees.</p>
+
+<pre class="code">
+p(hee,hee|c1) = 0.8 * 0.8
+p(hee,hee|c2) = 0.5 * 0.5
+
+p(hee<sup>n</sup>|c1) = 0.8<sup>n</sup>
+p(hee<sup>n</sup>|c2) = 0.5<sup>n</sup>
+
+p(c1|hee<sup>n</sup>) = 0.8<sup>n</sup> * 0.5 / (0.8<sup>n</sup> * 0.5 + 0.5<sup>n</sup> * 0.5)
+           = 0.8<sup>n</sup> / (0.8<sup>n</sup> + 0.5<sup>n</sup>)
+</pre>
+
+<p>So as the number of hees increases, the probablity
+estimate for category <code>c1</code> approaches 1.0.
+For instance, with <code>n = 10</code>, we have <code>p(c1|hee<sup>10</sup>) = 0.991</code>.
+</p>
+
+<h3>Training (or Testing) Error</h3>
+
+<p>The standard error measurement for statistical classifiers
+is log loss, which is defined for a sequence <code>wss</code> of
+token sequences and a parallel sequence <code>cs</code> of categories
+as:</p>
+
+<pre class="code">
+log p(wss,cs|&theta;) p(&theta;) = log p(&theta;) + <big>&Sigma;</big><sub>i</sub> log p(wss[i]|cs[i]) p(cs[i])
+</pre>
+
+<p>where <code>&theta;</code> is the set of parameters,
+<code>p(ws|c)</code> and <code>p(c)</code> are as defined
+above, and where <code>p(&theta;)</code> is the probability
+of the parameters (in their respective Dirichlet prior densities).  
+Explaining <code>p(&theta;)</code> is beyond the scope of
+this tutorial, but see the LingPipe method 
+<a href="../../../docs/api/com/aliasi/stats/Statistics.html#dirichletLog2Prob(double,%20double[])"><code>stats.Statistics.dirichletLog2Prob()</code></a> for full details.
+</p>
+
+<h3>Length Normalization</h3>
+
+<p>To compensate for the effect of length, one common strategy
+is to length normalize the inputs.  That is, treat the input
+as if it was effectively N characters long.  Mathematically,
+this is done through exponentiation:
+</p>
+
+<pre class="code">
+p(ws|c) = p(ws|c)<sup>N / length(c)</sup>
+
+log p(ws|c) = [N / length(c)] log p(ws|c)
+</pre>
+
+<p>In effect, if <code>length(c) &gt; N</code>, this pulls the
+estimate <code>p(c|ws)</code> closer to the category estimate
+<code>p(c)</code>.  If <code>length(c) &lt; N</code>, it has
+the opposite effect, and actually increases the attenuation.
+</p>
+
+<p>In particular, this will cause <code>p(c|hee<sup>m</sup>) = p(c|hee<sup>n</sup>)</code>
+for any <code>m &gt; 0</code> and <code>n &gt; 0</code>.
+</p>
+
+<p>In practice, we typically set the length norm to a fairly
+low number, like 5 or 10 or 20.</p>
+
+<h3>Constructing and Training Traditional Naive Bayes Classifiers</h3>
+
+<p>The full constructor for a trainable instance of naive Bayes
+is:</p>
+
+<pre class="code">
+TradNaiveBayesClassifier(Set&lt;String&gt; categorySet, 
+                         TokenizerFactory tokenizerFactory, 
+                         double categoryPrior, 
+                         double tokenInCategoryPrior, 
+                         double lengthNorm);
+</pre>
+
+<p>where the arguments correspond to the parameters described
+above.</p>
+
+<p>Training a traditional naive Bayes classifier is carried
+out in the usual way, through the class implementing the interface
+<code>ClassificationHandler&lt;CharSequence,Classification&gt;</code>,
+which means calling the naive Bayes method
+<code>handle(CharSequence cSeq, Classification c)</code> trains
+naive Bayes on the character sequence and classification.
+</p>
+
+<p>Traditional naive Bayes also supports a weighted training
+method, where all frequencies will be multiplied by a count.
+And on top of that, a convenience method that lets it train
+from a conditional classification, using the weights in that
+classification as counts.  It is this latter method that is
+used by EM.</p>
+
+
+
+<h2>The EM Algorithm</h2>
+
+<p>Here's the pseudo-code of the EM algorithm as copied from
+the javadoc of <code>classify.TradNaiveBayes</code>.  The
+algorithm is initialized with an initial classifier, and loops
+until convergence:
+</p>
+
+<pre class="code">
+ set lastClassifier to initialClassifier
+ for (epoch = 0; epoch &lt; maxEpochs; ++epoch) {
+      create classifier using factory
+      train classifier on supervised items
+      for (x in unsupervised items) {
+          compute p(c|x) with lastClassifier
+          for (c in category) 
+              train classifier on c weighted by p(c|x)
+      }
+      evaluate corpus and model probability under classifier
+      set lastClassifier to classifier
+      break if converged
+ }
+ return lastClassifier
+</pre>
+
+<p>In each epoch, we train a new classifier based on
+the supervised items, then on the output of the previous
+classifier, where training is weighted by the previous
+classifier's probability estimates.  It's easy to see here
+that there's nothing naive-Bayes dependent about EM; it
+can be applied to any classifier that can compute p(c|x)
+and can be estimated from weighted labeled training data.
+</p>
+
+<p>In practice, we require a corpus of labeled classified data, a
+corpus of unlabeled data, and a factory to generate a new trainable
+classifier in each epoch.  We
+can also provide a convergence parameter such that if relative error
+isn't reduced by a pre-specified percentage in an epoch, the algorithm
+terminates. And we can also bound the maximum number of epochs. </p>
+
+<h2>EM in LingPipe's Naive Bayes</h2>
+
+<p>LingPipe's <code>classify.TradNaiveBayes</code> class provides
+two static methods for calculating EM estimates of naive Bayes
+classifiers.  One provides an iterator over the results of each
+training epoch, but we will focus on the all-in-one method that
+does everything automatically.  Its signature is a doozy:
+</p>
+
+<pre class="code">
+static TradNaiveBayesClassifier
+em(TradNaiveBayesClassifier initialClassifier, 
+   Factory&lt;TradNaiveBayesClassifier&gt; classifierFactory, 
+
+   Corpus&lt;ObjectHandler&lt;Classified&lt;CharSequence&gt;&gt;&gt; labeledData,
+   Corpus&lt;ObjectHandler&lt;CharSequence&gt;&gt; unlabeledData,
+
+   double minTokenCount, 
+
+   int maxEpochs, 
+   double minImprovement, 
+
+   Reporter reporter); 
+</pre>
+
+<p>The first argument is the initial classifier.  This is pulled
+out as a separate argument to enable soft clustering to be
+easily implemented, as well as to allow a crude form of annealing
+we will discuss shortly.</p>
+
+<p>The second argument is a factory to create a fresh classifier
+in each epoch.  Note that the tokenization scheme is rolled
+into the classifier itself -- it isn't an argument to the EM
+method.</p>
+
+<p>The third and fourth arguments are corpora of labeled and
+unlabeled data respectively.  Labeled data consists of classified
+character sequences, whereas unlabeled data is just character
+sequences.
+</p>
+
+<p>The fifth argument is the minimum token count.  Any token that
+does not occur that many times in the combined labeled and unlabeled
+data will be discarded.</p>
+
+<p>The sixth and seventh arguments control convergence.  The maximum
+number of epochs caps the number of epochs for which EM will run.
+The min improvement is the minimum relative improvement in each
+epoch to prevent termination.  These can be effectively turned off
+by setting max epochs to <code>Integer.MAX_VALUE</code> and
+the minimum improvement to <code>0.0</code>.
+</p>
+
+<p>The last argument is an instance of
+<code>com.aliasi.io.Reporter</code>, which provides incremental
+feedback about the process of the algorithm.  Reporters are
+like loggers, but without any discovery process -- they are fully
+programatically configurable.  They may be configured with logging
+levels, and may write to files, standard output, or other streams.
+</p>
+
+<p>Finally, the returned value is simply an instance of
+<code>classify.TradNaiveBayesClassifier</code>, which implements
+<code>JointClassifier&lt;CharSequence&gt;</code>.
+Traditional naive Bayes also implements LingPipe's
+<code>util.Compilable</code> interface, meaning that the resulting
+model may be compiled to a more efficient run-time representation.
+It may also be serialized as-is in its dynamically trainable form.
+</p>
+
+
+<h2>Creating Labeled and Unlabeled Corpora</h2>
+
+<p>The demo consists of two classes, one to do the EM
+estimate and set up all the requisite factory parameters,
+and another to create the corpus.  We begin with the corpora.</p>
+
+<p>The corpora are defined in the class 
+<code>TwentyNewsgroupsCorpus</code>, which is in the file
+<a href="src/TwentyNewsgroupsCorpus.java"><code>src/TwentyNewsgroupsCorpus.java</code></a>.
+</p>
+
+<p>The corpus code is not very interesting.  The distribution
+has the posts arranged in two directories, one containing training
+data and the other test data.  Within each directory are 20
+subdirectories, one per newsgroup.  Within each subdirectory is
+a set of files, one message per file.  
+</p>
+
+<h3>Reading the Raw Data</h3>
+
+<p>All of the 20 newsgroups training data is read into two
+member variable maps from categories to arrays of texts 
+for convenience, using the method <code>read(File)</code>:</p>
+
+<pre class="code">
+    final Map&lt;String,String[]&gt; mTrainingCatToTexts;
+    final Map&lt;String,String[]&gt; mTestCatToTexts;
+</pre>
+
+<p>For instance, <code>mTestCatToTexts.get("sci.med")</code>
+returns an array where each entry is a test text for the
+newsgroup <code>sci.med</code>.  The headers
+are stripped out, as is any message of two or fewer tokens.</p>
+
+<h3>Permuting the Data</h3>
+
+<p>In order to get different results across different runs,
+we apply permutations to the training data using this method
+(the test data does not need to be permuted):
+</p>
+
+<pre class="code">
+    public void permuteInstances(Random random) {
+        for (String[] xs : mTrainingCatToTexts.values())
+            Arrays.permute(xs,random);
+    }
+</pre>
+
+<p>Note that we've supplied a random number generator to LingPipe's
+array-utility permutation function (implementing Knuth's method), so
+that we can have reproducible results across runs by using the same
+seed.</p>
+
+<h3>Visiting Training and Testing Data</h3>
+
+<p>The corpus methods that require implementation visit
+the training and test data, which send the appropriate
+maps and bounds to a helper method:</p>
+
+<pre class="code">
+    public void visitTrain(ObjectHandler&lt;Classified&lt;CharSequence&gt;&gt; handler) {
+        visit(mTrainingCatToTexts,handler,mMaxSupervisedInstancesPerCategory);
+    }
+
+    public void visitTest(ObjectHandler&lt;Classified&lt;CharSequence&gt;&gt; handler) {
+        visit(mTestCatToTexts,handler,Integer.MAX_VALUE);
+    }
+
+</pre>
+
+<p>The variable <code>mMaxSupervisedInstancesPerCategory</code> is set
+for each evaluation to the required number of supervised training instances
+per category.  For testing, we use the max integer value to return all
+instances.   The visit method itself is a straightforward loop over the map:
+</p>
+
+<pre class="code">
+    private static void visit(Map&lt;String,String[]&gt; catToItems,
+                              ObjectHandler&lt;Classified&lt;CharSequence&gt;&gt; handler,
+                              int maxItems) {
+        for (Map.Entry&lt;String,String[]&gt; entry : catToItems.entrySet()) {
+            String cat = entry.getKey();
+            Classification c = new Classification(cat);
+            String[] texts = entry.getValue();
+            for (int i = 0; i &lt; maxItems &amp;&amp; i &lt; texts.length; ++i) {
+                Classified&lt;CharSequence&gt; classifiedText
+                    = new Classified&lt;CharSequence&gt;(texts[i],c);
+                handler.handle(classifiedText);
+            }
+        }
+    }
+}
+</pre>
+
+<h3>Unlabeled Data Corpus</h3>
+
+<p>We return an unlabeled data corpus as an anonymous inner
+class by simply forgetting the categories:</p>
+
+<pre class="code">
+    public Corpus&lt;ObjectHandler&lt;CharSequence&gt;&gt; unlabeledCorpus() {
+        return new Corpus&lt;ObjectHandler&lt;CharSequence&gt;&gt;() {
+            public void visitTest(ObjectHandler&lt;CharSequence&gt; handler) {
+                throw new UnsupportedOperationException();
+            }
+            public void visitTrain(ObjectHandler&lt;CharSequence&gt; handler) {
+                for (String[] texts : mTrainingCatToTexts.values())
+                    for (int i = mMaxSupervisedInstancesPerCategory; 
+                         i &lt; texts.length; 
+                         ++i)
+                        handler.handle(texts[i]);
+            }
+        };
+    }
+
+}
+</pre>
+
+<p>Note that we start at the number of supervised instances, so that
+we don't duplicate data in the labeled and unlabeled corpora.</p>
+
+<h2>The EM Estimation Class</h2>
+
+<p>The hard part's in defining the corpora.  It usually is.  The 
+evaluation code for a full random-sample eval, with 10 trials per
+number of training samples, is given in <a href="src/EmTwentyNewsgroups.java"><code>src/EmTwentyNewsgroups.java</code></a>.
+</p>
+
+<h3>The Parameters</h3>
+
+<p>The code starts with a whole bunch of constant declarations:
+</p>
+
+<pre class="code">
+    static final long RANDOM_SEED = 45L;
+
+    static final int NUM_REPLICATIONS = 10;
+    static final int MAX_EPOCHS = 20;
+
+    static final double MIN_IMPROVEMENT = 0.0001;
+
+    static final double CATEGORY_PRIOR = 0.005; 
+    static final double TOKEN_IN_CATEGORY_PRIOR = 0.001;  
+    static final double INITIAL_TOKEN_IN_CATEGORY_PRIOR = 0.1;
+    static final double DOC_LENGTH_NORM = 9.0;
+    static final double COUNT_MULTIPLIER = 1.0;
+    static final double MIN_COUNT = 0.0001;
+
+    static final TokenizerFactory TOKENIZER_FACTORY = tokenizerFactory();
+</pre>
+
+<h3>Tokenization</h3>
+
+<p>The only interesting code behind this is in the tokenizer factory
+construction method (yes, a tokenizer factory factory method): </p>
+
+<pre class="code">
+static TokenizerFactory tokenizerFactory() {
+    TokenizerFactory factory = IndoEuropeanTokenizerFactory.INSTANCE;
+    factory = new RegExFilteredTokenizerFactory(factory,Pattern.compile("\\p{Alpha}+"));
+    factory = new LowerCaseTokenizerFactory(factory);
+    factory = new EnglishStopTokenizerFactory(factory);
+    return factory;
+}
+</pre>
+
+<p>As usual, this sets up a set of filters on tokens.  First,
+we use our basic Indo-European tokenizer, which provides a singleton
+instance.  Then, we pass its output through a number of filters.
+First, we remove all non-alpha-numeric tokens by requiring every
+passed token to match the regular expression <code>\p{Alpha}+</code>
+(with the backslash appropriately escaped, of course).  Next,
+we convert tokens to lowercase, then remove ones in the English
+stop list.  We didn't try any variations of this method, as it
+matched what others have done more or less.</p>
+
+<h3>Reporting</h3>
+
+<p>We set up a reporter to report to the system output
+stream all messages at the debug level or above, using
+the Latin1 (ISO-8859-1) character encoding:
+</p>
+
+<pre class="code">
+        Reporter reporter = Reporters.stream(System.out,"ISO-8859-1").setLevel(LogLevel.DEBUG);
+</pre>
+
+<h3>Constructing the Corpora</h3>
+
+<p>We construct the corpora using the constructor and a path
+to the unpacked data:
+</p>
+
+<pre class="code">
+        final TwentyNewsgroupsCorpus corpus = new TwentyNewsgroupsCorpus(corpusPath);
+        Corpus&lt;TextHandler&gt; unlabeledCorpus = corpus.unlabeledCorpus();
+</pre>
+
+<h3>Trial Outer Loops</h3>
+
+<p>The outer loops of the code just run over different numbers of
+supervised items, evaluating each a number of times based on different
+permutations:</p>
+
+<pre class="code">
+        for (int numSupervisedItems : new Integer[] {  1, 2, 4, 8, 16, 32, 64, 128, 256, 512 }) {
+            corpus.setMaxSupervisedInstancesPerCategory(numSupervisedItems);
+            double[] accs = new double[NUM_REPLICATIONS];
+            double[] accsEm = new double[NUM_REPLICATIONS];
+            for (int trial = 0; trial &lt; NUM_REPLICATIONS; ++trial) {
+                corpus.permuteInstances(random);
+                ...
+</pre>
+
+<p>The accuracies and accuracies for EM are buffers to store
+the accuracies across trials so their means and deviations may
+be reported.</p>
+
+<h3>The Real Work</h3>
+
+<p>After all of this setup, the inner loop that does the
+estimation and evaluation is quite simple, though rather
+verbose:</p>
+
+<pre class="code">
+...
+TradNaiveBayesClassifier initialClassifier
+    = new TradNaiveBayesClassifier(corpus.categorySet(),
+                                   TOKENIZER_FACTORY,
+                                   CATEGORY_PRIOR,
+                                   INITIAL_TOKEN_IN_CATEGORY_PRIOR,
+                                   DOC_LENGTH_NORM);
+
+  Factory&lt;TradNaiveBayesClassifier&gt; classifierFactory 
+    = new Factory&lt;TradNaiveBayesClassifier&gt;() {
+        public TradNaiveBayesClassifier create() {
+            return new TradNaiveBayesClassifier(corpus.categorySet(),
+                                                TOKENIZER_FACTORY,
+                                                CATEGORY_PRIOR,
+                                                TOKEN_IN_CATEGORY_PRIOR,
+                                                DOC_LENGTH_NORM);
+        }};
+
+TradNaiveBayesClassifier emClassifier
+    = TradNaiveBayesClassifier.emTrain(initialClassifier,
+                                       classifierFactory,
+                                       corpus,
+                                       unlabeledCorpus,
+                                       MIN_COUNT,
+                                       MAX_EPOCHS,
+                                       MIN_IMPROVEMENT,
+                                       reporter);
+accs[trial] = eval(initialClassifier,corpus);
+accsEm[trial] = eval(emClassifier,corpus);
+...
+</pre>
+
+<p>First, we set up the initial classifier, which is itself
+a traditional naive Bayes classifier.  It has its own token in
+category prior, which is larger than the one produced by the factory.
+This makes the predictions less attenuated to start, which is
+a kind of annealing strategy.  For soft clustering, the
+initial classifier would perform random assignments.
+</p>
+
+<p>Next, we create a classifier factory as an anonymous inner
+class.  It just returns a new traditional naive Bayes classifier
+with a different prior than for the initial classifier.</p>
+
+<p>Finally, we call the EM method with all of the parameters.</p>
+
+<p>Then, we run evaluation, first on the initial classifier,
+then on the EM-trained classifier.  The evaluation method just
+uses a LingPipe classifier evaluator to do its work; its set
+up to play nicely with corpora.</p>
+
+<pre class="code">
+    static double eval(TradNaiveBayesClassifier classifier, 
+                       Corpus&lt;ObjectHandler&lt;Classified&lt;CharSequence&gt;&gt;&gt; corpus)
+        throws IOException, ClassNotFoundException {
+
+        String[] categories = classifier.categorySet().toArray(new String[0]);
+        Arrays.sort(categories);
+        @SuppressWarnings("unchecked")
+        JointClassifier&lt;CharSequence&gt; compiledClassifier
+            = (JointClassifier&lt;CharSequence&gt;)
+            AbstractExternalizable.compile(classifier);
+        boolean storeInputs = false;
+        JointClassifierEvaluator&lt;CharSequence&gt; evaluator
+            = new JointClassifierEvaluator&lt;CharSequence&gt;(compiledClassifier,
+                                                                        categories,
+                                                                        storeInputs);
+        corpus.visitTest(evaluator);
+        return evaluator.confusionMatrix().totalAccuracy();
+    }
+</pre>
+
+<p>Evaluation just generates the category array from the category set,
+which it sorts for convenience in output (not really used here).  Then
+it compiles the classifier it was passed using the abstract externalizable
+utility method.  Then it creates an evaluator and runs it over
+the test set in the corpus.  Finally, it returns the accuracy from the
+evaluator's confusion matrix, which we put into the array accumulators.</p>
+
+<p>When we get to the end of the loop per number of supervised
+training samples, we assign it into the array, then at the
+end of the loop, we print out means and deviations.</p>
+
+<h2>Running the Example</h2>
+
+<p>First, you need to download and unpack the corpus.  Let's say
+the unpacked data is in a directory called <code><i>TWENTY_NEWSGROUPS</i></code>.
+Then the demo may be invoked through ant using:
+</p>
+
+<pre class="code">
+ant -Dnewsgroups.path=<i>TWENTY_NEWSGROUPS</i> em
+</pre>
+
+<p>which returns:</p>
+
+<pre class="code">
+CORPUS PATH=e:\data\20news\unpacked
+DOC LENGTH NORM=9.0
+CATEGORY PRIOR=0.0050
+TOKEN IN CATEGORY PRIOR=0.0010
+INITIAL TOKEN IN CATEGORY PRIOR=0.1
+NUM REPS=10
+MAX EPOCHS=20
+RANDOM SEED=45
+
+alt.atheism #train=480 #test=319
+comp.graphics #train=582 #test=389
+comp.os.ms-windows.misc #train=590 #test=393
+comp.sys.ibm.pc.hardware #train=588 #test=391
+comp.sys.mac.hardware #train=576 #test=384
+comp.windows.x #train=588 #test=391
+misc.forsale #train=578 #test=381
+rec.autos #train=592 #test=396
+rec.motorcycles #train=597 #test=398
+rec.sport.baseball #train=596 #test=397
+rec.sport.hockey #train=600 #test=399
+sci.crypt #train=595 #test=396
+sci.electronics #train=591 #test=393
+sci.med #train=594 #test=395
+sci.space #train=592 #test=394
+soc.religion.christian #train=599 #test=398
+talk.politics.guns #train=546 #test=364
+talk.politics.mideast #train=563 #test=376
+talk.politics.misc #train=465 #test=310
+talk.religion.misc #train=376 #test=251
+TOTALS: #train=11288 #test=7515 #combined=18803
+
+
+SUPERVISED DOCS/CAT=1
+TRIAL=0
+      :12 epoch=   0   dataLogProb=    -1237465.70   modelLogProb=    15035211.18   logProb=    13797745.48   diff=            NaN
+      :24 epoch=   1   dataLogProb=    -1231570.90   modelLogProb=    15123510.94   logProb=    13891940.04   diff= 0.006803584231
+      :37 epoch=   2   dataLogProb=    -1216209.52   modelLogProb=    15529135.24   logProb=    14312925.72   diff= 0.029851989631
+      :49 epoch=   3   dataLogProb=    -1199468.53   modelLogProb=    16320003.21   logProb=    15120534.68   diff= 0.054876929245
+...
+     3:25 epoch=  16   dataLogProb=    -1176298.68   modelLogProb=    17980646.97   logProb=    16804348.29   diff= 0.000162049813
+     3:37 epoch=  17   dataLogProb=    -1176195.94   modelLogProb=    17982292.01   logProb=    16806096.07   diff= 0.000104002156
+     3:49 epoch=  18   dataLogProb=    -1176095.45   modelLogProb=    17983720.34   logProb=    16807624.89   diff= 0.000090963924
+     3:49 Converged
+ACC=0.129   EM ACC=0.377
+
+...
+TRIAL=9
+    31:59 epoch=   0   dataLogProb=    -1237448.69   modelLogProb=    15030709.70   logProb=    13793261.01   diff=            NaN
+    32:11 epoch=   1   dataLogProb=    -1230837.52   modelLogProb=    15115282.06   logProb=    13884444.54   diff= 0.006588951110
+...
+    35:11 epoch=  16   dataLogProb=    -1176545.63   modelLogProb=    17810014.34   logProb=    16633468.71   diff= 0.000041518289
+    35:11 Converged
+ACC=0.108   EM ACC=0.226
+
+     ---------------------
+#Sup=   1  Supervised mean(acc)=0.130 sd(acc)=0.009   EM mean(acc)=0.389 sd(acc)=0.068          35:18
+
+...
+...
+
+SUPERVISED DOCS/CAT=512
+TRIAL=0
+  4:06:27 epoch=   0   dataLogProb=    -1172021.48   modelLogProb=    18066945.68   logProb=    16894924.20   diff=            NaN
+  4:06:38 epoch=   1   dataLogProb=    -1171420.14   modelLogProb=    18226716.74   logProb=    17055296.60   diff= 0.009447502378
+  4:06:49 epoch=   2   dataLogProb=    -1171342.28   modelLogProb=    18242581.15   logProb=    17071238.88   diff= 0.000934303845
+  4:07:00 epoch=   3   dataLogProb=    -1171323.18   modelLogProb=    18246273.05   logProb=    17074949.87   diff= 0.000217359169
+  4:07:11 epoch=   4   dataLogProb=    -1171315.29   modelLogProb=    18247489.49   logProb=    17076174.21   diff= 0.000071701103
+  4:07:11 Converged
+ACC=0.800   EM ACC=0.807
+
+...
+
+  4:18:08 epoch=   5   dataLogProb=    -1171301.28   modelLogProb=    18248274.13   logProb=    17076972.84   diff= 0.000055576147
+  4:18:08 Converged
+ACC=0.803   EM ACC=0.810
+
+     ---------------------
+#Sup= 512  Supervised mean(acc)=0.802 sd(acc)=0.001   EM mean(acc)=0.808 sd(acc)=0.001        4:18:17
+</pre>
+
+<p>The entire run took a little over four hours.</p>
+
+<p>For each epoch, we are reporting total elapsed time, the epoch ID,
+the log probability of the data <code><big>&Sigma;</big><sub>i</sub>&nbsp;log&nbsp;p(ws|c)&nbsp;+&nbsp;log&nbsp;p(c)</code>, and the log
+probablity of the model <code>log p(&theta;)</code>, and the sum under
+the final column.  It is this sum that's maximized by EM (error is negative
+log probability, which is minimized). Note that
+the model log prob is actually a density, which is why it can be
+positive.  The relative difference in error between epochs is also
+reported.</p>
+
+<p>Note that as the amount of supervised data goes up, and the
+amount of unsupervised data goes down, the number of epochs required
+to reach convergence also goes down.
+</p>
+
+<p>We collect these results into more readable form in the next
+section.</p>
+
+<h2>Results on 20 Newsgroups</h2>
+
+<p>The 20 Newsgroups corpus is a widely used training and test
+set for natural language classification.  It consists of a number
+of e-mail messages from 20 different newsgroups, some of which
+are on closely related topics and some on very diverse
+topics.</p>
+
+<p>Jason Rennie maintains the data set at MIT:</p>
+
+<ul>
+<li><a href="http://people.csail.mit.edu/jrennie/20Newsgroups/">20 Newsgroups Home Page</a></li>
+<li><a href="http://people.csail.mit.edu/jrennie/20Newsgroups/20news-bydate.tar.gz">Download <code>20news-bydate.tar.gz</code></a></li>
+</ul>
+
+<p>We used the recommended by-date version of the corpus, which splits
+the articles into a standard train and test set, with posts in the
+test set being made chronologically later than the ones in the train
+set.  The corpus contains 18846 documents, which include headers.  Here's
+an example from <code>rec.sports.baseball</code>:
+</p>
+
+<pre class="code" style="font-size:70%">
+<span style="color:grey">     From: ez027993@dale.ucdavis.edu (Gary The Burgermeister Huckabay)
+     Subject: Bill James Player Rating Book 1993.
+     Organization: Harold Brooks Duck L'Orange Club, Ltd.
+     Lines: 26</span>    
+
+    (Dave 'This has never happened to me before' Kirsch) writes:
+    >  Correction: "Nied was the only player identified in this book as a grade A
+    >prospect who was exposed to the draft..", according to Bill James in the
+    >'Stop the Presses' section preceding his player evaluations. He valued Nied
+    >at $21, and said that Nied's value does not increase significantly as a
+    >result of his selection (although he did catch a break getting away from the
+    >strongest rotation in baseball). 
+    
+    I thought Bill James' latest book completely and totally sucked.  I bought
+    it, but will not purchase anything of his ever again without THOROUGHLY
+    looking at it first.  What tripe.
+    
+    The book is inconsistent, and filled with selective analysis.  James
+    claims to be looking forward, and then makes some absolutely bizarre
+    statements of value.  Not only that, but I got the impression he
+    probably glanced at the book for about an hour before he put his name
+    on it. 
+    
+    To say I was disappointed is a grand understatement.
+    
+    
+    -- 
+    *     Gary Huckabay      * Kevin Kerr: The Al Feldstein of the mid-90's! *
+    * "A living argument for * If there's anything we love more than a huge  *
+    *  existence of parallel * .sig, it's someone quoting 100 lines to add   *
+    *       universes."      * 3 or 4 new ones.  And consecutive posts, too. *
+</pre>
+
+<p>As you can see, there are headers (in light grey on grey), quotes
+from previous posts, and signatures.  We stripped off the headers and
+removed documents with fewer than three tokens, leaving us with a
+total of 18803 documents, divided among the 20 newsgroups as
+follows:</p>
+
+
+<pre class="code">
+NEWSGROUP              #TRAIN  #TEST
+
+alt.atheism               480    319
+comp.graphics             582    389
+comp.os.ms-windows.misc   590    393
+comp.sys.ibm.pc.hardware  588    391
+comp.sys.mac.hardware     576    384
+comp.windows.x            588    391
+misc.forsale              578    381
+rec.autos                 592    396
+rec.motorcycles           597    398
+rec.sport.baseball        596    397
+rec.sport.hockey          600    399
+sci.crypt                 595    396
+sci.electronics           591    393
+sci.med                   594    395
+sci.space                 592    394
+soc.religion.christian    599    398
+talk.politics.guns        546    364
+talk.politics.mideast     563    376
+talk.politics.misc        465    310
+talk.religion.misc        376    251
+
+TOTALS:                 11288   7515
+</pre>
+
+<p>The results are presented in the following table, which
+lists the number of supervised documents per category, followed
+by the accuracies of the fully supervised classifier trained only
+on the supervised documents, followed by the accuracy achieved
+by EM on the combination of the supervised and unsupervised
+documents.</p>
+
+<table>
+<tr><th class="title" colspan="3">Supervised and Semi-Supervised Results on 20 Newsgroups</th></tr>
+<tr><th>#Supervised</th><th>Supervised Accuracy</th><th>EM Accuracy</th></tr>
+<tr><td>1</td><td>0.130 +/- 0.009</td><td>0.389 +/- 0.068</td></tr>
+<tr><td>2</td><td>0.183 +/- 0.021</td><td>0.483 +/- 0.038</td></tr>
+<tr><td>4</td><td>0.239 +/- 0.016</td><td>0.615 +/- 0.027</td></tr>
+<tr><td>8</td><td>0.357 +/- 0.012</td><td>0.661 +/- 0.020</td></tr>
+<tr><td>16</td><td>0.481 +/- 0.012</td><td>0.712 +/- 0.012</td></tr>
+<tr><td>32</td><td>0.581 +/- 0.011</td><td>0.735 +/- 0.007</td></tr>
+<tr><td>64</td><td>0.677 +/- 0.007</td><td>0.755 +/- 0.006</td></tr>
+<tr><td>128</td><td>0.735 +/- 0.004</td><td>0.770 +/- 0.002</td></tr>
+<tr><td>256</td><td>0.778 +/- 0.003</td><td>0.789 +/- 0.002</td></tr>
+<tr><td>512</td><td>0.802 +/- 0.001</td><td>0.808 +/- 0.001</td></tr>
+</table>
+
+<p>Note that the gap between semi-supervised and fully supervised
+closes as more supervised documents are added.  In theory, with enough
+supervised documents, the estimator should converge and it shouldn't
+be possible to get better performance by adding unlabeled data.  </p>
+
+<p>Also note that the number of unsupervised documents available
+decreases as more and more of the training set is used on the
+supervised side.  In typical applications, the amount of unlabeled
+data is effectively unbounded in the sense that we don't have enough
+computing power to use all that we have. (Though, having said that,
+EM is so easily parallelizable it's called &quot;embarassingly 
+parallel&quot;, so with large clusters, it can be scaled out
+quite easily.)  It'd be relatively easy to
+download hundreds of thousands of posts to these rather popular
+newsgroups, for instance, using <a
+href="http://groups.google.com/">Google Groups</a>, which for
+instance, reports 175,508 articles in the archive for the newsgroup
+<a href="http://groups.google.com/group/talk.politics.guns/topics?lnk"><code>talk.politics.guns</code></a> (on 16 April 2009).</p>
+
+<p>These results are substantially better for low numbers
+of supervised documents than that reported by Nigam, McCallum
+and Mitchell (2006) [see <a href="#references">references</a>].
+Although not reported in their paper, Kamal Nigam told us that
+he used a length normalization of around 100.  When we increase
+length  norm to that level, our results look more like theirs.
+We also found that having a more diffuse initial classifier (higher
+prior count) led to much better performance.
+</p>
+
+<a name="references"></a>
+<h2>References</h2>
+
+<ul>
+<li>Wikipedia: <a href="http://en.wikipedia.org/wiki/Expectation-maximization_algorithm">Expectation Maximization</a></li>
+
+<li>Dempster, A. P., N. M. Laird, and D. B. Rubin (1977)  
+<a href="http://babbage.cs.missouri.edu/~chengji/mlbioinfo/dempster_em.pdf">Maximum Likelihood from Incomplete Data via the EM Algorithm</a>. 
+<i>Journal of the Royal Statistical Society (Series B)</i> <b>39</b>(1): 1--38.
+</li>
+
+<li>Nigam, Kamal, Andrew McCallum, and Tom M. Mitchell  (2006)  <a href="http://www.cs.umass.edu/~mccallum/papers/semisup-em.pdf">Semi-Supervised Text Classification Using EM</a>.  In O. Chapelle, A. Zien, and B. Scholkopf (eds.) <i>Semi-Supervised Learning</i>. MIT Press.
+</li>
+</ul>
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+

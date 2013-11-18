@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Command-line Demo Instructions</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1>
+<h1 id="pagetitle">Command Demo <span style="font-size:0.5em">(Instructions)</span></h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../index.html">home</a></li>
+
+<li>
+  <a class="current" href="demos.html">demos</a>
+  <ul>
+    <li>
+      demo instructions
+      <ul>
+        <li><a href="demo-web.html">web</a></li>
+        <li><a href="demo-gui.html">gui</a></li>
+        <li><a class="current" href="demo-cmd.html">command line</a></li>
+      </ul>
+    </li>
+    <li>
+      list of demos
+      <ul>
+        <li><a href="demo-sentence.html">sentences</a></li>
+        <li><a href="demo-pos.html">parts of speech</a></li>
+        <li><a href="demo-ne.html">named entities</a></li>
+        <li><a href="demo-coref.html">coreference</a></li>
+        <li><a href="demo-chinese-words.html">chinese words</a></li>
+      <li><a href="demo-echo.html">echo &amp; transcoding</a></li>
+      </ul>
+    </li>
+  </ul>
+</li>
+
+
+<li><a href="licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="download.html">lingpipe core</a></li>
+<li><a href="models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="install.html">install</a></li>
+<li><a href="../demos/tutorial/read-me.html">tutorials</a></li>
+<li><a href="../docs/api/index.html">javadoc</a></li>
+<li><a href="book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="bugs.html">bugs</a></li>
+<li><a href="sandbox.html">sandbox</a></li>
+<li><a href="competition.html">competition</a></li>
+<li><a href="citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="contact.html">contact</a></li>
+
+<li><a href="about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+
+<h2>List of Command Demos</h2>
+
+<div class="sidebar">
+<h2>Portable Command Scripts</h2>
+
+<dl>
+<dt>Windows DOS (<code>.bat</code>)</dt>
+<dd>
+Microsoft <a href="http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/ntcmds_o.mspx?mfr=true">Windows command-line</a> batch (<code>.bat</code>) scripts are
+provided for running in Windows.
+</dd>
+<dt>Bourne Shell (<code>.sh</code>)</dt>
+<dd>
+<a href="http://en.wikipedia.org/wiki/Bourne_shell">Bourne shell</a> (<code>.sh</code>) scripts are
+provided for running in
+<a href="http://en.wikipedia.org/wiki/Unix-like">Unix-like</a> systems, including various
+flavors of Unix and Linux, Mac
+OS X, and in the Cygwin shell on Windows.
+</dd>
+</dl>
+</div>
+
+
+<p>
+Each demo has its own page, with examples of invoking it from the command line.
+The navigation bar to the left has a listing, as does the first
+section of the top-level demos page:
+</p>
+<ul>
+<li><a href="demos.html#list">List of Demos</a></li>
+</ul>
+<p>
+The rest of this page provides instructions for running
+the demos in a shell from the command line.
+</p>
+
+<h2>Ways to Run Commands</h2>
+
+
+
+
+<div class="sidebar">
+<h2>Command Implementation</h2>
+<p>
+The command demos are all implemented through reflection
+in a sigle class:
+</p>
+<ul>
+<li>
+<a href="../demos/generic/src/com/aliasi/demo/framework/DemoCommand.java"><code>demo.framework.DemoCommand</code></a>
+</li>
+</ul>
+<p>
+that extends LingPipe's utility:
+</p>
+<ul>
+<li>
+<a href="../docs/api/com/aliasi/util/AbstractCommand.html"><code>util.AbstractCommand</code></a>
+</li>
+</ul>
+<p>
+adapting demos implementing:
+</p>
+
+<ul>
+<li>
+<a href="../demos/generic/src/com/aliasi/demo/framework/StreamDemo.java"><code>demo.framework.StreamDemo</code></a>
+</li>
+</ul>
+</div>
+
+<h3>Demo Interfaces</h3>
+<p>
+LingPipe's command demos provide three interfaces,
+each with its own instructions:
+</p>
+<ul>
+<li><a href="#onefile">Single File</a></li>
+<li><a href="#dir">Directory Crawl</a></li>
+<li><a href="#stdin">Piped Standard Input/Output</a></li>
+</ul>
+
+<h3>Content Types</h3>
+<p>
+All three interfaces accept the same content
+types (HTML, XML and plain text) and specify
+input/output character set encodings in the
+same way:
+</p>
+<ul>
+<li><a href="#general">Content Types and Character Encodings</a></li>
+</ul>
+
+
+<h2>Running the Commands</h2>
+
+<p>
+The commands can be run directly or through the shell scripts
+in the <code>demos/generic/bin</code> directory.
+</p>
+
+<h3>Unix-like Scripts</h3>
+
+<p>
+Shell scripts (with suffix <code>.sh</code>) can be run
+directly in from the <code>demos/generic/bin</code> directory.  For example,
+the English news sentence extraction demo can be run with:
+</p>
+
+<pre class="code">
+% cd $lingpipe/demos/generic/bin
+% sh cmd_sentence_en_news.sh &quot;-<i>Param1</i>=<i>Val1</i>&quot; ... &quot;-<i>ParamN</i>=<i>ValN</i>&quot;
+</pre>
+
+
+<h3>Windows Dos Batch Script</h3>
+
+<p>
+Windows batch scripts (with suffix <code>.bat</code>) can
+be run directly in Windows from the <code>demos/generic/bin</code> directory.  For
+example:
+</p>
+
+<pre class="code">
+% cd $lingpipe/demos/generic/bin
+% cmd_sentence_en_news.bat &quot;-<i>Param1</i>=<i>Val1</i>&quot; ... &quot;-<i>ParamN</i>=<i>ValN</i>&quot;
+</pre>
+
+<p>
+In the installation instructions, we provide an overview of
+</p>
+<ul>
+<li>
+<a href="install.html#windows-commands">Using
+Windows Commands</a>
+</li>
+</ul>
+
+
+
+<h3>Running Directly</h3>
+
+<p>
+The scripts are fairly simple, the only complexity coming
+from the fact that they call several subscripts tos
+et up the classpath and parameters.  The scripts may
+be inspected, modified and run directly from the command line.
+</p>
+
+
+
+
+<h2>Parameter Specification</h2>
+
+
+<p>
+Parameters are specified on the command-line in the format:
+</p>
+<pre class="code">
+&quot;-<i>Param</i>=<i>Value</i>&quot;
+</pre>
+
+<p>
+Note that the parameter/value pair must be quoted;  this will prevent
+DOS or the unix-like shell from trying to expand or omit any of its
+contents.
+</p>
+
+<h3>Escaping Reserved Symbols</h3>
+
+<p>
+Depending on the command-line interpreter, symbols such as semicolons
+or quotes might be reserved and thus need to be escaped.  This is
+typically done by preceding them with a slash, as in
+<code>&quot;-a=\&quot;b\&quot;\;&quot;</code>, which sets the parameter
+<code>a</code> to value <code>&quot;b;&quot;</code> (with the value
+including the quote and semicolon).
+</p>
+
+
+<h3>Parameter Order</h3>
+
+<p>
+The command-line arguments are not order dependent, but
+should not be duplicated.
+</p>
+
+<h3>Parameter Documentation</h3>
+
+<p>
+The parameters available for all commands are documented on
+this page and repeated for each demo's page.  The command-line
+specific parameters are all discussed on this page.
+</p>
+
+<a name="onefile"></a>
+<h2>Interface 1: Single File Input/Output</h2>
+
+<h3>Specifying Files as Parameters</h3>
+
+<p>
+Input and output file names may be provided using the parameters:
+</p>
+<pre class="code">
+<i>command</i>&nbsp; &quot;-inFile=<i>path1</i>&quot;&nbsp; &quot;-outFile=<i>path2</i>&quot; ...
+</pre>
+
+<p>
+Note that the quotes are required around the key/value pair
+specifications in order to prevent DOS from expanding the equals sign
+(or splitting a command with space in it into multiple command-line
+arguments).
+</p>
+
+<p>For single-file input, the following parameters should be used
+to specify the file paths (relative or absolute).
+</p>
+<table>
+<tr><th>Parameter</th>
+    <th>Description</th>
+    <th>Usage Constraints</th></tr>
+<tr><td><code>inFile</code></td>
+    <td>Readable input file</td>
+    <td rowspan="2">May not be used with <code>inDir</code>.
+                    If either is not specified, defaults to standard input or output.</td>
+    </tr>
+<tr><td><code>outFile</code></td>
+    <td>Writeable output file</td>
+    </tr>
+</table>
+
+<h3>Everything's Case Sensitive</h3>
+
+<p>Other than file names on Windows, everything is case sensitive,
+including the names of parameters.  So <code>infile</code> can <b>not</b>
+be used in place of <code>inFile</code>.
+</p>
+
+<h3>File Permissions</h3>
+
+<p>
+The input file must be an ordinary readable file.  The output
+file must either exist and be writeable or not exist and
+be createable.
+</p>
+
+<a name="dir"></a>
+<h2>Interface 2: Directory Input/Output</h2>
+
+<h3>Batch Processing and Layout</h3>
+
+<p>Directory input allows the batch processing of a group of files in
+a directory.  This is more efficient than running files one at a time,
+because resources such as LingPipe models, not to mention the Java
+virtual machine, only need to be loaded once.
+</p>
+
+<h3>Recursive Crawl</h3>
+
+<p>
+The directory-based commands will walk the entire directory
+recursively and process each file they find.  The output is written in
+the specified output directory with a parallel directory structure.
+</p>
+
+<h3>Specifying Directories</h3>
+<p>
+Input and output directory names may be provided using the parameters:
+</p>
+<pre class="code">
+<i>command</i>&nbsp; &quot;-inDir=<i>path1</i>&quot;&nbsp; &quot;-outDir=<i>path2</i>&quot; ...
+</pre>
+<p>
+Note that the quotes around each key/value pair are required to
+prevent the DOS shell from removing the equal signs.
+</p>
+<p>For directory input, the parameters to specify (absolute
+or relative) directory paths are:
+</p>
+<table>
+<tr><th>Parameter</th>
+    <th>Description</th>
+    <th>Usage Constraints</th></tr>
+<tr><td><code>inDir</code></td>
+    <td>Readable input directory</td>
+    <td rowspan="2">May not be used with <code>inFile</code> or <code>outFile</code>.
+        If used, <code>inDir</code> and <code>outDir</code> must both be specified.</td></tr>
+<tr><td><code>outDir</code></td>
+    <td>Writeable output directory</td></tr>
+</table>
+
+
+
+<h3>File Permissions</h3>
+
+<p>
+The input directory must be an ordinary listable directory.  The
+output directory must either exist and allow file creation within
+it, or not exist and be creatable.
+</p>
+
+
+
+<a name="stdin"></a>
+<h2>Interface 3: Piped Standard Input/Output</h2>
+
+
+<h3>Unix-like Defaults</h3>
+<p>
+The commands are set up with Unix-like defaults to standard input or
+output if files are not specified.  If a directory is specified for
+input or output, then standard input/output is not available.  If no
+input directory or input file is specified, the input is read from the
+standard input stream.  If no output directory (and or output file is
+specified, the output is written directly to standard out.
+</p>
+
+<h3>Piping Input/Output</h3>
+<p>
+With the command-line defaulting to standard input/output
+behavior, it may be used in a streaming fashion.  For instance,
+the following invocation will pipe the quoted text through
+the sentence detector for English news and write the resulting
+XML to standard output.
+</p>
+
+<pre class="code">
+&gt; echo &quot;Hello. Goodbye.&quot; | cmd_sentence_en_news.bat
+</pre>
+
+
+<h3>Streaming Behavior</h3>
+<p>
+Whether the commands will stream output as they receive input
+depends on the particular demo.  Most of the annotation demos
+(sentence detection, part-of-speech, entity detection, etc.)
+stream; most of the classification demos do not.
+</p>
+
+
+<a name="general"></a>
+<h2>Content Types and Character Encodings</h2>
+
+
+
+<h3>Input: Text, HTML or XML</h3>
+<p>
+The demos process data in one of three formats: plain text, HTML or
+XML.  The usual parameter is used for this:
+</p>
+
+<table>
+<tr><th>Parameter</th>
+    <th>Description</th>
+    <th>Usage Constraints</th></tr>
+<tr><td><code>contentType</code></td>
+    <td>Input content type</td>
+    <td>May be one of:
+       <ul><li><code>text/plain</code></li>
+           <li><code>text/html</code></li>
+           <li><code>text/xml</code></li>
+       </ul>
+       Defaults to <code>text/plain</code>.</td></tr>
+</table>
+
+<p>For XML and HTML content types, the following two
+parameters control the elements annotated:
+</p>
+<table>
+<tr><th>Parameter</th>
+    <th>Description</th>
+    <th>Usage Constraints</th></tr>
+<tr><td><code>removeElts</code></td>
+    <td>Element tags to remove</td>
+    <td rowspan="3">Optional. May only be used with <code>contentType=text/html</code>
+        or <code>contentType=text/xml</code>.  Each value may be
+        comma-separated list.  If neither of these are
+        specified, all text content is processed.</td></tr>
+<tr><td><code>includeElts</code></td>
+    <td>Elements to annotate</td></tr>
+</table>
+
+
+<h3>Output: XML</h3>
+<p>
+The demo output format is XML in all cases.  Plain text is minimally
+wrapped in an element. HTML is parsed using NekoHTML into well-formed
+XML.  XML is passed through with inline annotation.  In all cases,
+stripping LingPipe-specific tags from the output will result in a
+content identical to the input; that is, no information about
+whitespace, case, etc., is lost.  The one exception is when the
+<code>removeElts</code> parameter is used to remove content (such as
+HTML style markups such as italics) from the input.
+</p>
+
+<h3>Character Encoding</h3>
+
+
+<p>
+The demos support any character set supported by the Java
+runtime engine.  The following parameters are used to
+control character sets for input and output:
+</p>
+<table>
+<tr><th>Parameter</th>
+    <th>Description</th>
+    <th>Usage Constraints</th></tr>
+<tr><td><code>inCharset</code></td>
+    <td>Input character set</td>
+    <td rowspan="2">Optional.  Defaults to platform default.</td></tr>
+<tr><td><code>outCharset</code></td>
+    <td>Output character set</td></tr>
+</table>
+
+
+
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+

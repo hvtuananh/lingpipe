@@ -1,0 +1,2770 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Clustering Tutorial</title>
+<meta http-equiv="Content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language"
+      content="en"/>
+<link href="../../../web/css/lp-site.css"
+      type="text/css"
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="../../../web/css/lp-site-print.css"
+      title="lp-site"
+      type="text/css"
+      rel="stylesheet"
+      media="print,handheld,tty,aural,braille,embossed"/>
+
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">Clustering Tutorial</h1>
+<a id="logo"
+   href="http://alias-i.com/"
+  ><img src="../../../web/img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../../../index.html">home</a></li>
+
+<li><a href="../../../web/demos.html">demos</a></li>
+
+<li><a href="../../../web/licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="../../../web/download.html">lingpipe core</a></li>
+<li><a href="../../../web/models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="../../../web/install.html">install</a></li>
+<li><a class="current" href="../read-me.html">tutorials</a>
+<ul>
+<li><a href="../classify/read-me.html">classification</a></li>
+<li><a href="../ne/read-me.html">named entity recognition</a></li>
+<li><a class="current" href="../cluster/read-me.html">clustering</a></li>
+<li><a href="../posTags/read-me.html">part of speech</a></li>
+<li><a href="../sentences/read-me.html">sentences</a></li>
+<li><a href="../querySpellChecker/read-me.html">spelling correction</a></li>
+<li><a href="../stringCompare/read-me.html">string comparison</a></li>
+<li><a href="../interestingPhrases/read-me.html">significant phrases</a></li>
+<li><a href="../lm/read-me.html">character language models</a></li>
+<li><a href="../db/read-me.html">database text mining</a></li>
+<li><a href="../chineseTokens/read-me.html">chinese word segmentation</a></li>
+<li><a href="../hyphenation/read-me.html">hyphenation and syllabification</a></li>
+<li><a href="../sentiment/read-me.html">sentiment analysis</a></li>
+<li><a href="../langid/read-me.html">language identification</a></li>
+<li><a href="../wordSense/read-me.html">word sense disambiguation</a></li>
+<li><a href="../svd/read-me.html">singular value decomposition</a></li>
+<li><a href="../logistic-regression/read-me.html">logistic regression</a></li>
+<li><a href="../crf/read-me.html">conditional random fields</a></li>
+<li><a href="../em/read-me.html">expectation maximization</a></li>
+<li><a href="../eclipse/read-me.html">eclipse</a></li>
+</ul>
+</li>
+<li><a href="../../../docs/api/index.html">javadoc</a></li>
+<li><a href="../../../web/book.html">textbook</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="../../../web/customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://lingpipe-blog.com/">blog</a></li>
+<li><a href="../../../web/bugs.html">bugs</a></li>
+<li><a href="../../../web/sandbox.html">sandbox</a></li>
+<li><a href="../../../web/competition.html">competition</a></li>
+<li><a href="../../../web/citations.html">citations</a></li>
+</ul>
+</li>
+
+<li><a href="../../../web/contact.html">contact</a></li>
+
+<li><a href="../../../web/about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+<span style="font-size:.6em; color:#888">by&nbsp;Google</span>
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<h2>What is Clustering?</h2>
+
+<p>
+Clustering is a technique for grouping objects based on similarity.
+For instance, <a href="http://clusty.com/">Clusty</a> provides
+clustering of web search results it retrieves from other search
+engines.  A popular technique for performing coreference between
+mentions of entities, such as telling if the &quot;Cpt. John
+J. Smith&quot; in one document is the same as the &quot;Captain
+J. J. Smith&quot; in another document, is to compare the aliases used
+by weighted edit distance and the context of words around the mention
+by TF/IDF measures.  Clustering then provides a way of grouping aliases
+by reference.
+</p>
+
+<h2>Simple Disjoint Clustering</h2>
+
+<h3>The Clustering Interface</h3>
+<p>
+The <code>Clusterer</code> interface provides a single method:
+</p>
+<pre class="code">
+interface <b>Clusterer</b>&lt;E&gt; {
+    Set&lt;Set&lt;E&gt;&gt; <b>cluster</b>(Set&lt;? extends E&gt; elements);
+}
+</pre>
+<p>
+Note that a clusterer is parameterized by the type <code>E</code> of
+the objects being clustered.  For example, a clusterer that clusters
+strings would be declared as <code>Clusterer&lt;String&gt;</code>.
+The clustering method is defined to take a set of elements extending
+<code>E</code>, which means they are guaranteed to extend the
+<code>E</code> class or implement the <code>E</code> interface.  The
+clustering is returned as a set of sets of <code>E</code>s, declared
+as type <code>Set&lt;Set&lt;E&gt;&gt;</code>.
+</p>
+
+<h3>Example</h3>
+<p>
+For example, a clusterer of strings might take a set of strings
+containing elements:
+</p>
+<pre class="code">
+{ &quot;aa&quot;, &quot;aaa&quot;, &quot;aaaaa&quot;, &quot;bbb&quot;, &quot;bbbb&quot; }
+</pre>
+<p>
+and clustering by edit distances up to two, return the following
+clustering:
+</p>
+<pre class="code">
+  {
+    { &quot;aa&quot;, &quot;aaa&quot;, &quot;aaaaa&quot; },
+    { &quot;bbb&quot;, &quot;bbbb&quot; }
+  }
+</pre>
+<p>
+The code for this example may be found in <a
+href="src/StringEdits.java"><code>src/StringEdits.java</code></a>; we return to
+it after introducing hierarchical clustering.
+</p>
+
+<h3>Partitions</h3>
+<p>
+For the two clustering implementations we provide in LingPipe, the
+resulting clusters form what is known as a partition of the input set.
+A set of sets is a partition of another set if each element of the set
+is a member of exactly one set of the partition.  In mathematical
+terms, the sets making up a partition are pairwise disjoint and their
+union is the original set.  The example clustering in the previous
+section is a partition of the input set.
+</p>
+
+
+<h2>Hierarchical Clustering and Dendrograms</h2>
+<p>
+The <code>HierarchicalClusterer</code> interface extends the clusterer
+interface with a single method:
+</p>
+<pre class="code">
+interface <b>HierarchicalClusterer</b>&lt;E&gt; extends Clusterer&lt;E&gt; {
+    Dendrogram&lt;E&gt; <b>hierarchicalCluster</b>(Set&lt;? extends E&gt; elements);
+}
+</pre>
+<p>
+The input is the same as for simple clustering, a set of sets
+extending the type of the clusterer.  The output is an instance of <a
+href="../../../docs/api/com/aliasi/cluster/Dendrogram.html
+"><code>com.aliasi.cluster.Dendrogram</code></a>.  A dendrogram is a
+binary tree over the elements being clustered, with distances attached
+to each branch indicating the distance between the two subbranches.
+</p>
+
+<h3>Example (Continued)</h3>
+<p>
+Continuing the edit-distance based example from the last section,
+consider the following dendrogram produced by single-link
+clustering (explained below), as printed by the dendrogram to-string
+method:
+</p>
+<pre class="code">
+{{{aaa+aa}:1.0+aaaaa}:2.0+{bbbb+bbb}:1.0}:3.0
+</pre>
+<p>
+and in indented binary tree notation:
+</p>
+<pre class="code">
+3.0
+    1.0
+        bbbb
+        bbb
+    2.0
+        1.0
+            aaa
+            aa
+        aaaaa
+</pre>
+<p>
+and finally in the standard dendrogram notation:
+</p>
+<pre class="code">
+3        ----------------
+        |                |
+2       |            --------
+        |           |        |
+1     -----       -----      |
+     |     |     |     |     |
+    bbbb  bbb   aaa   aa   aaaaa
+</pre>
+<p>
+There is a leaf for each of the five members of the input set.
+there are then four &quot;links&quot;.  First, <code>bbbb</code>
+and <code>bbb</code> are linked at their distance, 1.  Similarly,
+<code>aa</code> and <code>aaa</code> are linked at distance 1.
+Then <code>{aa,aaa}</code> is linked to <code>aaaaa</code> at
+distance 2.  Finally, the <code>a</code> cluster is linked to
+the <code>b</code> cluster at distance 3.
+</p>
+
+<h3>Clusterings from Dendrograms</h3>
+
+<p>
+There are two ways to extract standard clusterings from dendrograms.
+The simplest is to set a distance bound and maintain every cluster
+formed at less than or equal to that bound.  This is equivalent to
+cutting the standard dendrogram notation at a specified height.  The
+other way to construct a clustering is to continue cutting the highest
+distance cluster until a specified number of clusters is obtained.
+</p>
+
+
+
+<h2>Single-Link and Complete-Link Clustering</h2>
+
+<h3>Agglomerative Clustering</h3>
+
+<p>LingPipe provides the two standard aggolomerative clustering
+algorithms, single-link and complete-link clustering.  These
+clusterers are aggolomerative in the sense that the algorithms begin
+with a single leaf dendrogram for each element being clustered and
+then build up to the complete dendrogram by joining the next closest
+pairs of clusters.
+</p>
+<p>
+The only difference between the approaches is that single-link
+clustering considers the distance between clusters to be the minimum
+distance between elements of the clusters, whereas complete-link
+clustering takes it to be the maximum.  Thus Single-link clustering
+tends to create highly separated clusters whereas complete-link
+clustering tends to create more tightly centered clusters.  In
+practice, complete link clustering tends to be more useful, though it
+is more expensive to compute.
+</p>
+
+<h3>General Distance Functions</h3>
+<p>
+Single-link and complete-link clustererers are both based on
+a notion of distance between objects.  This is made concrete by the
+<code>com.aliasi.util.Distance</code> interface:
+</p>
+<pre class="code">
+public interface Distance&lt;E&gt; {
+    public double distance(E e1, E e2);
+}
+</pre>
+<p>
+The distance interface is parameterized by type <code>E</code>
+and provides a floating point distance between two objects of
+type <code>E</code>.
+</p>
+<p>
+Each clusterer requires an appropriate distance function, which must
+be a distance between supertypes of its own types; that is, a single-
+or complete-link clusterer implementing
+<code>Clusterer&lt;E&gt;</code> requires a distance function
+implementing <code>Distance&lt;? super E&gt;</code>.
+</p>
+
+<h2>Example: Strings By Edit Distance</h2>
+
+<h3>Edit Distance</h3>
+<p>
+The edit distance between strings is the number of insert, delete, or
+substitution operations required to convert one string into the other.
+For instance, the edit distance between &quot;Fred&quot; and
+&quot;Ted&quot; is two, as it requires the substitution of
+<code>T</code> for <code>F</code> and the deletion of <code>r</code>.
+</p>
+<p>
+In the following example, we will use LingPipe's implementation of
+simple edit distance, <code>com.aliasi.spell.EditDistance</code>,
+which computes edit distances between character sequences, and is thus
+specified to implement <code>Distance&lt;CharSequence&gt;</code>.
+Instances are created directly:
+</p>
+<pre class="code">
+static final Distance&lt;CharSequence&gt; EDIT_DISTANCE
+    = new EditDistance(false);
+</pre>
+<p>
+The boolean <code>false</code> indicates that transposition is
+not permitted as an edit operation.
+</p>
+
+<h3>Example: Strings to Cluster</h3>
+<p>
+We consider
+
+In this section, we illustrate the differences between single- and
+complete-link clustering in the context of string edit distances.
+We
+The following inputs provide an example where complete-link
+and single-link clustering produce different results:
+</p>
+<pre class="code">
+{ &quot;a&quot;, &quot;aaa&quot;, &quot;aaaaaa&quot;, &quot;aaaaaaaaaa&quot; }
+</pre>
+<p>
+That's 1, 3, 6 and 10 instances of the letter <code>a</code>.  In this
+case, edit distance is just the distance in length, as that is the
+number of insertions required to convert the shorter string into the
+longer (equivalently deletions working from longer to shorter).
+</p>
+
+<h3>Example: Clusterings</h3>
+
+<p>
+Here are the dendrograms produced by the complete-link and
+single-link clusterers.
+</p>
+<table>
+<tr><th class="title" colspan="2">Complete- and Single-Link Clusterings</th></tr>
+<tr><th>Complete Link</th>
+    <th>Single Link</th></tr>
+<tr>
+<td><pre>
+9.0
+    4.0
+        aaaaaa
+        aaaaaaaaaa
+    2.0
+        aaa
+        a
+</pre></td>
+
+<td><pre>
+4.0
+    3.0
+        aaaaaa
+        2.0
+            aaa
+            a
+    aaaaaaaaaa
+</pre></td>
+</tr>
+</table>
+<p>
+Note that the clusterings are different trees.  The single-link
+clustering is deeper, whereas the complete link is more balanced.
+</p>
+
+<h3>Example: Step-by-Step</h3>
+<p>
+Here are the steps taken by single-link clustering:
+</p>
+<pre class="code">
+a  aaa  aaaaaa  aaaaaaaaaa
+{a aaa}:2  aaaaaa  aaaaaaaaaa
+{{a aaa}:2  aaaaaa}:3  aaaaaaaaaa
+{{{a aaa}:2 aaaaaa}:3  aaaaaaaaaa}:4
+</pre>
+<p>
+Note that <code>aaaaaa</code> is linked to
+<code>{a aaa}</code> at distance 3, which
+is the distance to <code>aaa</code>, not at
+distance 5, which is the distance to <code>a</code>.
+Similarly the final linkage of <code>aaaaaaaaaa</code>
+to the cluster of the smaller strings is at
+distance 4, its distance to <code>aaaaaa</code>,
+the smallest distance among the distances to
+<code>a</code>, <code>aaa</code> and
+<code>aaaaaa</code>.
+</p>
+<p>
+Here are the steps taken taken by complete-link:
+</p>
+<pre class="code">
+a  aaa  aaaaaa  aaaaaaaaaa
+{a aaa}:2  aaaaaa  aaaaaaaaaa
+{a aaa}:2  {aaaaaa  aaaaaaaaaa}:4
+{{a aaa}:2  {aaaaaa  aaaaaaaaaa}:4}:9
+</pre>
+<p>
+the main difference is that <code>aaaaaa</code> is linked to
+<code>aaaaaaaaaa</code> instead of to the cluster <code>{a
+aaa}</code>.  That's because the maximum distance of
+<code>aaaaaa</code> to an element of <code>{a aaa}</code> is 5,
+whereas the distance between <code>aaaaaa</code> and
+<code>aaaaaaaaaa</code> is only 4.  The final link is at distance 9,
+which is the maximum distance between elements in the two clusters,
+specifically between <code>a</code> and <code>aaaaaaaaaa</code>.
+</p>
+
+
+
+<h2>Dendrograms to Clusterings</h2>
+
+<h3>Extracting <code>K</code> Clusters</h3>
+
+<p>
+The step-by-step example of clustering above indicates
+one way to think about generating K clusters from a dendrogram.
+Simply run the agglomerative algorithm until there are K
+clusters remaining to cluster and stop.  This same result
+may be computed directly from a dendrogram by cutting
+the most expensive dendrograms until there are exactly K
+dendrograms left.
+</p>
+<p>
+Given a dendrogram, we may return the least cost K clusters
+by calling the method <code>partitionK(int)</code>.
+For instance,
+consider the continuation of the example above in
+<a
+href="src/StringEdits.java"><code>src/StringEdits.java</code></a>:
+Here is the code to generate partitions of size K:
+</p>
+<pre class="code">
+for (int k = 1; k &lt;= clDendrogram.size(); ++k) {
+    Set&lt;Set&lt;String&gt;&gt; clKClustering = clDendrogram.partitionK(k);
+    System.out.println(k + "  " + slKClustering);
+}
+</pre>
+
+<p>
+resulting in the following output for the complete link
+dendrogram listed in the above table:
+</p>
+<pre class="code">
+Complete Link Clusterings
+1  [[aaaaaa, aaa, a, aaaaaaaaaa]]
+2  [[aaa, a], [aaaaaa, aaaaaaaaaa]]
+3  [[aaa, a], [aaaaaa], [aaaaaaaaaa]]
+4  [[aaaaaaaaaa], [aaaaaa], [aaa], [a]]
+</pre>
+<p>
+The single-link results are a bit different:
+</p>
+<pre class="code">
+Single Link Clusterings
+1  [[aaaaaa, aaa, a, aaaaaaaaaa]]
+2  [[aaaaaa, aaa, a], [aaaaaaaaaa]]
+3  [[aaa, a], [aaaaaaaaaa], [aaaaaa]]
+4  [[aaaaaa], [aaaaaaaaaa], [aaa], [a]]
+</pre>
+<p>
+Note that these clusterings exactly mirror the steps in the
+construction of the complete-link and single-link clusterings outlined
+above.
+</p>
+
+<h3>Extracting Clusters by Distance</h3>
+<p>
+The second built-in way to convert a dendrogram into a partition is to
+cut the dendrogram at a given distance.  That is, all clusters are
+retained that are formed at or below the given distance.
+</p>
+
+<h3>Configuring Hierarchical Clusterers</h3>
+
+<p>
+The hierarchical clustering interface returns a dendrogram,
+whereas the simple clustering interface returns a set of sets.
+Both single-link and complete-link clustering are configured
+so that their simple clustering behavior is to return all
+clusters that were formed at or below a specified maximum
+distance.  This maximum distance is set in the constructor
+for single-link and complete-link clusterers.
+</p>
+
+
+
+
+
+
+<h2>Evaluating Clusters</h2>
+
+<p>
+The next part of this demo is about scoring clustering results.  It is
+possible to score clusterings (sets of sets) derived from any two
+sources, called the reference and response partitions.
+</p>
+
+<h3>Scoring Demo</h3>
+<p>This section uses a running example found in <a
+href="src/ClusterScoreDemo.java"><code>src/ClusterScoreDemo.java</code></a>.
+</p>
+
+<h3>Building Clusterings Directly</h3>
+<p>
+To show the generality of the clustering evaluation and to sidestep
+any concerns about particular clusterers, we build up a reference and
+response clustering by hand in the demo:
+</p>
+
+<pre class="code">
+Set&lt;String&gt; referenceCluster1 = new HashSet&lt;String&gt;();
+referenceCluster1.add("1");
+referenceCluster1.add("2");
+referenceCluster1.add("3");
+
+Set&lt;String&gt; referenceCluster2 = new HashSet&lt;String&gt;();
+referenceCluster2.add("4");
+referenceCluster3.add("5");
+
+Set&lt;String&gt; referenceCluster3 = new HashSet&lt;String&gt;();
+referenceCluster3.add("6");
+
+Set&lt;Set&lt;String&gt;&gt; referencePartition = new HashSet&lt;Set&lt;String&gt;&gt;();
+referencePartition.add(referenceCluster1);
+referencePartition.add(referenceCluster2);
+referencePartition.add(referenceCluster3);
+</pre>
+
+<p>
+In set notation, the reference partition is
+<code>{{1,2,3},{4},{5,6}}</code>.  Of course, this could be read from
+a file or created in other ways.  We also create the
+response cluster directly.
+</p>
+<pre class="code">
+Set&lt;String&gt; responseCluster1 = new HashSet&lt;String&gt;();
+responseCluster1.add("1");
+responseCluster1.add("2");
+
+Set&lt;String&gt; responseCluster2 = new HashSet&lt;String&gt;();
+responseCluster2.add("3");
+responseCluster2.add("4");
+responseCluster2.add("5");
+responseCluster2.add("6");
+
+HashSet&lt;Set&lt;String&gt;&gt; responsePartition = new HashSet&lt;Set&lt;String&gt;&gt;();
+responsePartition.add(responseCluster1);
+responsePartition.add(responseCluster2);
+</pre>
+<p>
+In set notation, the response is <code>{{1,2},{3,4,5,6}}</code>, which is a partition
+with two clusters.  To summarize:
+</p>
+<pre class="code">
+Reference: { {1,2,3}, {4}, {5,6} }
+ Response: { {1,2}, {3,4,5,6} }
+</pre>
+
+
+<p>Scoring one clustering against the other is as simple as
+constructing a score object, which provides access to a broad range
+of clustering evaluations:
+</p>
+
+<pre class="code">
+ClusterScore&lt;String&gt; score
+    = new ClusterScore&lt;String&gt;(referencePartition,responsePartition);
+</pre>
+
+<p>
+Cluster scores can also be generated using sets of sets, instead of
+arrays of sets.  Cluster scores have an extensive
+<code>toString()</code> method, which basically prints out the same
+thing the demo does with the following illustrative code.
+</p>
+
+
+<h3>Traditional Clustering Measures</h3>
+
+<p>
+Traditional cluster scoring is based on the agreement between the
+clusters as measured over whether they put pairs of elements
+<code>(a,b)</code> in the same cluster or not.  Using these scoring
+metrics is straightforward:
+</p>
+
+<pre class="code">
+PrecisionRecallEvaluation prEval
+  = score.equivalenceEvaluation();
+System.out.println(prEval.toString());
+</pre>
+
+<p>
+The method name <code>equivalenceEvaluation()</code> is based on the
+fact that a paritition derives and equivalence relation from which all
+of these measures are derived as we show below.  The output is a <a
+href="../../../docs/api/com/aliasi/classify/PrecisionRecallEvaluation.html"
+>classify.PrecisionRecallEvaluation</a>.  A precision-recall
+evaluation is based on the following counts for pairs of elements
+<code>(a,b)</code>:
+</p>
+
+<ul>
+<li> <b>True Positives</b>: same cluster in reference, same cluster in response</li>
+<li> <b>False Negatives</b>: same cluster in reference, different cluster in response</li>
+<li> <b>False Positives</b>: different cluster in reference,  same cluster in response</li>
+<li> <b>True Negatives</b>: different cluster in reference, different cluster in response</li>
+</ul>
+
+<p>
+For instance, the pair <code>(1,2)</code> counts as a true positive,
+because the elements are in the same set of the reference partition,
+<code>{1,2,3}</code>, and in the same set in the response partition,
+<code>{1,2}</code>.  The pair <code>(2,1)</code> also gets counted as
+a true positive, as does the pair <code>(1,1)</code>.  Thus there will
+be at least as many true positives as elements coming from each
+element being equal to itself.  The other pairs then count double.
+The other two true positives are <code>(5,6)</code> and
+<code>(6,5)</code>, for a total of ten true positives -- two pairs
+plus six singletons.  The pair <code>(3,4)</code> is a false positive,
+as is <code>(4,3)</code>.  On the other hand, the pairs
+<code>(1,3)</code>, <code>(3,1)</code> and <code>(2,3)</code> and
+<code>(3,2)</code> are the other false negatives.  True negatives
+consist of the remaining cases, such as <code>(1,6)</code>, which are
+in different sets in the reference and response partitions.  This
+makes the total number of cases <code>n<sup><sup>2</sup></sup></code> where
+<code>n</code> is the number of objects being partitioned.
+</p>
+
+<p>From the counts, the following results are returned by <code>prEval.toString()</code>:
+</p>
+
+<pre class="code">
+Equivalence Relation Evaluation
+Total=36
+True Positive=10
+False Negative=4
+False Positive=10
+True Negative=12
+Positive Reference=14
+Positive Response=20
+Negative Reference=22
+Negative Response=16
+Accuracy=0.6111111111111112
+Recall=0.7142857142857143
+Precision=0.5
+Rejection Recall=0.5454545454545454
+Rejection Precision=0.75
+F(1)=0.588235294117647
+Fowlkes-Mallows=16.73320053068151
+Jaccard Coefficient=0.4166666666666667
+Yule's Q=0.5
+Yule's Y=0.2679491924311227
+Reference Likelihood=0.3888888888888889
+Response Likelihood=0.5555555555555556
+Random Accuracy=0.4876543209876543
+Random Accuracy Unbiased=0.5015432098765432
+kappa=0.24096385542168683
+kappa Unbiased=0.2198142414860682
+kappa No Prevalence=0.22222222222222232
+chi Squared=2.3376623376623376
+phi Squared=0.06493506493506493
+Accuracy Deviation=0.08124967025363077
+</pre>
+
+<p>
+These are all explained with formulas in the
+<a href="../../../docs/api/com/aliasi/classify/PrecisionRecallEvaluation.html"
+><code>PrecisionRecallEvaluation</code> class documentation</a>.
+</p>
+
+<h3>MUC and B<sup>3</sup> Measures</h3>
+
+<p>
+In addition to the traditional measures based on the underlying
+equivalence relations generated by partitions, the computational
+linguistics community has derived two classes of measures itself.  The
+first is the scoring defined by Vilain et al. and used in the Message
+Understanding Conferences.  This is accessed as follows:
+</p>
+
+<pre class="code">
+System.out.println("\nMUC Measures");
+System.out.println("  MUC Precision = "
+                   + score.mucPrecision());
+System.out.println("  MUC Recall = "
+                   + score.mucRecall());
+System.out.println("  MUC F(1) ="
+                   + score.mucF());
+</pre>
+
+<p>
+produces the following output:
+</p>
+
+<pre class="code">
+MUC Measures
+MUC Precision = 0.5
+MUC Recall = 0.6666666666666666
+MUC F(1) = 0.5714285714285715
+</pre>
+
+<p>
+The other class of measures are the B<sup>3</sup> measures of
+Bagga and Baldwin.  These are accessed through:
+</p>
+
+<pre class="code">
+System.out.println("\nB-Cubed Measures");
+System.out.println("  Cluster Averaged Precision = "
+                   + score.b3ClusterPrecision());
+System.out.println("  Cluster Averaged Recall = "
+                   + score.b3ClusterRecall());
+System.out.println("  Cluster Averaged F(1) = "
+                   + score.b3ClusterF());
+System.out.println("  Element Averaged Precision = "
+                   + score.b3ElementPrecision());
+System.out.println("  Element Averaged Recall = "
+                   + score.b3ElementRecall());
+System.out.println("  Element Averaged F(1) = "
+                   + score.b3ElementF());
+</pre>
+
+<p>
+and produce the output:
+</p>
+
+<pre class="code">
+B-Cubed Measures
+Cluster Averaged Precision = 0.6875
+Cluster Averaged Recall = 0.8518518518518519
+Cluster Averaged F(1) = 0.7609022556390977
+Element Averaged Precision = 0.5833333333333333
+Element Averaged Recall = 0.7777777777777777
+Element Averaged F(1) = 0.6666666666666666
+</pre>
+
+<p>
+More information on the definitions of the MUC and
+B<sup>3</sup> methods are provided in the <a
+href="../../../docs/api/com/aliasi/cluster/ClusterScore.html"><code>ClusterScore</code>
+class documentation</a>.
+</p>
+
+
+<a name="johnSmithClustering"></a>
+<h2>Natural Language Clustering</h2>
+
+<p>
+In this section, we provide a widely used baseline approach to
+document clustering based on treating documents as term vectors
+and comparing them by cosine.  The code may be found in
+<a href="src/TokenCosineDocCluster.java"><code>src/TokenCosineDocCluster.java</code></a>.
+</p>
+
+
+<h3>Sample Documents</h3>
+<p>As applications, we consider two tiny examples
+clustering newsgroup posts by topic and clustering documents
+referring to John Smiths by the particular John Smith to which
+they're referring.  The data collections are as follows:
+</p>
+<ul>
+<li><b>Four NewsGroups:</b>
+The four newsgroups data is a subset of 178 newsgroup posts
+balanced among the groups <code>alt.atheism</code>,
+<code>misc.forsale</code>, <code>soc.religion.christian</code>,
+and <code>talk.religion.misc</code>, a particularly challenging
+subset.  The four newsgroup data is in the directory
+<a href="../../data/fourNewsGroups.tar.gz"><code>fourNewsGroups.tar.gz</code></a>.
+</li>
+<li><b>John Smith:</b>
+The second data collection contains 197 <i>New York Times</i>
+articles about 35 different people named John Smith.  Each article
+mentions a single John Smith.  The clusters with more than one
+document contain the following numbers of documents:
+2, 2, 2, 4, 4, 5, 9, 15, 20, 22, 88.  The other 24 clusters contain
+a single document. This data, <a href="../../data/johnSmith.tar.gz"><code>johnSmith.tar.gz</code></a>,
+ is one of the data sets from Bagga and Baldwin's 1998 ACL paper
+<a
+href="http://acl.ldc.upenn.edu/P/P98/P98-1012.pdf">Entity-Based
+Cross-Document Coreferencing Using the Vector Space Model</a>.
+</li>
+</ul>
+<p>
+Our approach will differ from Bagga and Baldwin's in four
+important ways. First, we use whole documents rather than sentences linked
+by coreference; this was their baseline condition.  Second, we
+use agglomerative clustering rather than the greedy method
+of Bagga and Baldwin.  Third, we take the square root of raw
+counts as our term frequencies rathr than the raw counts.
+Fourth, we do not use inverse-document frequency normalization;
+inverse document frequency can be important for discrimination.
+</p>
+
+<h3>Documents and Token Counts</h3>
+<p>
+As described above, the basis of single-link and complete-link
+clustering is a distance measure over objects to cluster.  To
+this end, we define a <code>Document</code> class to represent
+documents in
+<a href="src/TokenCosineDocCluster.java"><code>src/TokenCosineDocCluster.java</code></a>.
+A document stores four fields: the file from which it
+was generated, the chars making up its text, a token
+counter, and a length:
+</p>
+<pre class="code">
+static class Document {
+
+    final File mFile;
+    final char[] mText; // don't really need to store
+    final ObjectToCounterMap&lt;String&gt; mTokenCounter
+        = new ObjectToCounterMap&lt;String&gt;();
+    final double mLength;
+    ...
+</pre>
+<p>
+The constructor simply sets these variables given a specified
+file from which to build the document.
+</p>
+<pre class="code">
+Document(File file) throws IOException {
+    mFile = file;
+    mText = Files.readCharsFromFile(file,Strings.UTF8);
+    Tokenizer tokenizer = TOKENIZER_FACTORY.tokenizer(mText,0,mText.length);
+    String token;
+    while ((token = tokenizer.nextToken()) != null)
+        mTokenCounter.increment(token.toLowerCase());
+    mLength = length(mTokenCounter);
+}
+</pre>
+
+<p> Note that a utility method in <code>com.aliasi.util.Files</code>
+is used to read the data.  Length is computed using the
+<code>length(ObjectToCounterMap)</code> method.  Tokenizers are
+extracted from the constant tokenizer factory.</p>
+
+<p>The tokenizer factory
+is generated and assigned to a constant in the usual way:
+</p>
+
+<pre class="code">
+    static final TokenizerFactory TOKENIZER_FACTORY = tokenizerFactory();
+
+    static TokenizerFactory tokenizerFactory() {
+        TokenizerFactory factory = IndoEuropeanTokenizerFactory.INSTANCE;
+        // factory  = new LowerCaseTokenizerFactory(factory);
+        // factory = new EnglishStopTokenizerFactory(factory);
+        // factory = new PorterStemmerTokenizerFactory(factory);
+        return factory;
+    }
+}
+</pre>
+
+<p>
+Although commented out, the subsequent filters may be
+applied: conversion to lowercase, removal of stop words
+and finally stemming.  None of these operations improve performance
+in the case at hand, so we left them commented out.
+</p>
+
+<h3>Cosine Inter-document Distance</h3>
+
+<p>Our methods for computing lengths and cosine implicitly
+apply the standard &quot;normalization&quot; to term frequencies,
+namely taking their square root.</p>
+<pre class="code">
+static double length(ObjectToCounterMap&lt;String&gt; otc) {
+    double sum = 0.0;
+    for (Counter counter : otc.values()) {
+        double count = counter.doubleValue();
+        sum += count;  // tf =sqrt(count); sum += tf * tf
+    }
+    return Math.sqrt(sum);
+}
+</pre>
+<p>
+This is just standard vector distance where the vector's values are
+the square roots of the counts; we have implicitly taken term
+frequencies to be the square root of observed frequencies and unrolled
+the computation into the length method.
+</p>
+<p>
+Computing cosines between two document vectors is also straightforward,
+as it's the usual vector product divided by the vectors' lengths:
+</p>
+<pre class="code">
+double cosine(Document thatDoc) {
+    return product(thatDoc) / (mLength * thatDoc.mLength);
+}
+</pre>
+<p>
+Vector products are computed in the usual way:
+</p>
+<pre class="code">
+double product(Document thatDoc) {
+    double sum = 0.0;
+    for (String token : mTokenCounter.keySet()) {
+        int count = thatDoc.mTokenCounter.getCount(token);
+        if (count == 0) continue;
+        sum += Math.sqrt(count * mTokenCounter.getCount(token)); // tf = sqrt(count)
+    }
+    return sum;
+}
+</pre>
+<p>
+As with length, we have converted counts into term frequencies
+by taking square roots.
+</p>
+<p>
+Cosines measure the similarity of vector directions.  Cosine
+is a proximity measure in that a higher cosine value
+between two vectors indicates that they are more in the same
+direction.  Thus to define a distance, we subtract the cosine
+between document vectors by one:
+</p>
+<pre class="code">
+static Distance&lt;Document&gt; COSINE_DISTANCE
+    = new Distance&lt;Document&gt;() {
+        public double distance(Document doc1, Document doc2) {
+            return 1.0 - doc1.cosine(doc2);
+        }
+    };
+</pre>
+
+<h3>Performing Clustering</h3>
+
+<p>
+Now that we have a way to construct documents and a distance
+measure, clustering itself is trivial.  Suppose that <code>docSet</code>
+is a set of documents of type <code>Set&lt;Document&gt;</code>.  The
+complete code for complete-link clustering is:
+</p>
+
+<pre class="code">
+HierarchicalClusterer&lt;Document&gt; clClusterer
+    = new CompleteLinkClusterer&lt;Document&gt;(COSINE_DISTANCE);
+Dendrogram&lt;Document&gt; completeLinkDendrogram
+    = clClusterer.hierarchicalCluster(docSet);
+</pre><!-- why has this lost its bottom border? -->
+
+<h3>Reading Reference Document Collection</h3>
+
+<p> The rest of the code is just housekeeping: I/O and scoring.  To
+begin, we assume the documents are arranged by true cluster in a
+document hierarchy.  A specified top-level directory contains a single
+subdirectory for each cluster, and that subdirectory contains a set of
+text files, corresponding to members of that cluster.  All of this is
+read into a reference clustering as a set of set of documents as
+follows:
+</p>
+
+<pre class="code">
+public static void main(String[] args) throws Exception {
+    File dir = new File(args[0]);
+
+    Set&lt;Set&lt;Document&gt;&gt; referencePartition
+        = new HashSet&lt;Set&lt;Document&gt;&gt;();
+
+    for (File catDir : dir.listFiles()) {
+        Set&lt;Document&gt; docsForCat = new HashSet&lt;Document&gt;();
+        referencePartition.add(docsForCat);
+        for (File file : catDir.listFiles()) {
+            Document doc = new Document(file);
+            docsForCat.add(doc);
+        }
+    }
+</pre>
+
+<p>
+From the reference partition, we can recover the complete set
+of docs to cluster, removing the truth from our input (and thus
+not cheating):
+</p>
+<pre class="code">
+Set&lt;Document&gt; docSet = new HashSet&lt;Document&gt;();
+for (Set&lt;Document&gt; cluster : referencePartition)
+    docSet.addAll(cluster);
+</pre>
+
+<h3>Clustering, Again</h3>
+
+<p>
+The actual clustering is performed as indicated earlier,
+repeated here for continuity:
+</p>
+<pre class="code">
+HierarchicalClusterer&lt;Document&gt; clClusterer
+    = new CompleteLinkClusterer&lt;Document&gt;(COSINE_DISTANCE);
+Dendrogram&lt;Document&gt; completeLinkDendrogram
+    = clClusterer.hierarchicalCluster(docSet);
+
+HierarchicalClusterer&lt;Document&gt; slClusterer
+    = new SingleLinkClusterer&lt;Document&gt;(COSINE_DISTANCE);
+Dendrogram&lt;Document&gt; singleLinkDendrogram
+    = slClusterer.hierarchicalCluster(docSet);
+</pre>
+
+<h3>Scoring</h3>
+
+<p> The rest of the code is just scoring.  We compute the
+precision/recall-based pairwise relational evaluation of the reference
+partition (aka the truth, or gold standard) versus complete link
+clustering results, reference versus single link, and finally, single
+link versus complete link.  We do this by splitting the dendrograms
+into all possible numbers of clusters and seeing what we get.  The
+loop to do all the evaluations is as follows:
+</p>
+<pre class="code">
+for (int k = 1; k &lt;= docSet.size(); ++k) {
+    Set&lt;Set&lt;Document&gt;&gt; clResponsePartition
+        = completeLinkDendrogram.partitionK(k);
+    Set&lt;Set&lt;Document&gt;&gt; slResponsePartition
+        = singleLinkDendrogram.partitionK(k);
+
+    ClusterScore&lt;Document&gt; scoreCL
+        = new ClusterScore&lt;Document&gt;(referencePartition,
+                                     clResponsePartition);
+    PrecisionRecallEvaluation clPrEval = scoreCL.equivalenceEvaluation();
+
+    ClusterScore&lt;Document&gt; scoreSL
+        = new ClusterScore&lt;Document&gt;(referencePartition,
+                                     slResponsePartition);
+    PrecisionRecallEvaluation slPrEval = scoreSL.equivalenceEvaluation();
+
+    ClusterScore&lt;Document&gt; scoreX
+        = new ClusterScore&lt;Document&gt;(clResponsePartition,
+                                     slResponsePartition);
+    PrecisionRecallEvaluation xPrEval = scoreX.equivalenceEvaluation();
+    ...
+</pre>
+
+<p>
+In each case, we take the dendrogram produced by hierarchical
+clustering and split it into the top K clusters.  We then
+create the three evaluations.  The rest is I/O.
+</p>
+
+<h3>Results for John Smith</h3>
+
+<p>
+Here are the results for the John Smith case, which can be
+viewed by executing the ant target <code>john-smith</code>
+</p>
+<pre class="code">
+C:\carp\mycvs\lingpipe\demos\tutorial\cluster&gt;ant john-smith
+Buildfile: build.xml
+
+compile:
+    [javac] Compiling 1 source file to C:\carp\mycvs\lingpipe\demos\tutorial\cluster\b
+
+john-smith:
+     [java] Category from file=..\..\data\johnSmith\0
+     [java] Category from file=..\..\data\johnSmith\1
+     [java] Category from file=..\..\data\johnSmith\10
+     ...
+     [java]
+     [java]  --------------------------------------------------------
+     [java] |  K  |  Complete      |  Single        |  Cross         |
+     [java] |     |  P    R    F   |  P    R    F   |  P    R    F   |
+     [java]  --------------------------------------------------------
+     [java] |   1 | 0.23 1.00 0.38 | 0.23 1.00 0.38 | 1.00 1.00 1.00 |
+     [java] |   2 | 0.45 0.96 0.61 | 0.23 1.00 0.38 | 0.50 0.99 0.66 |
+     [java] |   3 | 0.45 0.96 0.61 | 0.24 1.00 0.38 | 0.50 0.99 0.66 |
+     [java] |   4 | 0.54 0.96 <b>0.69</b> | 0.24 1.00 0.39 | 0.42 0.99 0.59 |
+     [java] |   5 | 0.44 0.55 0.49 | 0.24 1.00 0.39 | 0.30 0.97 0.45 |
+     [java] |   6 | 0.44 0.55 0.49 | 0.24 0.99 0.39 | 0.30 0.97 0.45 |
+     [java] |   7 | 0.42 0.48 0.45 | 0.24 0.99 0.39 | 0.27 0.95 0.42 |
+     [java] |   8 | 0.42 0.47 0.44 | 0.25 0.98 0.39 | 0.27 0.95 0.42 |
+     [java] |   9 | 0.40 0.43 0.42 | 0.25 0.98 0.40 | 0.25 0.94 0.40 |
+     [java] |  10 | 0.40 0.43 0.42 | 0.25 0.98 0.40 | 0.25 0.92 0.40 |
+     [java] |  15 | 0.55 0.32 0.40 | 0.27 0.98 0.42 | 0.14 0.92 0.25 |
+     [java] |  20 | 0.65 0.29 0.41 | 0.28 0.95 0.43 | 0.12 0.91 0.21 |
+     [java] |  25 | 0.80 0.28 0.42 | 0.29 0.91 0.44 | 0.10 0.92 0.18 |
+     [java] |  30 | 0.82 0.23 0.36 | 0.29 0.84 0.43 | 0.09 0.89 0.16 |
+     [java] |  35 | 0.83 0.23 0.36 | 0.31 0.83 0.45 | 0.09 0.88 0.16 |
+     [java] |  40 | 0.82 0.18 0.30 | 0.31 0.79 0.45 | 0.08 0.91 0.15 |
+     [java] |  45 | 0.83 0.17 0.28 | 0.58 0.79 0.67 | 0.14 0.93 0.24 |
+     [java] |  50 | 0.85 0.17 0.28 | 0.60 0.77 0.67 | 0.14 0.93 0.25 |
+     [java] |  60 | 0.87 0.15 0.25 | 0.77 0.68 0.72 | 0.18 0.95 0.30 |
+     [java] |  61 | 0.87 0.15 0.25 | 0.77 0.68 0.72 | 0.18 0.95 0.30 |
+     [java] |  62 | 0.88 0.15 0.25 | 0.77 0.68 0.72 | 0.18 0.95 0.30 |
+     [java] |  63 | 0.85 0.12 0.21 | 0.83 0.68 0.75 | 0.17 0.94 0.28 |
+     [java] |  64 | 0.85 0.12 0.21 | 0.86 0.68 0.76 | 0.16 0.89 0.26 |
+     [java] |  65 | 0.85 0.11 0.20 | 0.87 0.68 0.76 | 0.15 0.88 0.26 |
+     [java] |  66 | 0.85 0.11 0.20 | 0.87 0.68 0.76 | 0.15 0.89 0.26 |
+     [java] |  67 | 0.85 0.11 0.20 | 0.93 0.68 <b>0.79</b> | 0.15 0.85 0.26 |
+     [java] |  68 | 0.85 0.11 0.20 | 0.93 0.66 0.77 | 0.16 0.84 0.26 |
+     [java] |  69 | 0.85 0.11 0.20 | 0.93 0.66 0.77 | 0.15 0.84 0.26 |
+     [java] |  70 | 0.86 0.11 0.20 | 0.93 0.62 0.74 | 0.16 0.83 0.27 |
+     [java] |  71 | 0.86 0.10 0.18 | 0.92 0.52 0.67 | 0.17 0.82 0.29 |
+     [java] |  72 | 0.85 0.10 0.18 | 0.92 0.51 0.65 | 0.17 0.80 0.28 |
+     [java] |  73 | 0.85 0.10 0.17 | 0.91 0.42 0.58 | 0.20 0.80 0.32 |
+     [java] |  80 | 0.92 0.09 0.17 | 0.94 0.40 0.56 | 0.21 0.87 0.33 |
+     [java] |  90 | 0.98 0.09 0.16 | 0.97 0.30 0.46 | 0.27 0.94 0.42 |
+     [java] | 100 | 0.98 0.07 0.14 | 0.96 0.19 0.32 | 0.36 0.95 0.52 |
+     [java] | 125 | 1.00 0.06 0.12 | 1.00 0.07 0.13 | 0.85 0.96 0.90 |
+     [java] | 150 | 1.00 0.04 0.08 | 1.00 0.04 0.08 | 0.93 0.97 0.95 |
+     [java] | 175 | 1.00 0.03 0.06 | 1.00 0.03 0.06 | 1.00 1.00 1.00 |
+     [java] | 197 | 1.00 0.02 0.04 | 1.00 0.02 0.04 | 1.00 1.00 1.00 |
+     [java]  --------------------------------------------------------
+
+BUILD SUCCESSFUL
+Total time: 11 seconds
+</pre>
+
+<div class="sidebar">
+<h2>Post-hoc Fitting Warning</h2>
+<p>
+This is another case where we look at the entire set of results
+and see what pops up.  Thus we would not expect to have a .79
+F measure on unseen data with an a priori setting of the number
+of Ks.  The literature in this area has been naughty in exactly
+the same way -- publishing a posteriori maximum results.
+</p>
+</div>
+
+<p>We have eliminated some of the less interesting lines.  First,
+consider the case of K=35, which is the number of reference clusters.
+This is not the best scoring K for either single or complete-link
+clusterers.  For complete-link clustering, the maximum F measure is
+0.69, occurring at K=4; this result is somewhat of an anomoly, though,
+as the precision values are not monotonically increasing through this
+point (which is common for non-interpolated results such as these).
+Single-link clustering on the other hand has a maximum F measure of
+.79, occurring at K=67, which is roughly double the number of reference
+clusters.    Further note that a precision of 0.25 is the precision
+expected by randomly clustering.
+</p>
+<p>
+The complete-link and single-link clusterers present a range of
+possible operating points.  For instance, complete-link is
+better for precision at high recall.  Consider the best precision
+above 0.95 recall -- it's 0.54 for complete link and only
+0.28 for single link.  On the other hand, the best
+recall for 0.95 precision is reversed, with single-link providing
+a 0.30 recall at 0.95 precision, with complete link only having
+a 0.09 recall at 0.95 precision.  Single link clearly dominates
+in total F measure as well as in balanced precision/recall (in
+the 0.70 range for single link versus the 0.40 range for complete
+link).
+</p>
+<p>
+Note that the curves will also look different under different
+term frequency weightings, if stop lists or other normalizations
+are used, and so on.  They are actually very sensitive to threshold
+here.
+</p>
+
+<h3>Results for Four Newsgroups</h3>
+<p>
+For completeness, here's the same table for the four
+newsgroup example:
+</p>
+<pre class="code">
+C:\carp\mycvs\lingpipe\demos\tutorial\cluster&gt;ant four-news
+...
+ --------------------------------------------------------
+|  K  |  Complete      |  Single        |  Cross         |
+|     |  P    R    F   |  P    R    F   |  P    R    F   |
+ --------------------------------------------------------
+|   1 | 0.25 1.00 0.40 | 0.25 1.00 0.40 | 1.00 1.00 1.00 |
+|   2 | 0.31 0.84 0.45 | 0.25 0.99 0.40 | 0.68 0.99 0.81 |
+|   3 | 0.32 0.67 0.43 | 0.25 0.98 0.40 | 0.52 0.98 0.68 |
+|   4 | 0.32 0.64 0.43 | 0.25 0.97 0.40 | 0.51 0.98 0.67 |
+|   5 | 0.32 0.64 0.43 | 0.25 0.96 0.40 | 0.51 0.98 0.67 |
+|   6 | 0.34 0.47 0.40 | 0.25 0.95 0.40 | 0.35 0.98 0.52 |
+|   7 | 0.34 0.44 0.38 | 0.25 0.94 0.40 | 0.35 0.98 0.51 |
+|   8 | 0.34 0.44 0.38 | 0.25 0.93 0.40 | 0.35 0.99 0.52 |
+|   9 | 0.33 0.42 0.37 | 0.25 0.92 0.40 | 0.35 0.99 0.52 |
+|  10 | 0.34 0.31 0.33 | 0.25 0.91 0.39 | 0.25 0.98 0.40 |
+|  15 | 0.33 0.27 0.30 | 0.25 0.85 0.39 | 0.24 0.98 0.39 |
+|  20 | 0.36 0.26 0.31 | 0.26 0.80 0.39 | 0.23 0.97 0.37 |
+|  30 | 0.38 0.19 0.25 | 0.29 0.69 0.41 | 0.20 0.96 0.33 |
+|  40 | 0.45 0.12 0.19 | 0.31 0.63 0.42 | 0.13 0.96 0.22 |
+|  50 | 0.51 0.10 0.17 | 0.32 0.55 0.40 | 0.11 0.94 0.19 |
+|  75 | 0.64 0.07 0.13 | 0.35 0.33 0.34 | 0.11 0.88 0.19 |
+| 100 | 0.82 0.05 0.10 | 0.38 0.21 0.27 | 0.11 0.91 0.20 |
+| 125 | 0.93 0.04 0.08 | 0.47 0.10 0.16 | 0.19 0.88 0.31 |
+| 150 | 0.98 0.03 0.06 | 0.86 0.03 0.07 | 0.79 0.97 0.87 |
+| 178 | 1.00 0.02 0.04 | 1.00 0.02 0.04 | 1.00 1.00 1.00 |
+ --------------------------------------------------------
+</pre>
+
+<p> Here the true number of clusters is 4, and again, this is not the
+optimal preformance point for either clusterer.  Neither clusterer far
+exceeds the baseline result of just throwing everything in a single
+cluster (which, as indicated in the first line above, produces scores
+of P=0.25, R=1.00, F=0.40).  By the time either approach has a
+precision that's much better than chance (0.25), recall is fairly
+poor.  This is perhaps not surprising given the closeness of the
+topics in this document collection.  </p>
+
+<h2>Clustering for Word Sense Bootstrapping</h2>
+
+<p> This idea of clustering documents referring to John Smith is
+implicitly doing a kind of unsupervised word sense disambiguation
+(WSD).  For instance, rather than documents containing John Smith,
+one might choose documents containing other ambiguous words or
+phrases, either real or artificially generated.
+</p>
+<p>Grouping together
+contexts for words in this way is often known as bootstrapping
+in the computational linguistics literature (not related to the
+statistical technique of bootstrap estimation).  In the bootstrapping
+case, often a few supervised examples are provided as a starting
+point.
+</p>
+
+<h2>Latent Dirichlet Allocation</h2>
+
+<div class="sidebar">
+<h2>Where's the Math?</h2>
+
+<p>The class documentation for
+<a href="../../../docs/api/com/aliasi/cluster/LatentDirichletAllocation.html"><code>cluster.LatentDirichletAllocation</code></a> contains the complete set of formulas for the LDA model,
+the inference mechanisms supported by the class.  It also contains
+citations of the original LDA papers for further reading.
+</p>
+</div>
+
+<p> Latent Dirichlet allocation (LDA) is different than other document
+(or general multinomial) clustering techniques in that it assigns
+multiple topics to each document.  For instance, an article about the
+<a
+href="http://en.wikipedia.org/wiki/Banned_substances_in_baseball">steroid
+scandal in American baseball</a> is naturally modeled as a mixture of
+topics involving baseball, the United States congress, scandals and
+illegal drug use.  Although such topics may be correlated, covariance
+is not modeled in the basic LDA model.  </p>
+
+<p>The LDA model consists of a fixed number of topics, each of which
+is modeled as a distribution over words.  A document under LDA is
+modeled as a distribution over topics.  There is a Dirichlet prior on
+both the topic distributions over words and the document distributions
+over topics.</p>
+
+<p>The implementation of LDA in LingPipe performs two basic functions.
+First, it estimates the parameters of an LDA model from an unlabeled
+corpus of documents given the two Dirichlet priors and a fixed number
+of topics.  These estimates are performed by Gibbs sampling, which
+provides samples from the posterior distribution over topic
+distributions given the data.  These samples may be used individually
+to construct an LDA model, or they may be used collectively to perform
+Bayesian reasoning over the uncertainty in the model estimation.  The
+implementation of parameter estimation is handled by a single static
+method which returns a final model estimate and allows incremental
+sampling of model estimates and parameters as it goes.  </p>
+
+<p>The LDA class itself represents an estimated LDA model.  Such a
+model may be used to infer the topic distribution for new documents
+given the document-topic Dirichlet prior.  Thus it essentially functions
+as a multi-topic classifier over documents.</p>
+
+<p>A given LDA model may also be used to do reasoning at the word
+level, estimating the likelihood of a word given a previous bag
+of words.  This latter function may be used to model word associations.
+It may also be used to model collaborative filtering, where
+documents represent users and the words represent discrete ratings.
+</p>
+
+
+
+
+<h3>Synthetic LDA Example</h3>
+
+<p>We begin with an example drawn from Steyvers and Griffiths'
+paper on topic models (2007; see the references below).   Synthetic
+examples play an important role in statistics, namely
+testing that the model can appropriately estimate parameters
+to recreate the data source that generated it.  To do this,
+an artificial example case is generated using known parameters,
+and the algorithm attempts to estimate those parameters
+accurately.  For LDA models, the parameters of interest here
+are the topic distributions over words, as we treat the Dirichlet
+priors as fixed.</p>
+
+<p>This particular example was generated from
+two topics, whose distribution over words is given in
+the following table.</p>
+
+<table>
+<tr><th class="title" colspan="6">Word Probabilities in Topics</th></tr>
+<tr><td></td><th>river</th><th>stream</th><th>bank</th><th>money</th><th>loan</th></tr>
+<tr><th>Topic 0</th><td>0</td><td>0</td><td>1/3</td><td>1/3</td><td>1/3</td></tr>
+<tr><th>Topic 1</th><td>1/3</td><td>1/3</td><td>1/3</td><td>0</td><td>0</td></tr>
+</table>
+
+<p>
+For instance, the probability of generating the word &quot;stream&quot;
+in topic 1 is 1/3, but it is 0 in topic 0.  Both topics assign
+probability 1/3 to the word &quot;bank&quot;.
+Topic 0 generates words having to do with banking, whereas
+topic 1 generates words about rivers.  Both assign non-zero
+probability to the word &quot;bank&quot;.
+</p>
+
+<h4>Running the Example</h4>
+
+<p>The example can be run from Ant:</p>
+
+<pre class="code" style="font-size:65%">
+&gt; cd $LINGPIPE/demos/tutorial/cluster
+&gt; ant lda-fixed
+
+Epoch=  0   elapsed time=:00
+Epoch=  1   elapsed time=:00
+Epoch=  2   elapsed time=:00
+Epoch=  3   elapsed time=:00
+Epoch=  4   elapsed time=:00
+Epoch=  5   elapsed time=:00
+Epoch=  6   elapsed time=:00
+Epoch=  7   elapsed time=:00
+Epoch=  8   elapsed time=:00
+Epoch=  9   elapsed time=:00
+Epoch= 10   elapsed time=:00
+Epoch= 11   elapsed time=:00
+Epoch= 12   elapsed time=:00
+Epoch= 13   elapsed time=:00
+Epoch= 14   elapsed time=:00
+Epoch= 15   elapsed time=:00
+
+Final Report
+epoch=15
+numDocs=16
+numTokens=256
+numWords=5
+numTopics=2
+
+TOPIC 0  (total count=101)
+SYMBOL             WORD    COUNT   PROB          Z
+--------------------------------------------------
+     1           stream       42   0.416       4.3
+     2             bank       32   0.317      -0.7
+     0            river       27   0.267       3.3
+
+TOPIC 1  (total count=155)
+SYMBOL             WORD    COUNT   PROB          Z
+--------------------------------------------------
+     2             bank       63   0.406       0.7
+     3            money       48   0.310       3.0
+     4             loan       44   0.284       2.9
+
+DOC 0
+TOPIC    COUNT    PROB
+----------------------
+    1       16   0.994
+
+bank(1) loan(1) money(1) loan(1) loan(1) money(1) bank(1) loan(1) bank(1) loan(1) loan(1) money(1) bank(1) money(1) money(1) money(1)
+
+DOC 1
+TOPIC    COUNT    PROB
+----------------------
+    1       16   0.994
+
+loan(1) money(1) money(1) loan(1) bank(1) bank(1) money(1) bank(1) money(1) loan(1) money(1) money(1) bank(1) loan(1) bank(1) money(1)
+
+DOC 2
+TOPIC    COUNT    PROB
+----------------------
+    1       16   0.994
+
+loan(1) bank(1) money(1) money(1) bank(1) bank(1) loan(1) bank(1) money(1) bank(1) bank(1) loan(1) bank(1) money(1) money(1) loan(1)
+
+DOC 3
+TOPIC    COUNT    PROB
+----------------------
+    1       16   0.994
+
+loan(1) bank(1) money(1) bank(1) bank(1) money(1) bank(1) money(1) bank(1) money(1) bank(1) loan(1) money(1) loan(1) bank(1) money(1)
+
+DOC 4
+TOPIC    COUNT    PROB
+----------------------
+    1       16   0.994
+
+bank(1) money(1) bank(1) bank(1) loan(1) bank(1) loan(1) bank(1) loan(1) loan(1) loan(1) bank(1) loan(1) money(1) loan(1) bank(1)
+
+DOC 5
+TOPIC    COUNT    PROB
+----------------------
+    1       16   0.994
+
+bank(1) bank(1) loan(1) money(1) bank(1) bank(1) bank(1) money(1) loan(1) loan(1) money(1) bank(1) loan(1) bank(1) bank(1) bank(1)
+
+DOC 6
+TOPIC    COUNT    PROB
+----------------------
+    1       15   0.932
+    0        1   0.068
+
+money(1) loan(1) money(1) bank(1) loan(1) money(1) river(0) money(1) bank(1) bank(1) loan(1) loan(1) bank(1) loan(1) money(1) money(1)
+
+DOC 7
+TOPIC    COUNT    PROB
+----------------------
+    1       13   0.809
+    0        3   0.191
+
+money(1) bank(1) stream(0) stream(0) bank(1) money(1) bank(1) loan(1) bank(1) loan(1) bank(1) money(1) loan(1) river(0) money(1) bank(1)
+
+DOC 8
+TOPIC    COUNT    PROB
+----------------------
+    1        9   0.562
+    0        7   0.438
+
+money(1) bank(0) money(1) loan(1) stream(0) bank(0) loan(1) bank(0) bank(1) stream(0) money(1) bank(1) bank(1) stream(0) river(0) money(1)
+
+DOC 9
+TOPIC    COUNT    PROB
+----------------------
+    1       10   0.623
+    0        6   0.377
+
+stream(0) bank(1) bank(1) loan(1) bank(0) stream(0) loan(1) bank(1) river(0) loan(1) money(1) stream(0) bank(1) river(0) bank(1) loan(1)
+
+DOC 10
+TOPIC    COUNT    PROB
+----------------------
+    1       10   0.623
+    0        6   0.377
+
+money(1) bank(1) bank(1) bank(1) loan(1) stream(0) river(0) river(0) bank(1) bank(1) bank(1) money(1) stream(0) stream(0) money(1) bank(0)
+
+DOC 11
+TOPIC    COUNT    PROB
+----------------------
+    0       15   0.932
+    1        1   0.068
+
+stream(0) stream(0) bank(0) stream(0) bank(0) stream(0) bank(0) bank(0) stream(0) money(1) river(0) river(0) river(0) bank(0) bank(0) stream(0)
+
+DOC 12
+TOPIC    COUNT    PROB
+----------------------
+    0       15   0.932
+    1        1   0.068
+
+bank(0) stream(0) bank(0) loan(1) river(0) stream(0) bank(0) bank(0) river(0) stream(0) bank(0) river(0) river(0) river(0) river(0) bank(0)
+
+DOC 13
+TOPIC    COUNT    PROB
+----------------------
+    0       16   0.994
+
+bank(0) bank(0) stream(0) bank(0) stream(0) bank(0) stream(0) stream(0) stream(0) stream(0) bank(0) stream(0) river(0) bank(0) river(0) stream(0)
+
+DOC 14
+TOPIC    COUNT    PROB
+----------------------
+    0       16   0.994
+
+river(0) stream(0) stream(0) stream(0) river(0) stream(0) stream(0) bank(0) bank(0) bank(0) bank(0) river(0) river(0) stream(0) bank(0) stream(0)
+
+DOC 15
+TOPIC    COUNT    PROB
+----------------------
+    0       16   0.994
+
+stream(0) river(0) river(0) bank(0) stream(0) stream(0) stream(0) stream(0) bank(0) river(0) river(0) stream(0) bank(0) river(0) stream(0) bank(0)
+
+
+</pre>
+
+
+<p>Stepping through the output, we first see a report of each epoch
+and the elapsed time, the latter of which is negligible for this
+example.  An epoch corresponds to a single Gibbs sample, which is
+itself an assignment of topics to each word in the corpus.
+</p>
+
+<p>After the epoch-by-epoch report, we see a final report.  This
+provides information about the final sample, in this case the
+one drawn at epoch 15 (the 16th epoch counting from 0).  It reports
+the number of documents, tokens, words and topics.</p>
+
+<p>Next up is a summary of the topic models, which are multinomials
+over words.   Here we have two topic models, 0 and 1.  At the top,
+there is a report of how many words were assigned to each topic in
+the corpus; topic 0 has 101 words and topic 1 has 155.  Balance
+between the topics is influenced by the document-topic prior as
+well as the empirical distributions of words in documents.  For
+each symbol with non-zero count in a topic, we provide the symbol
+identifier (mediated by a symbol table in the application), the
+word for the symbol, and the number of times the word was assigned
+to the specified topic.  For instance, the word &quot;stream&quot;
+has symbol 1 and has 42 instances assigned to topic 0.  The
+probability of the word is also reported; it results from a combination
+of the topic-word prior and the sample counts.  For instance,
+the probability of generating the word &quot;loan&quot; from topic 1
+is 0.284.  We also report a binomial Z score, which measures the
+degree of independence of the word from the topic.  Note that
+the word &quot;bank&quot; is the least dependent on topic, as is to
+be expected.</p>
+
+<div class="sidebar">
+<h2>Chi by Eye</h2>
+<p>
+We're using a time-honored method of hypothesis testing
+here, namely
+<a href="http://instructor.physics.lsa.umich.edu/ip-labs/tutorials/errors/chi2.html">chi-by-eye</a>.
+That is, rather than setting up a proper hypothesis test,
+with chi-by-eye, one squints at the data and see if it
+sort of fits.  Chi-by-eye is most widely used in natural
+language processing to assert that some distribution is
+roughly <a href="http://en.wikipedia.org/wiki/Zipf's_law">Zipfian</a>
+(e.g. see the paper &quot;<a href="http://genomebiology.com/2007/8/4/404">Power-law-like distributions
+in biomedical publications and research funding</a>&quot;).
+</p>
+</div>
+
+<p>The question now arises as to whether our sample has recreated
+our underlying topic distributions.  First off, they have the right
+words with non-zero probability, but the overall balance is
+not exactly uniform.  Although they were generated from a uniform
+distribution by Steyvers and Griffiths, the empirical counts have
+many more instances of &quot;stream&quot; than &quot;river&quot; (42
+instances of the former versus only 27 of the latter).</p>
+
+<p>Finally, each document is reported at the level of topic
+distribution and then at the level of topic assigned to a word for
+each word in the corpus.  For instance, in document 11, fifteen words
+were generated by topic 0 and one word by topic 1.  The report
+at the word level shows the order of tokens in a document and then
+shows the topic assigned to each document.  Here, the token &quot;money&quot;
+is assigned to topic 1, with all other tokens being assigned to topic 0.
+In document 1, all
+words were generated by topic 1, and in document 15, all words were
+generated by topic 0.</p>
+
+<p>In document 8, we see a case where different tokens of the same
+word are assigned to different topic.  In particular, three instances
+of &quot;bank&quot; are assigned to topic 0 and three to topic 1.
+</p>
+
+<h4>Code Walk Through</h4>
+
+<p>The code for the fixed example is in two files, namely <a
+href="src/LdaFixed.java"><code>src/LdaFixed.java</code></a>, which
+contains the main, and the helper class
+<a href="src/LdaReportingHandler.java"><code>src/LdaReportingHandler.java</code></a>
+which does the reporting.</p>
+
+<p>
+The code for the <code>LdaFixed</code> class begins by defining a bunch
+of static constants for the input corpus.</p>
+
+<pre class="code">
+static String[] WORDS = new String[] {
+    "river",  "stream",  "bank",  "money",  "loan"
+};
+
+static SymbolTable SYMBOL_TABLE = new MapSymbolTable();
+static {
+    for (String word : WORDS)
+        SYMBOL_TABLE.getOrAddSymbol(word);
+}
+
+static final int[][] DOC_WORDS = new int[][] {
+    { 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4 },
+    { 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4 },
+    { 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4 },
+    { 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4 },
+    { 2, 2, 2, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4, 4 },
+    { 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4, 4 },
+    { 0, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4 },
+    { 0, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4 },
+    { 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4 },
+    { 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4 },
+    { 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 4 },
+    { 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3 },
+    { 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 4 },
+    { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2 },
+    { 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2 },
+    { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2 }
+};
+
+static {
+    for (int[] words : DOC_WORDS)
+        Arrays.permute(words,RANDOM);
+}
+</pre>
+
+<p>This defines an array of five words which are used
+to populate a symbol table.  The symbol table and words
+are only used for output.  The real input is the
+<code>DOC_WORDS</code> array which represents 16
+documents of 16 tokens each.  For instance, the first
+document contains four instances of token 2 (&quot;bank&quot;),
+six instances of token 3 (&quot;money&quot;) and six
+instances of token 4 (&quot;loan&quot;).  Note that we then
+permute the arrays using our randomizer to more naturally
+match real document input; nothing hinges on this randomization.
+</p>
+
+<p>Next, the class includes static constants for the parameters
+of LDA and search.</p>
+
+<pre class="code">
+static short NUM_TOPICS = 2;
+static double DOC_TOPIC_PRIOR = 0.1;
+static double TOPIC_WORD_PRIOR = 0.01;
+
+static int BURNIN_EPOCHS = 0;
+static int SAMPLE_LAG = 1;
+static int NUM_SAMPLES = 16;
+
+static Random RANDOM = new Random(43);
+</pre>
+
+<p>Finally, the <code>main()</code> method contains a call to
+the static LDA Gibbs sampler method given all of these
+parameters along with a newly constructed sample handler.</p>
+
+<pre class="code">
+public static void main(String[] args) throws Exception {
+
+    LdaReportingHandler handler
+        = new LdaReportingHandler(SYMBOL_TABLE);
+
+    LatentDirichletAllocation.GibbsSample sample
+        = LatentDirichletAllocation
+        .gibbsSampler(DOC_WORDS,
+                      NUM_TOPICS,
+                      DOC_TOPIC_PRIOR,
+                      TOPIC_WORD_PRIOR,
+                      BURNIN_EPOCHS,
+                      SAMPLE_LAG,
+                      NUM_SAMPLES,
+                      RANDOM,
+                      handler);
+
+    handler.fullReport(sample,5,2,true);
+}
+</pre>
+
+<p>The handler, whose code we turn to shortly, is constructed with
+a reference to the symbol table; this will be used for reporting.
+The static <code>gibbsSampler()</code> method is called with
+a slew of arguments: the data, the number of topics, the two
+priors, the burnin and lag for the sampler, the total number of
+samples to handle, a randomizer, and finally, the handler which
+receives samples as callbacks.</p>
+
+<h4>LDA Reporting Handler Code</h4>
+
+<p>The samples themselves are instances of the class <a
+href="../../../docs/api/com/aliasi/cluster/LatentDirichletAllocation.GibbsSample.html"><code>com.aliasi.cluster.LatentDirichletAllocation.GibbsSample</code></a>.
+The samples are passed to the specified handler by the
+static Gibbs sampler method.  The handler implements
+<a
+href="../../../docs/api/com/aliasi/corpus/ObjectHandler.html"><code>com.aliasi.corpus.ObjectHandler</code></a><code>&lt;GibbsSample&gt;</code>, which specifies a single method,
+<a href="../../../docs/api/com/aliasi/corpus/ObjectHandler.html#handle(E)"><code>handle(GibbsSample)</code></a>.
+</p>
+
+<p>The handler generating the reports in the demos in this tutorial is
+provided in <a
+href="src/LdaReportingHandler.java"><code>src/LdaReportingHandler.java</code></a>.
+After the relevant imports, the handler is declared by:
+</p>
+
+<pre class="code">
+class LdaReportingHandler implements ObjectHandler&lt;LatentDirichletAllocation.GibbsSample&gt;
+</pre>
+
+<p>Instances are constructured with a reference to the symbol table
+that will be used to convert multinomial outcomes represented as
+integers to words.</p>
+
+<pre class="code">
+LdaReportingHandler(SymbolTable symbolTable) {
+    mSymbolTable = symbolTable;
+}
+</pre>
+
+<p>We have ellided the time calculations, as they have nothing
+to do with the LDA interface per se.  Again, not worrying about
+time, we have the <code>handle()</code> method defined by:
+</p>
+
+<pre class="code">
+public void handle(LatentDirichletAllocation.GibbsSample sample) {
+    System.out.printf(&quot;Epoch=%3d\n&quot;,sample.epoch());
+}
+</pre>
+
+<p>This handler simply prints out the epoch number as we go along.
+More useful handlers might store samples in files or memory to
+be used later for collective reasoning, or they might store estimates
+which are themselves combined across samples.</p>
+
+<p>Most of the work for the example is done in the
+<code>fullReport(GibbsSample)</code> method of the handler, which is
+not specified by the <code>ObjectHandler</code> interface.  Recall
+that the <code>LatentDirichletAllocation.gibbsSampler()</code> method
+returns a sample.  This sample is passed to the final report method in
+the handler to report on the sample.  For instance, the final report
+could be generated for each sample to inspect how topic assignments
+evolve.  This can be done by making a call to <code>fullReport()</code>
+for each sample sent to the handler.</p>
+
+<p>
+The <code>fullReport()</code> method begins by reporting the
+top-level counts for the sample:
+</p>
+
+<pre class="code">
+void fullReport(LatentDirichletAllocation.GibbsSample sample,
+                int maxWordsPerTopic,
+                int maxTopicsPerDoc,
+                boolean reportTokens) {
+
+    int numTopics = sample.numTopics();
+    int numWords = sample.numWords();
+    int numDocs = sample.numDocuments();
+    int numTokens = sample.numTokens();
+    ...
+</pre>
+
+<p>We leave out the print statements in this tutorial presentation,
+focusing on the structure of the sample.  The two numerical arguments to
+<code>fullReport()</code> are
+used to limit the output for topics and document reports, and the final
+boolean argument determines whether a the topic assignment for each
+token in the corpus is reported.
+</p>
+
+<p>The next thing the full report method does is report on the topic
+models.
+</p>
+
+<pre class="code">
+    for (int topic = 0; topic &lt; numTopics; ++topic) {
+        int topicCount = sample.topicCount(topic);
+        ObjectToCounterMap&lt;Integer&gt; counter = new ObjectToCounterMap&lt;Integer&gt;();
+        for (int word = 0; word &lt; numWords; ++word)
+            counter.set(new Integer(word),sample.topicWordCount(topic,word));
+        List&lt;Integer&gt; topWords = counter.keysOrderedByCountList();
+    }
+</pre>
+
+<p>The loop iterates over the topics, first collecting the
+total count for the topic into variable <code>topicCount</code>.
+Next, an object-to-counter map (in <code>com.aliasi.util</code>) is
+used to map the word identifiers to their counts in the current
+topic.  The resulting mapping is sorted on the identifiers
+based on their counts, from high to low, and assigned to a
+list of integers. Then we consider each rank from most frequent
+to less frequent.</p>
+
+<pre class="code">
+        for (int rank = 0; rank &lt; maxWordsPerTopic &amp;&amp; rank &lt; topWords.size(); ++rank) {
+            int wordId = topWords.get(rank);
+            String word = mSymbolTable.idToSymbol(wordId);
+            int wordCount = sample.wordCount(wordId);
+            int topicWordCount = sample.topicWordCount(topic,wordId);
+            double topicWordProb = sample.topicWordProb(topic,wordId);
+            double z = binomialZ(topicWordCount,
+                                 topicCount,
+                                 wordCount,
+                                 numTokens);
+        }
+</pre>
+
+<div class="sidebar">
+<h2>Z Scores for Words in Topics</h2>
+<p>
+The Z score represents the standard binomial hypothesis
+test of word frequency in topic versus word frequency in
+the corpus:
+</p>
+
+<pre class="code" style="font-size:70%">
+z(w,topic)
+= ( count(w,topic) - pCorpus * count(w,corpus) )
+  / sqrt( cnt(corpus) * pCorpus * (1 - pCorpus) )
+
+pCorpus = cnt(w,corpus) / cnt(corpus)
+</pre>
+</div>
+
+<p>
+We retrieve the word identifier from the top words list and assign
+it to <code>wordId</code>, and then retrieve the underlying string
+for the word from the class's symbol table.  Next, we retrieve the
+total count for the word in the sample, as well as the count for
+the word in the topic.  Next, the probability of the word in the
+topic is computed from the sample, which uses the topic-word prior
+in this calculation as well as the overall topic count.</p>
+
+<p>Finally, we compute a binomial Z score of the independence of the
+word from the topic.  This is computed using the counts of the word in
+the topic, the count of all words in the topic, the count of the word
+in the corpus and the count of all words in the corpus.  </p>
+
+<p>Next, the full report method iterates over the documents in the
+corpus, finding the top ranked topics for each document.</p>
+
+<pre class="code">
+    for (int doc = 0; doc &lt; numDocs; ++doc) {
+        int docCount = 0;
+        for (int topic = 0; topic &lt; numTopics; ++topic)
+            docCount += sample.documentTopicCount(doc,topic);
+        ObjectToCounterMap&lt;Integer&gt; counter = new ObjectToCounterMap&lt;Integer&gt;();
+        for (int topic = 0; topic &lt; numTopics; ++topic)
+            counter.set(new Integer(topic),sample.documentTopicCount(doc,topic));
+        List&lt;Integer&gt; topTopics = counter.keysOrderedByCountList();
+</pre>
+
+<p>We loop over the top-ranking topics in a document the same way as we
+looped over the top-ranking words in a topic, but here we calculate
+the count of the topic, the count of the topic in the document, and the
+estimate of the topic probability in the document; note that this latter
+calculation incorporates the document-topic prior.
+</p>
+
+<pre class="code">
+        for (int rank = 0; rank &lt; topTopics.size() &amp;&amp; rank &lt; maxTopicsPerDoc; ++rank) {
+            int topic = topTopics.get(rank);
+            int docTopicCount = sample.documentTopicCount(doc,topic);
+            double docTopicPrior = sample.documentTopicPrior();
+            double docTopicProb = (sample.documentTopicCount(doc,topic) + docTopicPrior)
+                / (docCount + numTopics * docTopicPrior);
+</pre>
+
+<p>The final stage is the report of the topic assignment to each corpus
+in a document.  This may be turned off using the <code>reportTokens</code> flag
+in the method call.</p>
+
+<pre class="code">
+        if (!reportTokens) continue;
+        int numDocTokens = sample.documentLength(doc);
+        for (int tok = 0; tok &lt; numDocTokens; ++tok) {
+            int symbol = sample.word(doc,tok);
+            String word = mSymbolTable.idToSymbol(symbol);
+            short topic = sample.topicSample(doc,tok);
+        }
+</pre>
+
+<p>Again, we elide the print statements to make the library calls
+clearer.</p>
+
+<h3>Corpus LDA Example: Wormbase Citations</h3>
+
+<div class="sidebar">
+<h2>Another Worm Bibliography</h2>
+<p>Another corpus of curated MEDLINE citations relating to
+nematodes is available from the
+<a href="http://www.cbs.umn.edu/CGC/">Caenorhabditis
+Genetic Center</a>.   It may be downloaded as a text file
+from the following link:
+</p>
+<ul>
+<li>Download <a href="http://elegans.swmed.edu/wli/cgcbib">CGCBIB</a>
+</li>
+</ul>
+<p>
+A smaller, earlier version of this bibliography was the basis of
+Blei et al. (2006).  The CGC data has hand annotation
+of genes appearing in full text articles.
+</p>
+</div>
+
+<div class="sidebar">
+<h2>Recent Wormbase Bibliography</h2>
+<p>
+To get more recent data, there is a top-level description and
+an FTP directory you can browse:
+</p>
+
+<ul>
+<li>Wormbase <a href="http://www.wormbase.org/wiki/index.php/Downloads">Downloads Wiki</a></li>
+<li>Wormbase <a href="ftp://ftp.wormbase.org/pub/wormbase/misc/literature/">Literature FTP Directory</a>
+</li>
+</ul>
+</div>
+
+<p>Sampling for an LDA model over a corpus of natural language
+documents is almost as easy as running over synthetic multinomial
+data.  The only difference is that the text needs to be parsed out of
+its source and then converted to symbol identifiers for the
+multinomial representation required by the LDA Gibbs sampler.  Once
+the text is extracted, as a character sequence per document, there's a
+static convenience method in the LDA class itself to perform the
+conversion to integer symbols in a single step.  </p>
+
+<h4>The Data</h4>
+
+
+<p>In this section, we show how to extract topics from a large corpus
+of documents about various aspects of the <a
+href="http://en.wikipedia.org/wiki/Nematode">nematode worm</a> (aka
+<i>Caenorhabditis elegans</i>, aka <i>c. elegans</i>).  The <a
+href="http://www.wormbase.org/">Wormbase</a> data repository
+distributes a curated bibliography that is regularly updated.  You may
+upload the data we used in this demo by clicking on the following link
+and saving the gzipped file (you don't even need to unpack it): </p>
+
+<ul>
+<li>
+<a
+href="ftp://ftp.wormbase.org/pub/wormbase/misc/literature/2007-12-01-wormbase-literature.endnote.gz"><code>2007-12-01-wormbase-literature.endnote.gz</code></a> (data for this demo)
+</li>
+</ul>
+
+
+<p>The data file contains a (gzipped) sequence of references like the
+following one, with references separated by blank lines.</p>
+
+<pre class="code">
+%0 Journal Article
+%T Determination of life-span in Caenorhabditis elegans by four clock genes.
+%A Lakowski, B
+%A Hekimi, S
+%D 1996
+%V 272
+%P 1010-1013
+%J Science
+%M WBPaper00002456
+%X The nematode worm Caenorhabditis elegans is a model system for the study of the genetic basis of aging. Maternal-effect mutations in four genes--clk-1, clk-2, clk-3, and gro-1--interact genetically to determine both the duration of development and life-span. Analysis of the phenotypes of these mutants suggests the existence of a general physiological clock in the worm. Mutations in certain genes involved in dauer formation (an alternative larval stage induced by adverse conditions in which development is arrested) can also extend life-span, but the life extension of Clock mutants appears to be independent of these genes. The daf-2(e1370) clk-1(e2519) worms, which carry life-span-extending mutations from two different pathways, live nearly five times as long as wild-type worms.
+</pre>
+
+<div class="sidebar">
+<h2>&quot;Custom&quot; Flat File Formats</h2>
+<p>Note that all three of MEDLINE, Wormbase and CGC use
+different formats, leading to lots of fun writing ad-hoc
+parsers.
+</p>
+</div>
+
+
+<p> The size of the Worm bibliography data set after pruning at a
+mininum token count of 2 is 26,888 documents, 52,437 words, and
+3,862,644 total tokens.  We used a topic-word prior of 0.01 and
+a document-topic prior of 0.1.  We ran to 2000 samples, at which point,
+the samples appeared to be reasonably stable in terms of
+conditional log likelihood given the topic and document multinomials.
+</p>
+
+
+<h4>Running the Demo</h4>
+
+<p>The demo may be run from Ant using target <code>lda-worm</code>.
+The gzipped data must be provided through the property
+<code>wormbase.gz</code>.  Here's how we ran it:
+</p>
+
+<pre class="code">
+&gt; ant -Dwormbase.gz=e:\data\wormbase\dist\2007-12-01-wormbase-literature.endnote.gz lda-worm
+</pre>
+
+<p>The output is almost identical to the fixed case example, but there
+are many more topics, many more words, and the documents are much
+longer.  As an example, here's the output for the document whose
+citation was given above.  As before, document output includes the
+document topic distribution followed by a listing of each token
+extracted from the tokenizer and the topic to which it was assigned.
+</p>
+
+
+<pre class="code">
+DOC 2366
+TOPIC    COUNT    PROB
+----------------------
+   11       29   0.378
+   30       15   0.196
+   42       14   0.183
+   46       11   0.144
+   20        1   0.014
+   21        1   0.014
+   45        1   0.014
+
+determination(46) life-span(11) caenorhabditi(46) elegan(46) clock(21)
+gene(11) nematode(11) worm(11) caenorhabditi(11) elegan(11) model(46)
+system(46) study(46) genetic(42) basi(30) aging(11)
+maternal-effect(30) mutation(30) clk-2(11) clk-3(11) genetically(30)
+determine(11) duration(11) development(11) life-span(11) analysi(42)
+phenotype(30) mutant(30) suggest(11) existence(46) general(46)
+physiological(11) clock(11) worm(11) mutation(30) certain(30) gene(11)
+involved(46) dauer(42) formation(42) alternative(42) larval(42)
+stage(42) induced(42) adverse(42) condition(11) development(46)
+arrested(42) extend(11) life-span(11) life(11) extension(11) clock(11)
+mutant(30) appear(30) independent(30) gene(30) daf-2(42) e1370(42)
+clk-1(11) e2519(11) worm(30) carry(46) mutation(30) different(20)
+pathway(42) live(11) nearly(42) time(45) long(11) wild-type(30)
+worm(11)
+</pre>
+
+<p>This document is modeled as being generated from a mixture of seven
+topics.  37.8% of the tokens were generated by topic 11, whereas the
+last three topics accounted for only one token each.  There is
+substantial random variation from the sampling approach.  This is
+intentional and an intrinsic property of Gibbs sampling.  The reason
+sampling produces results like the one above is that it allows the
+variance of posterior statistics to be computed and used for Bayesian
+inference.  The downside is that the topic distributions are not
+maximum likelihood estimates, and thus not our best estimates of the
+assignment of topics to a document. In this example, the token
+&quot;clock&quot; is assigned first to topic 21 and then topic 11.  It
+would almost certainly be more likely for all the token instances of a
+given word to be generated from the same topic.  With our prior of 0.1
+for topics in documents, we expect peaky posterior distributions over
+topics.
+</p>
+
+<p>The topical structure is much richer when run over
+a substantial real data set.  Here's the dominant topic from
+the above document.
+</p>
+
+<pre class="code">
+TOPIC 11  (total count=76046)
+SYMBOL             WORD    COUNT   PROB          Z
+--------------------------------------------------
+ 26488             life     2204   0.029      41.7
+  9966             span     2150   0.028      43.9
+ 13546             stre     2056   0.027      42.7
+  6545            aging     1916   0.025      41.6
+   516           elegan     1547   0.020       2.4
+ 10576           mutant     1297   0.017       3.2
+ 27002         lifespan     1124   0.015      24.5
+ 22483             heat      866   0.011      23.7
+ 16877         response      847   0.011       9.4
+ 12775        oxidative      836   0.011      28.0
+...
+  5763        longevity      794   0.010      22.1
+  9229           oxygen      757   0.010      26.5
+  7932    mitochondrial      710   0.009      19.1
+  9336        increased      698   0.009      14.1
+ 18944              age      668   0.009      22.1
+  9899            shock      657   0.009      20.8
+  7982       resistance      650   0.009      14.5
+ 21754         increase      634   0.008      11.9
+  7633            clk-1      569   0.007      23.4
+  6230             rate      551   0.007      10.0
+  1938            age-1      433   0.006      13.5
+ 17131        extension      371   0.005      11.1
+ 21056           damage      350   0.005      10.2
+ 27155       long-lived      307   0.004      15.9
+ 16730        metabolic      302   0.004      12.2
+ 26006           ageing      247   0.003      14.0
+  2988       superoxide      244   0.003      15.3
+  1321               ro      234   0.003      13.5
+ 16080        life-span      220   0.003      13.7
+ 18997            mev-1      209   0.003      14.2
+ 26823            hif-1      205   0.003      14.0
+   848            hsp70      200   0.003      13.8
+ 12054          dietary      194   0.003      11.5
+ 22639              sod      183   0.002      13.3
+  8991          hypoxia      179   0.002      12.9
+ 18945           anoxia      168   0.002      12.7
+ 19807       senescence      162   0.002      12.0
+  5026      age-related      158   0.002      12.3
+ 13166         reactive      158   0.002      11.3
+ 23352      antioxidant      156   0.002      12.2
+ 15571            mtdna      151   0.002      12.0
+ 10198        dismutase      135   0.002      11.4
+ 25739          radical      134   0.002      11.3
+ 18860  thermotolerance      133   0.002      11.3
+  5474         paraquat      120   0.002      10.7
+ 13258          caloric      114   0.001      10.5
+</pre>
+
+<p>
+most frequent terms with z-scores greater than 10.
+This topic
+is clearly related to longevity.  The genes appearing in the
+topic, such as <code>clk-1</code> are known to be aging related.
+</p>
+<p>
+We've only listed the ten most frequent terms and then any
+term in the top 500 most frequent terms for that topic with
+z-scores greater than 10 (the program actually prints out all
+500 of the most frequent terms per topic).
+</p>
+
+<p>The next topic is about inherited mutations and their effects.</p>
+
+<pre class="code">
+TOPIC 30  (total count=166558)
+SYMBOL             WORD    COUNT   PROB          Z
+--------------------------------------------------
+ 15117         mutation    11964   0.072      74.1
+ 10576           mutant     8769   0.053      39.0
+ 18989           allele     7912   0.047      74.6
+ 21785        phenotype     7696   0.046      55.6
+ 16249             gene     5346   0.032      11.4
+  8150           defect     3114   0.019      26.7
+ 20706       suppressor     2583   0.015      38.4
+  4999           animal     2387   0.014      13.7
+  8313             null     1759   0.011      30.8
+ 26652            cause     1499   0.009      18.3
+...
+ 11491        wild-type     1317   0.008      16.5
+   680         isolated     1299   0.008      14.7
+ 15960           suppre     1277   0.008      25.1
+ 14850         dominant     1222   0.007      28.5
+ 10544        lethality     1145   0.007      22.4
+  8234           lethal     1131   0.007      19.1
+  3835           double     1053   0.006      19.2
+ 19226      temperature      974   0.006      15.5
+ 25127        recessive      961   0.006      26.0
+ 17768        homozygou      905   0.005      22.3
+ 21647              cla      871   0.005      10.7
+ 22116           rescue      869   0.005      12.4
+ 17444        defective      795   0.005      11.8
+ 10263           affect      773   0.005      10.3
+  2396      suppression      757   0.005      21.5
+ 16981          exhibit      658   0.004      11.1
+  5635  loss-of-function      620   0.004      14.6
+  7597           viable      597   0.004      18.7
+ 20959             locu      554   0.003      12.5
+ 21884         abnormal      541   0.003      10.4
+ 20834       suppressed      535   0.003      14.5
+  4665          display      532   0.003      10.5
+  3940        sensitive      529   0.003      12.4
+ 20064          rescued      518   0.003      12.9
+ 20318           severe      515   0.003      14.4
+ 19470             fail      510   0.003      10.0
+ 27607           strong      485   0.003      10.2
+  7463             weak      479   0.003      14.1
+ 26052  temperature-sensitive      473   0.003      17.2
+ 17043       complement      471   0.003      14.7
+ 18265          sterile      462   0.003      11.8
+  1240               ts      440   0.003      17.5
+ 21186              egl      421   0.003      17.3
+ 15536       homozygote      399   0.002      15.8
+ 23504          partial      391   0.002      10.7
+  2127         missense      362   0.002      15.1
+ 16225        penetrant      339   0.002      13.0
+  2645        revertant      320   0.002      10.7
+ 15098           unc-93      311   0.002      15.8
+ 12188           lesion      266   0.002      11.1
+ 12506  maternal-effect      243   0.001      10.7
+  5130         nonsense      237   0.001      12.0
+ 26793       penetrance      237   0.001      10.6
+  8756            sup-9      236   0.001      14.7
+  6077       intragenic      235   0.001      13.7
+ 23991       extragenic      227   0.001      13.6
+  3594      heterozygou      215   0.001      10.0
+ 23025      hypomorphic      204   0.001      11.3
+  2387            amber      191   0.001      12.5
+   953           sup-10      190   0.001      12.6
+ 27062    semi-dominant      170   0.001      12.4
+  2957      restrictive      163   0.001      10.1
+</pre>
+
+<p>The next topic has to do with larval worms and genetic control of
+development.  The daf family of genes is highly represented in this
+topic.</p>
+
+<pre class="code">
+TOPIC 42  (total count=45197)
+SYMBOL             WORD    COUNT   PROB          Z
+--------------------------------------------------
+ 12927            dauer     3749   0.082      57.5
+   597        formation     1254   0.028      17.1
+  5220         receptor     1172   0.026      11.0
+ 10576           mutant      817   0.018       2.2
+ 24793           daf-12      777   0.017      27.5
+  4312           larvae      758   0.017      15.9
+ 14289            stage      704   0.015       7.5
+ 26805          nuclear      686   0.015      10.9
+ 15093            daf-c      668   0.015      25.5
+...
+ 20294          hormone      667   0.015      24.0
+  2198            larva      520   0.011      20.8
+  7427        pheromone      507   0.011      21.0
+ 14990            daf-7      507   0.011      21.8
+ 16249             gene      461   0.010      -1.0
+ 14995            daf-9      305   0.007      17.3
+ 15001            daf-3      258   0.006      15.9
+ 14991            daf-4      250   0.005      11.1
+ 15003            daf-1      235   0.005      14.4
+  3903            fax-1      225   0.005      14.1
+ 21443          steroid      189   0.004      12.7
+ 14992            daf-5      182   0.004      13.3
+ 24705           daf-21      176   0.004      13.1
+ 11543  dauer-constitutive      172   0.004      13.0
+  8124           nhr-25      157   0.003      12.4
+ 24794           daf-11      155   0.003      11.1
+   774            hsp90      132   0.003      10.1
+ 23507              nhr      127   0.003      11.1
+ 24796           daf-14      127   0.003      11.0
+ 15106            daf-d      124   0.003      11.0
+ 10372             nhrs      123   0.003      11.0
+ 14993            daf-8      123   0.003      11.0
+ 25298  dauer-defective      119   0.003      10.8
+   918               nr      109   0.002      10.3
+ 24449         ecdysone      108   0.002      10.3
+</pre>
+
+<p>Finally, the last substantially represented topic inferred for the
+document in the sample we took is the following:</p>
+
+<pre class="code">
+TOPIC 46  (total count=141190)
+SYMBOL             WORD    COUNT   PROB          Z
+--------------------------------------------------
+   516           elegan     5953   0.042      18.2
+ 23217          genetic     2883   0.020      22.8
+ 26479           system     2660   0.019      27.8
+  5428         nematode     2267   0.016      17.1
+ 10322            model     2214   0.016      26.6
+  3467    caenorhabditi     2161   0.015      14.2
+ 22362         organism     2082   0.015      29.9
+ 22518        molecular     1897   0.013      21.1
+ 26901        mechanism     1874   0.013      19.6
+ 13542             stud     1756   0.012      22.1
+...
+ 11886            proce     1565   0.011      15.4
+ 10250            study     1291   0.009      18.1
+  4888    understanding      983   0.007      22.4
+ 22068          provide      977   0.007      15.9
+ 12684         cellular      930   0.007      14.8
+ 27589    developmental      860   0.006      11.1
+ 12749           recent      770   0.005      19.2
+  4633       biological      656   0.005      14.6
+ 25751          biology      564   0.004      14.5
+ 25358          insight      548   0.004      15.9
+ 11333           review      544   0.004      22.4
+ 13151         research      471   0.003      13.3
+ 24528           simple      446   0.003      13.5
+ 23483        approache      399   0.003      11.5
+ 20181              key      386   0.003      10.1
+ 18148             tool      362   0.003      11.6
+  1587         question      361   0.003      10.2
+ 26428     invertebrate      339   0.002      10.5
+  9406            discu      327   0.002      14.6
+  2563       underlying      311   0.002      10.1
+ 19230             year      310   0.002      10.6
+ 24613     experimental      299   0.002      10.3
+   173    multicellular      282   0.002      11.2
+ 10916      fundamental      265   0.002      11.9
+  2683        knowledge      245   0.002      11.5
+ 16253         powerful      237   0.002      11.8
+   196        discovery      215   0.002      10.9
+ 13782        excellent      182   0.001      10.2
+  2382            offer      180   0.001      10.7
+  3564     manipulation      180   0.001      10.9
+  5930       physiology      180   0.001      10.4
+ 13283          advance      162   0.001      10.6
+</pre>
+
+<p>This topic is interesting because of its genericness.
+General words related to abstract-level research are highly
+represented here.
+</p>
+
+
+<h4>Sizing and Scaling LDA Gibbs Sampling</h4>
+
+<p>Note that the demo took several hours to run (on a notebook
+computer with good performance as of December 2006).  This is partly
+because we ran to 2000 epochs to mirror Steyvers and Griffiths' large
+corpus examples.  We only ran 100 topics, as that's what Blei et
+al. found worked well for their nematode bibliography.</p>
+
+<p>Run time is directly proportional to the number of topics times the
+number of tokens in the corpus.  The numbers of words and documents
+don't really matter.  Although LDA is highly scalable, it is fairly
+slow per epoch.  Thus scaling an order of magnitude (to 40 million
+tokens, or about 250MB of ASCII text before tokenization and
+stoplisting) would require a day of computer time to run.  Scaling
+beyond beyond 50M tokens would be prohibitive without some kind of
+parallelization.</p>
+
+
+
+
+<h4>Code Walkthrough</h4>
+
+<p>The code is in <a
+href="src/LdaWormbase.java"><code>src/LdaWormbase.java</code></a>.  It
+is mostly like the fixed example code.  It begins to differ when
+reading the corpus:
+</p>
+
+<pre class="code">
+public static void main(String[] args) throws Exception {
+    File corpusFile = new File(args[0]);
+    ...
+    CharSequence[] articleTexts = readCorpus(corpusFile);
+</pre>
+
+
+<p>The details may be found in the
+implementation of the method <code>readCorpus()</code> in the source.  It
+basically reads in the titles and bodies of the citations
+(the contents of the <code>%T</code>
+and <code>%X</code> fields).</p>
+
+<p>The critical new step is converting the raw text into a sequence
+of words and then into a multinomial representation.  A tokenizer
+converts text to a sequence of tokens (word instances), and
+a symbol table takes care of the conversion from words to numerical
+identifiers as required by the LDA Gibbs sampler.</p>
+
+<pre class="code">
+    SymbolTable symbolTable
+        = new MapSymbolTable();
+    TokenizerFactory tokenizerFactory
+        = new WormTokenizerFactory();
+    int[][] docTokens
+        = LatentDirichletAllocation
+        .tokenizeDocuments(articleTexts,
+                           tokenizerFactory,
+                           symbolTable,
+                           minTokenCount);
+</pre>
+
+<p>The static <code>tokenizeDocuments()</code> method in the LDA class
+takes in the raw texts (an array of character sequences), a tokenizer
+factory with which to convert the texts into token streams, a symbol
+table to convert tokens to integer representations.  There is also
+a minimum count for tokens; all tokens occurring fewer times than this
+count in the corpus are removed.  These tend not to be too useful
+for topical analysis, though the topic distributions of even singletons
+may be estimated using LDA, so in some cases, no pruning is necessary
+and the minimum token count can be set to 1.</p>
+
+<p>The tokenizer factory was designed to mirror the one used by Blei
+et al., to the extent that it was described (they only sketched their
+stoplisting).  Tokenization is based on a regex-based tokenizer
+factory that is fairly coarse grained so as to leave gene names like
+&quot;clk-2&quot; together as single tokens.  There is a stop filter
+to remove stoplisted words and non-alpha-numeric tokens.  There is
+also a simple plural stemmer as described in the paper, and all
+strings are normalized to lower case.  The details of the tokenizer
+may may be found in the source file.  </p>
+
+<p>The rest of the code is exactly the same as for the fixed example.
+There is an additional static method <code>reportCorpus()</code>. which
+may be used to do a token count report on a corpus; we used this method
+in determining the form of the stoplist to use and also to get a feel
+for token distributions.
+</p>
+
+<h3>Topic Stability Evaluation</h3>
+
+<p>We replicate Steyvers and Griffiths' (2007) comparison of topic
+stability.  They first drew two Gibbs samples from different random
+initializations (in theory these could just come from a large enough
+sample lag on the same chain).  The basis for topic comparison is the
+symmetrized form of Kullback-Leibler divergence.  Steyvers and
+Griffiths ran this over the discrete distributions over words in a
+topic determined by the sample.  </p>
+
+<h4>Running the Demo</h4>
+
+<p>the topic evaluation may be run from ant with the target
+<code>lda-topic-sim</code> with property <code>wormbase.gz</code> set
+to the path for the data.</p>
+
+<p>The output very closely mirrors that in the Steyvers and Griffiths
+paper, though their graphical presentation by color intensity is rather
+difficult to accurately decipher.  Here we just list the divergences
+in ascending order:.</p>
+
+<pre class="code">
+Epoch=1860   elapsed time=3:30:45
+Epoch=1998   elapsed time=3:30:45
+Epoch=1999   elapsed time=3:30:51
+      log2 p(corpus|phi,theta)=-3.83662707520383E7     token cross-entropy rate=10.101570740784956
+Epoch=1861   elapsed time=3:30:58
+...
+      log2 p(corpus|phi,theta)=-3.836600079880293E7     token cross-entropy rate=10.101499663986237
+...
+Epoch=1900   elapsed time=3:35:11
+      log2 p(corpus|phi,theta)=-3.8365097949822724E7     token cross-entropy rate=10.101261950164616
+...
+Epoch=1950   elapsed time=3:40:41
+      log2 p(corpus|phi,theta)=-3.836379238634189E7     token cross-entropy rate=10.10091820443172
+...
+Epoch=1990   elapsed time=3:45:04
+      log2 p(corpus|phi,theta)=-3.8363853398416765E7     token cross-entropy rate=10.100934268484291
+...
+Epoch=1999   elapsed time=3:46:04
+
+Computing Greedy Aligned Symmetrized KL Divergences
+   0           0.339
+   1           0.417
+   2           0.529
+   3           0.552
+   4           0.604
+   5           0.622
+   6           0.646
+   7           0.715
+   8           0.727
+   9           0.743
+  10           0.756
+  11           0.792
+  12           0.820
+  13           0.823
+  14           0.923
+  15           0.941
+  16           1.127
+  17           1.249
+  18           1.400
+  19           1.402
+  20           1.419
+  21           1.463
+  22           1.484
+  23           1.534
+  24           1.638
+  25           1.665
+  26           1.708
+  27           1.730
+  28           1.869
+  29           1.875
+  30           2.037
+  31           2.322
+  32           2.347
+  33           2.574
+  34           2.658
+  35           2.783
+  36           3.270
+  37           3.519
+  38           3.568
+  39           3.591
+  40           3.737
+  41           4.122
+  42           4.809
+  43           5.159
+  44           6.169
+  45           7.338
+  46           8.924
+  47           9.784
+  48           9.923
+  49          11.714
+</pre>
+
+<p>The initial set of values indicates a very good match.  We're
+looking at multinomials over thousands of words with very low KL
+divergences.  As the ordering decreases, the divergences grow larger.
+</p>
+
+
+<h4>Multi-Threaded Code</h4>
+
+<p>The code for the evaluation is in <a
+href="src/LdaTopicSimilarity.java"><code>src/LdaTopicSimilarity.java</code></a>.
+The first thing to note about it is that it runs in multiple threads.  The
+texts and their multinomial representations are created as before.  But
+now, rather than calling the Gibbs sampling method directly, we start
+two threads:
+</p>
+
+<pre class="code">
+LdaRunnable runnable1 = new LdaRunnable(docTokens,
+                                        new LdaReportingHandler(symbolTable),
+                                        new Random());
+
+LdaRunnable runnable2 = new LdaRunnable(docTokens,
+                                        new LdaReportingHandler(symbolTable),
+                                        new Random());
+
+Thread thread1 = new Thread(runnable1);
+Thread thread2 = new Thread(runnable2);
+
+thread1.start();
+thread2.start();
+
+thread1.join();
+thread2.join();
+
+LatentDirichletAllocation lda0 = runnable1.mLda;
+LatentDirichletAllocation lda1 = runnable2.mLda;
+</pre>
+
+<div class="sidebar">
+<h2>Managing Threads</h2>
+<p>For user-specified numbers of threads, the parallel code would
+obviously need to go in a loop; we kept it simple here for clarity.</p>
+
+<p>A serious application would likely use one of the execution
+frameworks found in the <code>java.util.concurrent</code> package. This
+would be especially true if more than the number of available threads
+number of samples is needed, because then there has to be waiting,
+queuing, or some other throttling and collection method.
+</p>
+</div>
+
+<p>First, we create the two runnables, which get the
+document-token arrays, their own handlers, and their
+own fresh randomizers.  Then the runnables are embedded
+in threads and started.  In order to wait for the threads
+to finish running, the current (calling) thread, calls
+<code>join()</code> on each thread in turn.  After both methods
+have completed, we'll know both threads have finished.  At
+that point, we pull the LDA objects out of the runnables.
+</p>
+
+<p>The runnable's code just does the obvious sampling.</p>
+
+<pre class="code">
+static class LdaRunnable implements Runnable {
+    LatentDirichletAllocation mLda;
+    final int[][] mDocTokens;
+    final ObjectHandler&lt;LatentDirichletAllocation.GibbsSample&gt; mHandler;
+    final Random mRandom;
+
+    LdaRunnable(int[][] docTokens,
+                ObjectHandler&lt;LatentDirichletAllocation.GibbsSample&gt; handler,
+                Random random) {
+        mDocTokens = docTokens;
+        mHandler = handler;
+        mRandom = random;
+    }
+
+    public void run() {
+        mLda = sample(mDocTokens,mHandler,mRandom);
+    }
+}
+</pre>
+
+<p>The <code>sample()</code> method itself just runs sampling and
+then converts the sample to an LDA model:
+</p>
+
+<pre class="code">
+LatentDirichletAllocation.GibbsSample sample
+    = LatentDirichletAllocation
+      .gibbsSampler(docTokens,
+                    ...
+
+return sample.lda();
+</pre>
+
+<p>We then take the two LDA instances and compare them for topic
+similarity using greedy alignment.   Specifically, we compare each
+pair of topic distributions using symmetrized KL divergence.
+Then we continue to take pairs of topics that have the highest
+scores but have not been used already, until we are out of topics.
+</p>
+
+<p>For the sake of understanding LDA, the only part of the
+implementation that's important is the computation of
+divergence:
+</p>
+
+<pre class="code">
+for (int i = 0; i &lt; numTopics; ++i) {
+    for (int j = 0; j &lt; numTopics; ++j) {
+        if (i == j) continue;
+        double divergence
+            = Statistics
+              .symmetrizedKlDivergence(lda0.wordProbabilities(i),
+                                       lda1.wordProbabilities(j));
+        ...
+</pre>
+
+<p>The static divergence method is in the <code>com.aliasi.stats.Statistics</code>.
+</p>
+
+<h3>LDA Document Similarity: More Like This</h3>
+
+<div class="sidebar">
+<h2>Diverse Divergences</h2>
+<p>Steyvers and Griffiths used the symmetrized form
+of KL divergence over the multinomial estimates derived
+from a sample.  The multinomials do not represent the
+full posterior, but only its mean.  The full posterior
+is a Dirichlet parameterized by posterior counts.</p>
+
+<p>LingPipe can also implement the (symmetrized) KL divergence between
+two Dirichlet distributions using static methods
+in <code>com.aliasi.stats.Statistics</code>.
+</p>
+
+<p>It's also possible to symmetrize KL divergence relative
+to their means, using Jenson-Shannon divergence.  This method
+is only available for multinomials.
+</p>
+
+</div>
+
+
+
+<p> Just as we compared topics using KL divergence, we can compare
+documents by measuring the divergence of their distributions over
+topics.  Within the sampling process, we have access to both the
+Dirichlet posterior parameters and thus the discrete distribution
+representing its mean.  These may be used to compare the two documents.
+</p>
+<p>
+Alternatively, an LDA model may be used for a pair of fresh documents
+in the following way.  This merely requires first estimating their
+topic distribution, which may be done by sampling or by taking an
+aggregate mean over samples.  Both approaches are represented within
+the LDA class as methods.
+</p>
+
+
+
+<!--
+<h3>Word Association</h3>
+
+<p>All the methods are in place to recreate Steyvers and Griffiths'
+word association measures.  An LDA method is available to convert
+a bag of words, which can be a single word, into a posterior sample,
+from which another word's probability may be crudely estimated.
+</p>
+
+-->
+
+
+<h2>References</h2>
+
+<ul>
+
+<li>Bagga, Amit and Breck Baldwin.  1998a.  <a
+href="http://acl.ldc.upenn.edu/P/P98/P98-1012.pdf">Entity-Based
+Cross-Document Coreferencing Using the Vector Space Model</a>. In
+<i>Proceedings of ACL/COLING.</i>
+</li>
+
+<li> Bagga, Amit and Breck Baldwin.  1998b.  <a
+href="ftp://ftp.cis.upenn.edu/pub/breck/scoring-paper.ps.gz">Algorithms
+for scoring coreference chains</a>.  In <i>Proceedings of the First
+International Conference on Language Resources and Evaluation Workshop
+on Linguistic Coreference.</i>
+<br />
+<small>[The B<sup>3</sup> source.]</small>
+</li>
+
+<li> Blei, D.M., K. Franks, M.I. Jordan and I.S. Mian.
+2006.
+<a href="http://www.biomedcentral.com/1471-2105/7/250">Statistical modeling of biomedical corpora: mining the
+Caenorhabditis Genetic Center Bibliography for genes related to
+life span</a>.
+<i>BMC Bioinformatics</i> <b>7</b>:250.</li>
+
+<li>Gooi, Chung Heong and James Allan. 2004.
+<a href="http://acl.ldc.upenn.edu/N/N04/N04-1002.pdf">Cross-document coreference on a large scale corpus</a>.  Proceedings of HLT/NAACL.
+<br />
+<small>[Extends Bagga and Baldwin to agglomerative clustering.]</small>
+</li>
+
+<li>Griffiths, T. and M. Steyvers. 2004.
+<a href="http://www.pnas.org/cgi/reprint/101/suppl_1/5228">Finding Scientific Topics</a>. <i>National Academy of Sciences</i> <b>101</b>.
+5228-5235.</li>
+
+<li>Hastie, T., R. Tibrishani and J.H. Friedman.  2001.
+<i>The Elements of Statistical Learning</i>. Springer-Verlag.
+<br /><small>[Lots of statistical info and model-based analyses of clustering.]</small>
+</li>
+
+<li>Jain, A.K., R. C. Dubes. 1988. <i>Algorithms for Data
+clustering</i>. Prentice Hall.
+<br />
+<small>[Almost all you need to know in the classical setting, including all of
+the above evaluation criteria and clustering algorithms.]</small>
+</li>
+
+<li>Jain, A. K., M. N. Murty, P. J. Flynn. 1999. <a
+href="http://citeseer.ist.psu.edu/jain99data.html">Data Clustering: A
+Review</a>.
+<i>ACM Computing Surveys</i> <b>31</b>(3):264-323.
+<br />
+<small>[Very readable overview.]</small>
+</li>
+
+<li>Mathematica Documentation. 2005. <a
+href="http://documents.wolfram.com/mathematica/Add-onsLinks/StandardPackages/Statistics/ClusterAnalysis.html"
+>ClusterAnalysis</a>.
+</li>
+
+
+
+<li>Pedersen, Ted, Amruta Purandare, and Anagha Kulkarni.
+2005.
+<a href="http://www.d.umn.edu/~kulka020/cicling2005.pdf">Name discrimination by clustering similar contexts</a>.  CICLING.
+<br />
+<small>[Extends Bagga and Baldwin with a singular-value decomposition
+of co-occurrence matrix prior to clustering.]</small>
+</li>
+
+<li>Steyvers, Mark and Tom Griffiths. 2007.
+<a href="http://psiexp.ss.uci.edu/research/papers/SteyversGriffithsLSABookFormatted.pdf">Probabilistic topic models</a>.
+In  Thomas K. Landauer, Danielle S. McNamara, Simon Dennis and Walter Kintsch (eds.),
+<i>Handbook of Latent Semantic Analysis.</i>
+Laurence Erlbaum.
+</li>
+
+<li>Vilain, Marc, John Burger, John Aberdeen, Dennis Connolly, and
+Lynette Hirschman.  1995.  <a
+href="http://acl.ldc.upenn.edu/M/M95/M95-1005.pdf">A model-theoretic
+coreference scoring scheme.</a> In <i>Proceedings fo the 6th Message
+Understanding Conference (MUC6)</i>.  45--52.  Morgan Kaufmann.
+<br />
+<small>[The MUC source.]</small>
+</li>
+
+<li>Wikipedia. 2005. <a href="http://en.wikipedia.org/wiki/Dendrogram"
+>Dendrogram</a>.
+</li>
+
+<li>Wikipedia. 2005. <a href="http://en.wikipedia.org/wiki/Data_clustering"
+>Data clustering</a>.
+</li>
+
+</ul>
+
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2011 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15123726-1");
+pageTracker._trackPageview();
+} catch(err) {}</script></body>
+</html>
+
+
+
+
+
+
+
+
+

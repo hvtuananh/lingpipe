@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+
+<project name="LingPipe Tutorial - Hyphenation and Syllabification"
+         default="compile" basedir=".">
+
+<path id="classpath.standard">
+  <pathelement location="hyphenation.jar"/>
+  <pathelement location="../../../lingpipe-4.1.0.jar"/>
+</path>
+
+<target name="clean">
+  <delete dir="build"/>
+  <delete file="hyphenation.jar"/>
+</target>
+
+<target name="compile">
+  <mkdir dir="build/classes"/>
+  <javac includeAntRuntime="false"   optimize="on"
+         debug="yes"
+         debuglevel="source,lines,vars"
+         destdir="build/classes">
+    <compilerarg value="-Xlint:all"/>
+    <classpath refid="classpath.standard"/>
+    <src path="src/"/>
+  </javac>
+</target>
+
+<target name="jar"
+        depends="compile">
+  <jar destfile="hyphenation.jar">
+    <fileset dir="build/classes"
+             includes="**/*.class"/>
+  </jar>
+</target>
+
+<property name="celex.raw.dir"
+          value="e:\data\celex2\unpacked\celex2"/>
+<property name="celex.ow.file"
+          value="${celex.raw.dir}/english/eow/eow.cd"/>
+<property name="hyphens.file"
+          value="celex-english-hyphens.txt"/>
+<property name="celex.pw.file"
+          value="${celex.raw.dir}/english/epw/epw.cd"/>
+<property name="celex.sylls.file"
+          value="celex-english-syllables.txt"/>
+
+<property name="moby.raw.file"
+          value="E:\data\moby-hyphens\unpacked\mhyph.txt"/>
+
+<property name="hyphens.file"
+          value="moby-hyphens.txt"/>
+
+
+<property name="verbose"
+          value="true"/>
+<property name="intersect"
+          value="true"/>
+
+<target name="celex-hyphens"
+        depends="jar">
+  <java classname="CelexHyphenCorpus"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${celex.ow.file}"/>
+    <arg value="${hyphens.file}"/>
+  </java>
+</target>
+
+<target name="celex-hyphens-german"
+        depends="jar">
+  <java classname="CelexHyphenCorpusGerman"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${celex.ow.file}"/>
+    <arg value="${hyphens.file}"/>
+  </java>
+</target>
+
+<target name="celex-syllables"
+        depends="jar">
+  <java classname="CelexSyllableCorpus"
+        maxmemory="4G"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${celex.pw.file}"/>
+    <arg value="${celex.sylls.file}"/>
+  </java>
+</target>
+
+
+<target name="moby-hyphens"
+        depends="jar">
+  <java classname="MobyHyphenCorpus"
+        maxmemory="1G"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${moby.raw.file}"/>
+    <arg value="${hyphens.file}"/>
+  </java>
+</target>
+
+<target name="websters-hyphens"
+        depends="jar">
+  <java classname="WebstersHyphensCorpus"
+        maxmemory="1G"
+        fork="true">
+    <classpath refid="classpath.standard"/>
+    <arg value="${websters.raw.file}"/>
+    <arg value="${hyphens.file}"/>
+  </java>
+</target>
+
+<target name="xval-hyphens"
+        depends="jar">
+  <java classname="XvalHyphenation"
+        fork="true">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+    <arg value="${hyphens.file}"/>
+    <arg value="${verbose}"/>  <!-- verbosity -->
+  </java>
+</target>
+
+<target name="xval-hyphens-bidi"
+        depends="jar">
+  <java classname="XvalHyphenationBiDi"
+        maxmemory="1G"
+        fork="true">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+    <arg value="${hyphens.file}"/>
+    <arg value="${verbose}"/>  <!-- verbosity -->
+  </java>
+</target>
+
+
+<target name="xval-hyphens-bidi-int"
+        depends="jar">
+  <java classname="XvalHyphenationBiDiIntersect"
+        maxmemory="1G"
+        fork="true">
+    <jvmarg value="-server"/>
+    <classpath refid="classpath.standard"/>
+    <arg value="${hyphens.file}"/>
+    <arg value="${intersect}"/>  <!-- true=intersect, false=union -->
+    <arg value="${verbose}"/>  <!-- verbosity -->
+  </java>
+</target>
+
+
+</project>
