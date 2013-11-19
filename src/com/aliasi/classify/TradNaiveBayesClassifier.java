@@ -1061,7 +1061,7 @@ public class TradNaiveBayesClassifier
             mLabeledData = labeledData;
             mUnlabeledData = unlabeledData;
             mMinTokenCount = minTokenCount;
-            trainSup(labeledData,initialClassifier);
+            trainSupInitial(labeledData,initialClassifier);
             compile(initialClassifier);
         }
         @Override
@@ -1071,6 +1071,14 @@ public class TradNaiveBayesClassifier
             trainUnsup(mUnlabeledData,classifier);
             compile(classifier);
             return classifier;
+        }
+        void trainSupInitial(Corpus<ObjectHandler<Classified<CharSequence>>> labeledData,
+                      TradNaiveBayesClassifier classifier) {
+            try {
+                labeledData.visitGold(classifier);
+            } catch (IOException e) {
+                throw new IllegalStateException("Error during labeled training",e);
+            }
         }
         void trainSup(Corpus<ObjectHandler<Classified<CharSequence>>> labeledData,
                       TradNaiveBayesClassifier classifier) {
