@@ -115,5 +115,11 @@ public class Corpus<H extends Handler> {
 
         /* override by subclass to do something */
     }
+    
+    public int getTestCount(String cat) 
+        throws IOException {
+        return 0;
+        /* override by subclass to do something */
+    }
 
 }
